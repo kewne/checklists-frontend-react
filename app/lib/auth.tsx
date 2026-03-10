@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { type User, onAuthStateChanged, signOut as firebaseSignOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from './firebase';
+import { FirebaseUIProvider } from '@firebase-oss/ui-react';
+import { auth, ui } from './firebase';
 
 interface AuthContextType {
   user: User | null;
@@ -28,9 +29,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signOut }}>
-      {children}
-    </AuthContext.Provider>
+    <FirebaseUIProvider ui={ui}>
+      <AuthContext.Provider value={{ user, loading, signOut }}>
+        {children}
+      </AuthContext.Provider>
+    </FirebaseUIProvider>
   );
 }
 
