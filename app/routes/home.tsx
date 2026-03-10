@@ -2,12 +2,73 @@ import { Link } from "react-router";
 import type { Route } from "./+types/home";
 import { Welcome } from "../welcome/welcome";
 import { useAuth } from "../lib/auth";
+import { useState, useEffect } from "react";
+import { callChecklistsAPI, type ApiResult } from "../lib/api";
 
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "New React Router App" },
     { name: "description", content: "Welcome to React Router!" },
   ];
+}
+
+function ApiStatusBox({ user }: { user: any }) {
+  const [apiStatus, setApiStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
+  useEffect(() => {
+    if (user) {
+      callChecklistsAPI(user)
+        .then((result: ApiResult) => {
+          if (result.success) {
+            setApiStatus('success');
+          } else {
+            setApiStatus('error');
+            setErrorMessage(result.error || 'Unknown error');
+          }
+        })
+        .catch((error) => {
+          setApiStatus('error');
+          setErrorMessage('Failed to call API');
+        });
+    }
+  }, [user]);
+
+  if (apiStatus === 'loading') {
+    return (
+      <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
+        <div className="flex items-center">
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+          <span className="text-blue-700 text-sm">Checking API connection...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (apiStatus === 'success') {
+    return (
+      <div className="bg-green-50 border border-green-200 rounded-md p-4 mb-4">
+        <div className="flex items-center">
+          <svg className="h-4 w-4 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+          <span className="text-green-700 text-sm font-medium">API connection successful</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
+      <div className="flex items-center">
+        <svg className="h-4 w-4 text-red-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+        </svg>
+        <span className="text-red-700 text-sm font-medium">API connection failed</span>
+        {errorMessage && <span className="text-red-600 text-sm ml-2">({errorMessage})</span>}
+      </div>
+    </div>
+  );
 }
 
 export default function Home() {
@@ -57,6 +118,7 @@ export default function Home() {
           </div>
           <div className="border-t pt-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Dashboard</h2>
+            <ApiStatusBox user={user} />
             <p className="text-gray-600">
               You're successfully authenticated with Firebase UI! You can now start building your application.
             </p>

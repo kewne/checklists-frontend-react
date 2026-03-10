@@ -15,7 +15,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-connectAuthEmulator(auth, "http://127.0.0.1:9099");
+// connectAuthEmulator(auth, "http://127.0.0.1:9099");
 // Initialize Firebase UI v7
 export const ui = initializeUI({
   app,
