@@ -12,6 +12,7 @@ import "./app.css";
 import "@firebase-oss/ui-styles/dist.min.css";
 import { FirebaseUIProvider } from "@firebase-oss/ui-react";
 import { ui } from "./lib/firebase";
+import { AuthProvider } from "./lib/auth";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -47,7 +48,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <FirebaseUIProvider ui={ui}>
+      <AuthProvider>
         <Outlet />
+      </AuthProvider>
     </FirebaseUIProvider>
   );
 }
