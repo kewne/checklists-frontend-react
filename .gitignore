@@ -1,4 +1,7 @@
 .DS_Store
+
+# Authentication state - contains sensitive cookies/tokens
+playwright/.auth
 .env
 /node_modules/
 
@@ -8,3 +11,6 @@
 
 firebase-debug.log
 .firebase/
+
+test-results/
+playwright-report/
