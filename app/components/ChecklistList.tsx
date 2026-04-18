@@ -1,6 +1,7 @@
 import type { User } from "firebase/auth";
 import { useResource } from "../lib/useResource";
 import { CreateChecklistForm } from "./CreateChecklistForm";
+import { ChecklistItem } from "./ChecklistItem";
 
 export function ChecklistList({ href, user }: { href: string; user: User }) {
   const { state, get } = useResource(href, user);
@@ -29,9 +30,12 @@ export function ChecklistList({ href, user }: { href: string; user: User }) {
           <li className="px-4 py-3 text-gray-500 text-sm">No checklists found.</li>
         ) : (
           items.map((item) => (
-            <li key={item.href} className="px-4 py-3 text-sm text-gray-800">
-              {item.title ?? item.name}
-            </li>
+            <ChecklistItem
+              key={item.href}
+              item={item}
+              user={user}
+              onDelete={get}
+            />
           ))
         )}
       </ul>

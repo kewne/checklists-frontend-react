@@ -8,20 +8,27 @@ export type ResourceState =
   | { status: 'error'; error: Error }
   | { status: 'success'; resource: Resource };
 
+export type UseResourceOptions = {
+  autoFetch?: boolean;
+};
+
 export type UseResourceReturn = {
   state: ResourceState;
   get: () => Promise<void>;
   post: (data: any) => Promise<void>;
+  delete: () => Promise<void>;
 };
 
 /**
  * Hook to fetch a resource from the API
  * @param href - The URL of the resource to fetch
  * @param user - The authenticated user making the request
- * @returns Object with state, get function, and post function
+ * @param options - Configuration options (autoFetch defaults to true)
+ * @returns Object with state, get function, post function, and delete function
  */
-export function useResource(href: string, user: User): UseResourceReturn {
+export function useResource(href: string, user: User, options?: UseResourceOptions): UseResourceReturn {
   const [state, setState] = useState<ResourceState>({ status: 'loading' });
+  const autoFetch = options?.autoFetch !== false;
 
   const loadResource = useCallback(async () => {
     try {
@@ -36,6 +43,8 @@ export function useResource(href: string, user: User): UseResourceReturn {
   }, [href, user]);
 
   useEffect(() => {
+    if (!autoFetch) return;
+
     let isMounted = true;
 
     const load = async () => {
@@ -59,7 +68,7 @@ export function useResource(href: string, user: User): UseResourceReturn {
     return () => {
       isMounted = false;
     };
-  }, [href, user]);
+  }, [href, user, autoFetch]);
 
   const get = useCallback(async () => {
     await loadResource();
@@ -83,5 +92,22 @@ export function useResource(href: string, user: User): UseResourceReturn {
 
   }, [href, user]);
 
-  return { state, get, post };
+  const deleteResource = useCallback(async (): Promise<void> => {
+    const idToken = await user.getIdToken();
+
+    const response = await fetch(href, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${idToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+  }, [href, user]);
+
+  return { state, get, post, delete: deleteResource };
 }
