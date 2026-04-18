@@ -7,8 +7,8 @@ import { useResource } from "~/lib/useResource";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "Checklists" },
+    { name: "description", content: "Manage your checklists" },
   ];
 }
 
