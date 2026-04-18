@@ -1,7 +1,8 @@
 import type { User } from 'firebase/auth';
 import { Resource } from './hal';
+import { useResource, type ResourceState } from './useResource';
 
-async function fetchResource(user: User, href: string): Promise<Resource> {
+export async function fetchResource(user: User, href: string): Promise<Resource> {
   const idToken = await user.getIdToken();
 
   const response = await fetch(href, {
@@ -18,9 +19,3 @@ async function fetchResource(user: User, href: string): Promise<Resource> {
 
   return new Resource(await response.json());
 }
-
-export async function callChecklistsAPI(user: User): Promise<Resource> {
-  return fetchResource(user, 'https://api.checklists.keeoon.dev/');
-}
-
-export { fetchResource };
