@@ -3,7 +3,7 @@ import type { Route } from "./+types/home";
 import { Welcome } from "../welcome/welcome";
 import { useAuth } from "../lib/auth";
 import { useState, useEffect } from "react";
-import { callChecklistsAPI, type ApiResult } from "../lib/api";
+import { callChecklistsAPI } from "../lib/api";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -19,17 +19,12 @@ function ApiStatusBox({ user }: { user: any }) {
   useEffect(() => {
     if (user) {
       callChecklistsAPI(user)
-        .then((result: ApiResult) => {
-          if (result.success) {
-            setApiStatus('success');
-          } else {
-            setApiStatus('error');
-            setErrorMessage(result.error || 'Unknown error');
-          }
+        .then(() => {
+          setApiStatus('success');
         })
         .catch((error) => {
           setApiStatus('error');
-          setErrorMessage('Failed to call API');
+          setErrorMessage(error instanceof Error ? error.message : 'Failed to call API');
         });
     }
   }, [user]);

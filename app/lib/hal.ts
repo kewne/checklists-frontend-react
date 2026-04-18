@@ -1,0 +1,29 @@
+export interface HalLink {
+  href: string;
+  templated?: boolean;
+  type?: string;
+  name?: string;
+  title?: string;
+}
+
+export interface HalDocument {
+  _links?: Record<string, HalLink | HalLink[]>;
+  [key: string]: unknown;
+}
+
+export class Resource {
+  private readonly doc: HalDocument;
+
+  constructor(doc: HalDocument) {
+    this.doc = doc;
+  }
+
+  getLink(rel: string): HalLink | HalLink[] | undefined {
+    return this.doc._links?.[rel];
+  }
+
+  get properties(): Record<string, unknown> {
+    const { _links, ...rest } = this.doc;
+    return rest;
+  }
+}
