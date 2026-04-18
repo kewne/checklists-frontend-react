@@ -9,28 +9,22 @@ interface CreateChecklistFormProps {
 }
 
 export function CreateChecklistForm({ href, user, onSuccess }: CreateChecklistFormProps) {
-  const { post } = useResource(href, user);
+  const { state, post } = useResource(href, user);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [title, setTitle] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitError(null);
-    setIsSubmitting(true);
-
-    try {
-      await post({ title });
-      
-      // Reset form and trigger refresh
-      setTitle('');
-      setIsFormOpen(false);
-      onSuccess?.();
-    } finally {
-      setIsSubmitting(false);
-    }
+    await post({ title });
+    
+    // Reset form and trigger refresh
+    setTitle('');
+    setIsFormOpen(false);
+    onSuccess?.();
   };
+
+  const isSubmitting = state.status === 'loading';
+  const submitError = state.status === 'error' ? state.error.message : null;
 
   return (
     <>

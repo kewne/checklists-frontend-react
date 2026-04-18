@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { User } from 'firebase/auth';
 import { useResource } from '../lib/useResource';
 import type { HalLink } from '../lib/hal';
@@ -10,24 +9,15 @@ interface ChecklistItemProps {
 }
 
 export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
-  const { delete: deleteResource } = useResource(item.href, user, { autoFetch: false });
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const { state, delete: deleteResource } = useResource(item.href, user, { autoFetch: false });
 
   const handleDelete = async () => {
-    setDeleteError(null);
-    setIsDeleting(true);
-
-    try {
       await deleteResource();
       onDelete();
-    } catch (error) {
-      setDeleteError(
-        error instanceof Error ? error.message : 'Failed to delete checklist'
-      );
-      setIsDeleting(false);
-    }
   };
+
+  const isDeleting = state.status === 'loading';
+  const deleteError = state.status === 'error' ? state.error.message : null;
 
   if (isDeleting) {
     return (

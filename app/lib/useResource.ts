@@ -75,6 +75,7 @@ export function useResource(href: string, user: User, options?: UseResourceOptio
   }, [loadResource]);
 
   const post = useCallback(async (data: any): Promise<void> => {
+    setState({ status: 'loading' });
     const idToken = await user.getIdToken();
 
     const response = await fetch(href, {
@@ -89,10 +90,10 @@ export function useResource(href: string, user: User, options?: UseResourceOptio
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-
   }, [href, user]);
 
   const deleteResource = useCallback(async (): Promise<void> => {
+    setState({ status: 'loading' });
     const idToken = await user.getIdToken();
 
     const response = await fetch(href, {
@@ -106,7 +107,6 @@ export function useResource(href: string, user: User, options?: UseResourceOptio
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-
   }, [href, user]);
 
   return { state, get, post, delete: deleteResource };
