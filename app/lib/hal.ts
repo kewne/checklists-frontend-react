@@ -22,6 +22,16 @@ export class Resource {
     return this.doc._links?.[rel];
   }
 
+  getLinkArray(rel: string): HalLink[] {
+    const link = this.doc._links?.[rel];
+    if (!link) return [];
+    return Array.isArray(link) ? link : [link];
+  }
+
+  getNamedLink(rel: string, name: string): HalLink | undefined {
+    return this.getLinkArray(rel).find((l) => l.name === name);
+  }
+
   get properties(): Record<string, unknown> {
     const { _links, ...rest } = this.doc;
     return rest;

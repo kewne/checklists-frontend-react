@@ -4,6 +4,8 @@ import { Welcome } from "../welcome/welcome";
 import { useAuth } from "../lib/auth";
 import { useState, useEffect } from "react";
 import { callChecklistsAPI } from "../lib/api";
+import type { Resource } from "../lib/hal";
+import { ChecklistList } from "../components/ChecklistList";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -14,12 +16,14 @@ export function meta({}: Route.MetaArgs) {
 
 function ApiStatusBox({ user }: { user: any }) {
   const [apiStatus, setApiStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [apiResult, setApiResult] = useState<Resource | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
     if (user) {
       callChecklistsAPI(user)
-        .then(() => {
+        .then((resource) => {
+          setApiResult(resource);
           setApiStatus('success');
         })
         .catch((error) => {
@@ -40,15 +44,19 @@ function ApiStatusBox({ user }: { user: any }) {
       </div>
     );
   } else if (apiStatus === 'success') {
+    const checklistsLink = apiResult?.getNamedLink('related', 'checklists');
     status = (
-      <div className="bg-green-50 border border-green-200 rounded-md p-4 mb-4">
-        <div className="flex items-center">
-          <svg className="h-4 w-4 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-          </svg>
-          <span className="text-green-700 text-sm font-medium">API connection successful</span>
+      <>
+        <div className="bg-green-50 border border-green-200 rounded-md p-4 mb-4">
+          <div className="flex items-center">
+            <svg className="h-4 w-4 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <span className="text-green-700 text-sm font-medium">API connection successful</span>
+          </div>
         </div>
-      </div>
+        {checklistsLink && <ChecklistList href={checklistsLink.href} user={user} />}
+      </>
     );
   } else {
 
