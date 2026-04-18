@@ -4,7 +4,7 @@ import { CreateChecklistForm } from "./CreateChecklistForm";
 import { ChecklistItem } from "./ChecklistItem";
 
 export function ChecklistList({ href, user }: { href: string; user: User }) {
-  const { state, get } = useResource(href, user);
+  const { state, get, post } = useResource(href, user);
 
   if (state.status === 'loading') {
     return (
@@ -28,7 +28,7 @@ export function ChecklistList({ href, user }: { href: string; user: User }) {
 
   return (
     <>
-      <CreateChecklistForm href={href} user={user} onSuccess={get} />
+      <CreateChecklistForm onSuccess={post} />
       <ul aria-label="checklists" className="mt-4 divide-y divide-gray-100 border border-gray-200 rounded-md">
         {items.length === 0 ? (
           <li className="px-4 py-3 text-gray-500 text-sm">No checklists found.</li>

@@ -6,12 +6,7 @@ import { Resource, type HalDocument } from './hal';
 export type ResourceState = 
   | { status: 'loading' }
   | { status: 'error'; error: Error }
-  | { status: 'success'; resource: Resource }
-  | { status: 'unloaded' };
-
-export type UseResourceOptions = {
-  autoFetch?: boolean;
-};
+  | { status: 'success'; resource: Resource };
 
 export type UseResourceReturn = {
   state: ResourceState;
@@ -20,16 +15,8 @@ export type UseResourceReturn = {
   delete: () => Promise<void>;
 };
 
-/**
- * Hook to fetch a resource from the API
- * @param href - The URL of the resource to fetch
- * @param user - The authenticated user making the request
- * @param options - Configuration options (autoFetch defaults to true)
- * @returns Object with state, get function, post function, and delete function
- */
-export function useResource(href: string, user: User, options?: UseResourceOptions): UseResourceReturn {
-  const autoFetch = options?.autoFetch !== false;
-  const [state, setState] = useState<ResourceState>({ status: autoFetch ? 'loading' : 'unloaded' });
+export function useResource(href: string, user: User): UseResourceReturn {
+  const [state, setState] = useState<ResourceState>({ status: 'loading' });
 
   const loadResource = useCallback(async () => {
     try {
@@ -44,8 +31,6 @@ export function useResource(href: string, user: User, options?: UseResourceOptio
   }, [href, user]);
 
   useEffect(() => {
-    if (!autoFetch) return;
-
     let isMounted = true;
 
     const load = async () => {
@@ -69,7 +54,7 @@ export function useResource(href: string, user: User, options?: UseResourceOptio
     return () => {
       isMounted = false;
     };
-  }, [href, user, autoFetch]);
+  }, [href, user]);
 
   const get = useCallback(async () => {
     await loadResource();
@@ -87,6 +72,7 @@ export function useResource(href: string, user: User, options?: UseResourceOptio
       },
       body: JSON.stringify(data),
     });
+    await get();
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -111,4 +97,62 @@ export function useResource(href: string, user: User, options?: UseResourceOptio
   }, [href, user]);
 
   return { state, get, post, delete: deleteResource };
+}
+
+export type HeadlessResourceState =
+  | { status: 'idle' }
+  | { status: 'updating' }
+  | { status: 'error'; error: Error };
+
+export type UseHeadlessResourceReturn = {
+  state: HeadlessResourceState;
+  post: (data: any) => Promise<void>;
+  delete: () => Promise<void>;
+};
+
+export function useHeadlessResource(href: string, user: User): UseHeadlessResourceReturn {
+  const [state, setState] = useState<HeadlessResourceState>({ status: 'idle' });
+
+  const post = useCallback(async (data: any): Promise<void> => {
+    setState({ status: 'updating' });
+    try {
+      const idToken = await user.getIdToken();
+      const response = await fetch(href, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      setState({ status: 'idle' });
+    } catch (error) {
+      setState({ status: 'error', error: error instanceof Error ? error : new Error(String(error)) });
+    }
+  }, [href, user]);
+
+  const deleteResource = useCallback(async (): Promise<void> => {
+    setState({ status: 'updating' });
+    try {
+      const idToken = await user.getIdToken();
+      const response = await fetch(href, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      setState({ status: 'idle' });
+    } catch (error) {
+      setState({ status: 'error', error: error instanceof Error ? error : new Error(String(error)) });
+    }
+  }, [href, user]);
+
+  return { state, post, delete: deleteResource };
 }

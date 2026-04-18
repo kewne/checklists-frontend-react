@@ -1,5 +1,5 @@
 import type { User } from 'firebase/auth';
-import { useResource } from '../lib/useResource';
+import { useHeadlessResource } from '../lib/useResource';
 import type { HalLink } from '../lib/hal';
 
 interface ChecklistItemProps {
@@ -9,14 +9,14 @@ interface ChecklistItemProps {
 }
 
 export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
-  const { state, delete: deleteResource } = useResource(item.href, user, { autoFetch: false });
+  const { state, delete: deleteResource } = useHeadlessResource(item.href, user);
 
   const handleDelete = async () => {
       await deleteResource();
       onDelete();
   };
 
-  const isDeleting = state.status === 'loading';
+  const isDeleting = state.status === 'updating';
   const deleteError = state.status === 'error' ? state.error.message : null;
 
   return (

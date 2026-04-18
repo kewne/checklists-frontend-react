@@ -1,28 +1,19 @@
 import { useState } from 'react';
-import type { User } from 'firebase/auth';
-import { useResource } from '../lib/useResource';
 
 interface CreateChecklistFormProps {
-  href: string;
-  user: User;
-  onSuccess?: () => void;
+  onSuccess?: (data: { title: string }) => Promise<void>;
 }
 
-export function CreateChecklistForm({ href, user, onSuccess }: CreateChecklistFormProps) {
-  const { state, post } = useResource(href, user);
+export function CreateChecklistForm({ onSuccess }: CreateChecklistFormProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [title, setTitle] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await post({ title });    
+    await onSuccess?.({ title });
     setTitle('');
     setIsFormOpen(false);
-    onSuccess?.();
   };
-
-  const isSubmitting = state.status === 'loading';
-  const submitError = state.status === 'error' ? state.error.message : null;
 
   return (
     <>
@@ -46,23 +37,15 @@ export function CreateChecklistForm({ href, user, onSuccess }: CreateChecklistFo
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter checklist title"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700"
-              disabled={isSubmitting}
               required
             />
           </div>
 
-          {submitError && (
-            <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
-              {submitError}
-            </div>
-          )}
-
           <button
             type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700"
           >
-            {isSubmitting ? 'Creating...' : 'Create'}
+            Create
           </button>
         </form>
       )}
