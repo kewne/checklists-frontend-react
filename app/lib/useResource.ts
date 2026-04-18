@@ -6,7 +6,8 @@ import { Resource, type HalDocument } from './hal';
 export type ResourceState = 
   | { status: 'loading' }
   | { status: 'error'; error: Error }
-  | { status: 'success'; resource: Resource };
+  | { status: 'success'; resource: Resource }
+  | { status: 'unloaded' };
 
 export type UseResourceOptions = {
   autoFetch?: boolean;
@@ -27,8 +28,8 @@ export type UseResourceReturn = {
  * @returns Object with state, get function, post function, and delete function
  */
 export function useResource(href: string, user: User, options?: UseResourceOptions): UseResourceReturn {
-  const [state, setState] = useState<ResourceState>({ status: 'loading' });
   const autoFetch = options?.autoFetch !== false;
+  const [state, setState] = useState<ResourceState>({ status: autoFetch ? 'loading' : 'unloaded' });
 
   const loadResource = useCallback(async () => {
     try {

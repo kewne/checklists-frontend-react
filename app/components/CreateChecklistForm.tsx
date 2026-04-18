@@ -15,9 +15,7 @@ export function CreateChecklistForm({ href, user, onSuccess }: CreateChecklistFo
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await post({ title });
-    
-    // Reset form and trigger refresh
+    await post({ title });    
     setTitle('');
     setIsFormOpen(false);
     onSuccess?.();

@@ -19,14 +19,6 @@ export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
   const isDeleting = state.status === 'loading';
   const deleteError = state.status === 'error' ? state.error.message : null;
 
-  if (isDeleting) {
-    return (
-      <li className="px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
-        <span className="text-gray-500">Deleting...</span>
-      </li>
-    );
-  }
-
   return (
     <li className="px-4 py-3 text-sm text-gray-800 flex justify-between items-center">
       <div className="flex-1">
@@ -40,7 +32,7 @@ export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
         disabled={isDeleting}
         className="ml-4 px-3 py-1 text-red-600 hover:bg-red-50 rounded text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Delete
+        {isDeleting ? 'Deleting...' : 'Delete'}
       </button>
     </li>
   );

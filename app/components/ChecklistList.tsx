@@ -20,6 +20,10 @@ export function ChecklistList({ href, user }: { href: string; user: User }) {
     );
   }
 
+  if (state.status !== 'success') {
+    return null;
+  }
+
   const items = state.resource.getLinkArray('items');
 
   return (
