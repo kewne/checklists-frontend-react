@@ -89,32 +89,33 @@ export default function ChecklistDetail({
           {state.status === "success" && (
             <>
               <h1 className="text-3xl font-bold text-gray-900 mb-6">
-                {state.resource.properties.title || "Untitled Checklist"}
+                {(state.resource.properties.title as string) || "Untitled Checklist"}
               </h1>
 
               <div className="border-t pt-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Items</h2>
 
                 <div className="space-y-2">
-                  {state.resource.getLinkArray("items").length === 0 ? (
-                    <p className="text-gray-500 text-sm">No items in this checklist yet.</p>
-                  ) : (
-                    <ul className="space-y-2">
-                      {state.resource.getLinkArray("items").map((item) => (
-                        <li
-                          key={item.href}
-                          className="flex items-center px-4 py-3 bg-gray-50 rounded-md border border-gray-200"
-                        >
-                          <input
-                            type="checkbox"
-                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                            disabled
-                          />
-                          <span className="ml-3 text-gray-800">{item.title || item.name || "Unnamed item"}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  {(() => {
+                    const items = (state.resource.properties.items as Array<{ title?: string; description?: string }>) ?? [];
+                    return items.length === 0 ? (
+                      <p className="text-gray-500 text-sm">No items in this checklist yet.</p>
+                    ) : (
+                      <ul className="space-y-2">
+                        {items.map((item, index) => (
+                          <li
+                            key={index}
+                            className="px-4 py-3 bg-gray-50 rounded-md border border-gray-200"
+                          >
+                            <p className="text-gray-800 font-medium">{item.title || "Unnamed item"}</p>
+                            {item.description && (
+                              <p className="text-gray-500 text-sm mt-0.5">{item.description}</p>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    );
+                  })()}
                 </div>
               </div>
             </>
