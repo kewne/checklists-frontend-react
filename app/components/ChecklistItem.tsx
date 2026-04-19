@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { User } from 'firebase/auth';
 import { NavLink } from 'react-router';
 import { useHeadlessResource } from '../lib/useResource';
@@ -11,13 +12,25 @@ interface ChecklistItemProps {
 }
 
 export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
-  const { state, delete: deleteResource } = useHeadlessResource(item.href, user);
+  const { state, post, delete: deleteResource } = useHeadlessResource(item.href, user);
+  const [isRunning, setIsRunning] = useState(false);
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     await deleteResource();
     onDelete();
+  };
+
+  const handleRun = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsRunning(true);
+    try {
+      await post({});
+    } finally {
+      setIsRunning(false);
+    }
   };
 
   const isDeleting = state.status === 'updating';
@@ -35,8 +48,15 @@ export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
         )}
       </NavLink>
       <button
+        onClick={handleRun}
+        disabled={isRunning || isDeleting}
+        className="mr-2 px-3 py-1 text-green-600 hover:bg-green-50 rounded text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {isRunning ? 'Running...' : 'Run'}
+      </button>
+      <button
         onClick={handleDelete}
-        disabled={isDeleting}
+        disabled={isDeleting || isRunning}
         className="mr-4 px-3 py-1 text-red-600 hover:bg-red-50 rounded text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isDeleting ? 'Deleting...' : 'Delete'}
