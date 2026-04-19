@@ -1,5 +1,7 @@
 import type { User } from "firebase/auth";
+import { NavLink } from "react-router";
 import { useResource } from "../lib/useResource";
+import { encodeApiUrl } from "../lib/encoding";
 
 interface ChecklistInstanceListProps {
   href: string;
@@ -31,8 +33,13 @@ export function ChecklistInstanceList({ href, user }: ChecklistInstanceListProps
         <li className="px-4 py-3 text-gray-500 text-sm">No checklist instances found.</li>
       ) : (
         items.map((item) => (
-          <li key={item.href} className="px-4 py-3 text-sm text-gray-800">
-            <div className="font-medium text-indigo-600">{item.title ?? item.name}</div>
+          <li key={item.href} className="text-sm text-gray-800">
+            <NavLink
+              to={`/checklist-run/${encodeApiUrl(item.href)}`}
+              className="block px-4 py-3 hover:bg-gray-50 transition-colors"
+            >
+              <div className="font-medium text-indigo-600">{item.title ?? item.name}</div>
+            </NavLink>
           </li>
         ))
       )}

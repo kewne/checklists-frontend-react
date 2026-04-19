@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { User } from 'firebase/auth';
-import { NavLink } from 'react-router';
+import { NavLink, useNavigate } from 'react-router';
 import { useHeadlessResource } from '../lib/useResource';
 import { encodeApiUrl } from '../lib/encoding';
 import type { HalLink } from '../lib/hal';
@@ -13,6 +13,7 @@ interface ChecklistItemProps {
 
 export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
   const { state, post, delete: deleteResource } = useHeadlessResource(item.href, user);
+  const navigate = useNavigate();
   const [isRunning, setIsRunning] = useState(false);
 
   const handleDelete = async (e: React.MouseEvent) => {
@@ -27,7 +28,10 @@ export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
     e.stopPropagation();
     setIsRunning(true);
     try {
-      await post({});
+      const location = await post({});
+      if (location) {
+        navigate(`/checklist-run/${encodeApiUrl(location)}`);
+      }
     } finally {
       setIsRunning(false);
     }
@@ -52,7 +56,7 @@ export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
         disabled={isRunning || isDeleting}
         className="mr-2 px-3 py-1 text-green-600 hover:bg-green-50 rounded text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isRunning ? 'Running...' : 'Run'}
+        {isRunning ? 'Creating run...' : 'Run'}
       </button>
       <button
         onClick={handleDelete}

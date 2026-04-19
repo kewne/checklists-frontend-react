@@ -4,4 +4,5 @@ export default [
   index("routes/home.tsx"),
   route("/login", "routes/login.tsx"),
   route("/checklists/:apiUrlEncoded", "routes/checklist.tsx"),
+  route("/checklist-run/:apiUrlEncoded", "routes/checklist-run.tsx"),
 ] satisfies RouteConfig;
