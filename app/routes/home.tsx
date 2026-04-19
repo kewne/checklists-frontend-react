@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import type { Route } from "./+types/home";
 import { Welcome } from "../welcome/welcome";
 import { useAuth } from "../lib/auth";
-import { ChecklistList } from "../components/ChecklistList";
+import { ChecklistHome } from "../components/ChecklistHome";
 import { useResource } from "~/lib/useResource";
 
 export function meta({}: Route.MetaArgs) {
@@ -37,7 +37,7 @@ function ApiStatusBox({ user }: { user: any }) {
             <span className="text-green-700 text-sm font-medium">API connection successful</span>
           </div>
         </div>
-        {checklistsLink && <ChecklistList href={checklistsLink.href} user={user} />}
+        {checklistsLink && <ChecklistHome href={checklistsLink.href} user={user} />}
       </>
     );
   } else {
