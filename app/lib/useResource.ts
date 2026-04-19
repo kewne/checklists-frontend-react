@@ -4,7 +4,7 @@ import { fetchResource } from './api';
 import { Resource, type HalDocument } from './hal';
 
 export type ResourceState = 
-  | { status: 'loading' }
+  | { status: 'loading'; action: 'get' | 'post' | 'put' | 'delete' }
   | { status: 'error'; error: Error }
   | { status: 'success'; resource: Resource };
 
@@ -17,7 +17,7 @@ export type UseResourceReturn = {
 };
 
 export function useResource(href: string, user: User): UseResourceReturn {
-  const [state, setState] = useState<ResourceState>({ status: 'loading' });
+  const [state, setState] = useState<ResourceState>({ status: 'loading', action: 'get' });
 
   const loadResource = useCallback(async () => {
     try {
@@ -62,7 +62,7 @@ export function useResource(href: string, user: User): UseResourceReturn {
   }, [loadResource]);
 
   const post = useCallback(async (data: any): Promise<void> => {
-    setState({ status: 'loading' });
+    setState({ status: 'loading', action: 'post' });
     const idToken = await user.getIdToken();
 
     const response = await fetch(href, {
@@ -78,10 +78,10 @@ export function useResource(href: string, user: User): UseResourceReturn {
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-  }, [href, user]);
+  }, [href, user, get]);
 
   const put = useCallback(async (data: any): Promise<void> => {
-    setState({ status: 'loading' });
+    setState({ status: 'loading', action: 'put' });
     const idToken = await user.getIdToken();
 
     const response = await fetch(href, {
@@ -101,7 +101,7 @@ export function useResource(href: string, user: User): UseResourceReturn {
   }, [href, user, get]);
 
   const deleteResource = useCallback(async (): Promise<void> => {
-    setState({ status: 'loading' });
+    setState({ status: 'loading', action: 'delete' });
     const idToken = await user.getIdToken();
 
     const response = await fetch(href, {
@@ -122,7 +122,7 @@ export function useResource(href: string, user: User): UseResourceReturn {
 
 export type HeadlessResourceState =
   | { status: 'idle' }
-  | { status: 'updating' }
+  | { status: 'updating'; action: 'post' | 'delete' }
   | { status: 'error'; error: Error };
 
 export type UseHeadlessResourceReturn = {
@@ -135,7 +135,7 @@ export function useHeadlessResource(href: string, user: User): UseHeadlessResour
   const [state, setState] = useState<HeadlessResourceState>({ status: 'idle' });
 
   const post = useCallback(async (data: any): Promise<string | null> => {
-    setState({ status: 'updating' });
+    setState({ status: 'updating', action: 'post' });
     try {
       const idToken = await user.getIdToken();
       const response = await fetch(href, {
@@ -158,7 +158,7 @@ export function useHeadlessResource(href: string, user: User): UseHeadlessResour
   }, [href, user]);
 
   const deleteResource = useCallback(async (): Promise<void> => {
-    setState({ status: 'updating' });
+    setState({ status: 'updating', action: 'delete' });
     try {
       const idToken = await user.getIdToken();
       const response = await fetch(href, {

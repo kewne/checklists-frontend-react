@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { User } from 'firebase/auth';
 import { NavLink, useNavigate } from 'react-router';
 import { useHeadlessResource } from '../lib/useResource';
@@ -14,7 +13,6 @@ interface ChecklistItemProps {
 export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
   const { state, post, delete: deleteResource } = useHeadlessResource(item.href, user);
   const navigate = useNavigate();
-  const [isRunning, setIsRunning] = useState(false);
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -26,18 +24,18 @@ export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
   const handleRun = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsRunning(true);
     try {
       const location = await post({});
       if (location) {
         navigate(`/checklist-run/${encodeApiUrl(location)}`);
       }
-    } finally {
-      setIsRunning(false);
+    } catch (error) {
+      // Error is handled by the hook state
     }
   };
 
-  const isDeleting = state.status === 'updating';
+  const isRunning = state.status === 'updating' && state.action === 'post';
+  const isDeleting = state.status === 'updating' && state.action === 'delete';
   const deleteError = state.status === 'error' ? state.error.message : null;
 
   return (
