@@ -3,6 +3,7 @@ import type { Route } from "./+types/home";
 import { Welcome } from "../welcome/welcome";
 import { useAuth } from "../lib/auth";
 import { ChecklistHome } from "../components/ChecklistHome";
+import { ChecklistInstanceList } from "../components/ChecklistInstanceList";
 import { useResource } from "~/lib/useResource";
 
 export function meta({}: Route.MetaArgs) {
@@ -27,6 +28,7 @@ function ApiStatusBox({ user }: { user: any }) {
     );
   } else if (state.status === 'success') {
     const checklistsLink = state.resource.getNamedLink('related', 'checklists');
+    const instancesLink = state.resource.getNamedLink('related', 'checklist-instances');
     status = (
       <>
         <div className="bg-green-50 border border-green-200 rounded-md p-4 mb-4">
@@ -38,6 +40,12 @@ function ApiStatusBox({ user }: { user: any }) {
           </div>
         </div>
         {checklistsLink && <ChecklistHome href={checklistsLink.href} user={user} />}
+        {instancesLink && (
+          <>
+            <h3 className="text-lg font-semibold text-gray-900 mt-6 mb-2">Checklist Instances</h3>
+            <ChecklistInstanceList href={instancesLink.href} user={user} />
+          </>
+        )}
       </>
     );
   } else {
