@@ -1,6 +1,6 @@
 import type { User } from "firebase/auth";
 import { useResource } from "../lib/useResource";
-import { CreateChecklistForm } from "./CreateChecklistForm";
+import { ChecklistForm } from "./ChecklistForm";
 import { ChecklistList } from "./ChecklistList";
 
 export function ChecklistHome({ href, user }: { href: string; user: User }) {
@@ -8,7 +8,7 @@ export function ChecklistHome({ href, user }: { href: string; user: User }) {
 
   return (
     <>
-      <CreateChecklistForm onSuccess={post} />
+      <ChecklistForm onSuccess={post} />
       <ChecklistList state={state} get={get} user={user} />
     </>
   );

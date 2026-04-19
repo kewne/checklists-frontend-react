@@ -12,6 +12,7 @@ export type UseResourceReturn = {
   state: ResourceState;
   get: () => Promise<void>;
   post: (data: any) => Promise<void>;
+  put: (data: any) => Promise<void>;
   delete: () => Promise<void>;
 };
 
@@ -79,6 +80,26 @@ export function useResource(href: string, user: User): UseResourceReturn {
     }
   }, [href, user]);
 
+  const put = useCallback(async (data: any): Promise<void> => {
+    setState({ status: 'loading' });
+    const idToken = await user.getIdToken();
+
+    const response = await fetch(href, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${idToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    await get();
+  }, [href, user, get]);
+
   const deleteResource = useCallback(async (): Promise<void> => {
     setState({ status: 'loading' });
     const idToken = await user.getIdToken();
@@ -96,7 +117,7 @@ export function useResource(href: string, user: User): UseResourceReturn {
     }
   }, [href, user]);
 
-  return { state, get, post, delete: deleteResource };
+  return { state, get, post, put, delete: deleteResource };
 }
 
 export type HeadlessResourceState =

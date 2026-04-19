@@ -3,6 +3,7 @@ import type { Route } from "./+types/checklist";
 import { useAuth } from "../lib/auth";
 import { useResource } from "../lib/useResource";
 import { decodeApiUrl } from "../lib/encoding";
+import { ChecklistForm } from "../components/ChecklistForm";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -57,7 +58,7 @@ export default function ChecklistDetail({
     );
   }
 
-  const { state } = useResource(decodedUrl, user);
+  const { state, put } = useResource(decodedUrl, user);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -87,38 +88,15 @@ export default function ChecklistDetail({
           )}
 
           {state.status === "success" && (
-            <>
-              <h1 className="text-3xl font-bold text-gray-900 mb-6">
-                {(state.resource.properties.title as string) || "Untitled Checklist"}
-              </h1>
-
-              <div className="border-t pt-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Items</h2>
-
-                <div className="space-y-2">
-                  {(() => {
-                    const items = (state.resource.properties.items as Array<{ title?: string; description?: string }>) ?? [];
-                    return items.length === 0 ? (
-                      <p className="text-gray-500 text-sm">No items in this checklist yet.</p>
-                    ) : (
-                      <ul className="space-y-2">
-                        {items.map((item, index) => (
-                          <li
-                            key={index}
-                            className="px-4 py-3 bg-gray-50 rounded-md border border-gray-200"
-                          >
-                            <p className="text-gray-800 font-medium">{item.title || "Unnamed item"}</p>
-                            {item.description && (
-                              <p className="text-gray-500 text-sm mt-0.5">{item.description}</p>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    );
-                  })()}
-                </div>
-              </div>
-            </>
+            <ChecklistForm
+              initialValues={{
+                title: (state.resource.properties.title as string) ?? '',
+                items: ((state.resource.properties.items as Array<{ title?: string; description?: string }>) ?? []).map(
+                  (item) => ({ title: item.title ?? '', description: item.description ?? '' })
+                ),
+              }}
+              onSuccess={put}
+            />
           )}
         </div>
       </div>
