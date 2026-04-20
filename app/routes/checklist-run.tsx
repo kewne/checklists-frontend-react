@@ -55,7 +55,7 @@ export default function ChecklistRun({ params }: Route.ComponentProps) {
     );
   }
 
-  const { state } = useResource(decodedUrl, user);
+  const { state, get } = useResource(decodedUrl, user);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -82,7 +82,7 @@ export default function ChecklistRun({ params }: Route.ComponentProps) {
           )}
 
           {state.status === "success" && (
-            <ChecklistRunDetail resource={state.resource} />
+            <ChecklistRunDetail resource={state.resource} user={user} onItemUpdated={get} />
           )}
         </div>
       </div>
