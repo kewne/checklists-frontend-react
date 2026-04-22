@@ -39,7 +39,6 @@ export default function ChecklistsRedirect({ params }: Route.ComponentProps) {
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4 flex items-center justify-center">
-        Bla
       <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600">Bla</div>
     </div>
   );
