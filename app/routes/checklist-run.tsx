@@ -13,7 +13,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function ChecklistRun({ params }: Route.ComponentProps) {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
 
   let decodedUrl: string;
   try {
@@ -39,23 +39,7 @@ export default function ChecklistRun({ params }: Route.ComponentProps) {
     );
   }
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Please sign in to view this run.</div>
-      </div>
-    );
-  }
-
-  const { state, get } = useResource(decodedUrl, user);
+  const { state, get } = useResource(decodedUrl, user!);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -82,7 +66,7 @@ export default function ChecklistRun({ params }: Route.ComponentProps) {
           )}
 
           {state.status === "success" && (
-            <ChecklistRunDetail resource={state.resource} user={user} onItemUpdated={get} />
+            <ChecklistRunDetail resource={state.resource} user={user!} onItemUpdated={get} />
           )}
         </div>
       </div>

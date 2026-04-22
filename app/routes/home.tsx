@@ -1,6 +1,4 @@
-import { Link } from "react-router";
 import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
 import { useAuth } from "../lib/auth";
 import { ChecklistHome } from "../components/ChecklistHome";
 import { ChecklistInstanceList } from "../components/ChecklistInstanceList";
@@ -67,31 +65,8 @@ function ApiStatusBox({ user }: { user: any }) {
 }
 
 export default function Home() {
-  const { user, loading, signOut } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center space-y-6">
-        <Welcome />
-        <div className="space-x-4">
-          <Link
-            to="/login"
-            className="bg-indigo-600 text-white px-6 py-3 rounded-md font-medium hover:bg-indigo-700"
-          >
-            Sign In
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  const { user: nullableUser, signOut } = useAuth();
+  const user = nullableUser!;
 
   return (
     <div className="min-h-screen bg-gray-50">

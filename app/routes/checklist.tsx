@@ -15,7 +15,7 @@ export function meta({}: Route.MetaArgs) {
 export default function ChecklistDetail({
   params,
 }: Route.ComponentProps) {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
 
   // Decode the API URL from the route parameter
   let decodedUrl: string;
@@ -42,23 +42,7 @@ export default function ChecklistDetail({
     );
   }
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Please sign in to view this checklist.</div>
-      </div>
-    );
-  }
-
-  const { state, put } = useResource(decodedUrl, user);
+  const { state, put } = useResource(decodedUrl, user!);
 
   return (
     <div className="min-h-screen bg-gray-50">
