@@ -1,4 +1,4 @@
-import { type RouteConfig, index, layout, route } from "@react-router/dev/routes";
+import { type RouteConfig, index, layout, prefix, route } from "@react-router/dev/routes";
 
 export default [
   route("/login", "routes/login.tsx"),
@@ -6,8 +6,11 @@ export default [
   layout("components/ProtectedLayout.tsx", [
     layout("components/MenuLayout.tsx", [
       index("routes/home.tsx"),
-      route("/checklists/:apiUrlEncoded", "routes/checklists.tsx"),
-      route("/checklist/:apiUrlEncoded", "routes/checklist.tsx"),
+      ...prefix("/checklists", [
+        index("routes/checklists-redirect.tsx"),
+        route("list/:apiUrlEncoded", "routes/checklists-list.tsx"),
+        route("show/:apiUrlEncoded", "routes/checklists-show.tsx"),
+      ]),
       route("/checklist-run/:apiUrlEncoded", "routes/checklist-run.tsx"),
       route("/checklist-instances/:apiUrlEncoded", "routes/checklist-instances.tsx"),
     ]),

@@ -30,7 +30,7 @@ export default function MenuLayout() {
             )}
           {checklistsLink && (
             <NavLink
-              to={`/checklists/${encodeApiUrl(checklistsLink.href)}`}
+              to={`/checklists`}
               className={({ isActive }) =>
                 `px-4 py-2 rounded-md font-medium text-sm ${
                   isActive
