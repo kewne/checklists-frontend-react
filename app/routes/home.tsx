@@ -1,7 +1,8 @@
+import { Link } from "react-router";
 import type { Route } from "./+types/home";
 import { useAuth } from "../lib/auth";
-import { ChecklistHome } from "../components/ChecklistHome";
 import { ChecklistInstanceList } from "../components/ChecklistInstanceList";
+import { encodeApiUrl } from "~/lib/encoding";
 import { useResource } from "~/lib/useResource";
 
 export function meta({}: Route.MetaArgs) {
@@ -37,7 +38,14 @@ function ApiStatusBox({ user }: { user: any }) {
             <span className="text-green-700 text-sm font-medium">API connection successful</span>
           </div>
         </div>
-        {checklistsLink && <ChecklistHome href={checklistsLink.href} user={user} />}
+        {checklistsLink && (
+          <Link
+            to={`/checklists/${encodeApiUrl(checklistsLink.href)}`}
+            className="inline-block bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700"
+          >
+            View Checklists
+          </Link>
+        )}
         {instancesLink && (
           <>
             <h3 className="text-lg font-semibold text-gray-900 mt-6 mb-2">Checklist Instances</h3>
