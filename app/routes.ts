@@ -8,5 +8,6 @@ export default [
     route("/checklists/:apiUrlEncoded", "routes/checklists.tsx"),
     route("/checklist/:apiUrlEncoded", "routes/checklist.tsx"),
     route("/checklist-run/:apiUrlEncoded", "routes/checklist-run.tsx"),
+    route("/checklist-instances/:apiUrlEncoded", "routes/checklist-instances.tsx"),
   ]),
 ] satisfies RouteConfig;

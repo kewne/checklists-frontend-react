@@ -1,7 +1,6 @@
 import { Link } from "react-router";
 import type { Route } from "./+types/home";
 import { useAuth } from "../lib/auth";
-import { ChecklistInstanceList } from "../components/ChecklistInstanceList";
 import { encodeApiUrl } from "~/lib/encoding";
 import { useResource } from "~/lib/useResource";
 
@@ -47,10 +46,12 @@ function ApiStatusBox({ user }: { user: any }) {
           </Link>
         )}
         {instancesLink && (
-          <>
-            <h3 className="text-lg font-semibold text-gray-900 mt-6 mb-2">Checklist Instances</h3>
-            <ChecklistInstanceList href={instancesLink.href} user={user} />
-          </>
+          <Link
+            to={`/checklist-instances/${encodeApiUrl(instancesLink.href)}`}
+            className="inline-block ml-3 bg-white border border-indigo-600 text-indigo-600 px-4 py-2 rounded-md font-medium hover:bg-indigo-50"
+          >
+            View Runs
+          </Link>
         )}
       </>
     );
