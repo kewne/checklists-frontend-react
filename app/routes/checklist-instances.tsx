@@ -38,20 +38,10 @@ export default function ChecklistInstances({ params }: Route.ComponentProps) {
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto py-8 px-4">
-        <div className="mb-6">
-          <NavLink
-            to="/"
-            className="text-indigo-600 hover:text-indigo-700 font-medium text-sm"
-          >
-            ← Back to Home
-          </NavLink>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Checklist Runs</h1>
-          <ChecklistInstanceList href={decodedUrl} user={user!} />
-        </div>
+    <div className="max-w-4xl mx-auto py-8 px-4">
+      <div className="bg-white rounded-lg shadow p-6">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">Checklist Runs</h1>
+        <ChecklistInstanceList href={decodedUrl} user={user!} />
       </div>
     </div>
   );

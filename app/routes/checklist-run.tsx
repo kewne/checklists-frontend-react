@@ -41,33 +41,25 @@ export default function ChecklistRun({ params }: Route.ComponentProps) {
   const { state, get } = useResource(decodedUrl, user!);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto py-8 px-4">
-        <div className="mb-6">
-          <NavLink to="/" className="text-indigo-600 hover:text-indigo-700 font-medium text-sm">
-            ← Back to Home
-          </NavLink>
-        </div>
+    <div className="max-w-4xl mx-auto py-8 px-4">
+      <div className="bg-white rounded-lg shadow p-6">
+        {state.status === "loading" && (
+          <div className="flex items-center">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600 mr-3"></div>
+            <span className="text-gray-600">Loading run...</span>
+          </div>
+        )}
 
-        <div className="bg-white rounded-lg shadow p-6">
-          {state.status === "loading" && (
-            <div className="flex items-center">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600 mr-3"></div>
-              <span className="text-gray-600">Loading run...</span>
-            </div>
-          )}
+        {state.status === "error" && (
+          <div className="bg-red-50 border border-red-200 rounded-md p-4">
+            <p className="text-red-700 font-semibold">Failed to load run</p>
+            <p className="text-red-600 text-sm mt-1">{state.error.message}</p>
+          </div>
+        )}
 
-          {state.status === "error" && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4">
-              <p className="text-red-700 font-semibold">Failed to load run</p>
-              <p className="text-red-600 text-sm mt-1">{state.error.message}</p>
-            </div>
-          )}
-
-          {state.status === "success" && (
-            <ChecklistRunDetail resource={state.resource} user={user!} onItemUpdated={get} />
-          )}
-        </div>
+        {state.status === "success" && (
+          <ChecklistRunDetail resource={state.resource} user={user!} onItemUpdated={get} />
+        )}
       </div>
     </div>
   );
