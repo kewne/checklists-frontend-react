@@ -11,15 +11,22 @@ interface RunItemProps {
   description?: string;
   completed?: RunItemCompleted;
   completeHref?: string;
+  markIncompleteHref?: string;
   user: User;
   onItemUpdated: () => void;
 }
 
-export function RunItem({ title, description, completed, completeHref, user, onItemUpdated }: RunItemProps) {
+export function RunItem({ title, description, completed, completeHref, markIncompleteHref, user, onItemUpdated }: RunItemProps) {
   const { post } = useHeadlessResource(completeHref ?? '', user);
+  const { post: postMarkIncomplete } = useHeadlessResource(markIncompleteHref ?? '', user);
 
   const handleCompleted = async () => {
     await post({});
+    onItemUpdated();
+  };
+
+  const handleMarkIncomplete = async () => {
+    await postMarkIncomplete({});
     onItemUpdated();
   };
 
@@ -48,6 +55,14 @@ export function RunItem({ title, description, completed, completeHref, user, onI
           )}
           {isCompleted && (
             <span className="text-xs text-gray-400">Completed on {completedAt}</span>
+          )}
+          {markIncompleteHref && (
+            <button
+              onClick={handleMarkIncomplete}
+              className="px-3 py-1 text-sm font-medium rounded text-white bg-red-600 hover:bg-red-700"
+            >
+              Mark Incomplete
+            </button>
           )}
         </div>
       </div>

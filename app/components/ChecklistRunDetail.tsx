@@ -31,6 +31,9 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated }: ChecklistR
             const completeLink = resource.getLinkArray('complete-item').find(
               (l) => l.name === item.name
             );
+            const markIncompleteLink = resource.getLinkArray('mark-incomplete-item').find(
+              (l) => l.name === item.name
+            );
             return (
               <RunItem
                 key={item.name}
@@ -38,6 +41,7 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated }: ChecklistR
                 description={item.description}
                 completed={item.completed}
                 completeHref={completeLink?.href}
+                markIncompleteHref={markIncompleteLink?.href}
                 user={user}
                 onItemUpdated={onItemUpdated}
               />
