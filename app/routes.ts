@@ -11,8 +11,11 @@ export default [
         route("list/:apiUrlEncoded", "routes/checklists-list.tsx"),
         route("show/:apiUrlEncoded", "routes/checklists-show.tsx"),
       ]),
-      route("/checklist-run/:apiUrlEncoded", "routes/checklist-run.tsx"),
-      route("/checklist-instances/:apiUrlEncoded", "routes/checklist-instances.tsx"),
+      ...prefix("/runs", [
+        index("routes/runs-redirect.tsx"),
+        route("run/:apiUrlEncoded", "routes/checklist-run.tsx"),
+        route("instances/:apiUrlEncoded", "routes/checklist-instances.tsx"),
+      ]),
     ]),
   ]),
 ] satisfies RouteConfig;

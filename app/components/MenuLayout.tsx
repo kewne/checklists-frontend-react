@@ -16,7 +16,7 @@ export default function MenuLayout() {
         <div className="max-w-4xl mx-auto px-4 py-3 flex gap-3">
             {instancesLink && (
               <NavLink
-                to={`/checklist-instances/${encodeApiUrl(instancesLink.href)}`}
+                to={`/runs`}
                 className={({ isActive }) =>
                   `px-4 py-2 rounded-md font-medium text-sm ${
                     isActive
@@ -25,7 +25,7 @@ export default function MenuLayout() {
                   }`
                 }
               >
-                View Runs
+                Runs
               </NavLink>
             )}
           {checklistsLink && (
@@ -39,7 +39,7 @@ export default function MenuLayout() {
                 }`
               }
             >
-              View Checklists
+              Checklists
             </NavLink>
           )}
         </div>
