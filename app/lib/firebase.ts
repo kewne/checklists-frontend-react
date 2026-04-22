@@ -1,15 +1,15 @@
-import { initializeApp } from 'firebase/app';
-import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { initializeUI } from '@firebase-oss/ui-core';
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 
 // TODO: Replace with your Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDNgo8t6wJLKfpiGqOSt493dsLoMR9ENB0",
   authDomain: "checklists-486418.firebaseapp.com",
   projectId: "checklists-486418",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id"
+  storageBucket: "checklists-486418.firebasestorage.app",
+  messagingSenderId: "240319760723",
+  appId: "1:240319760723:web:e5a55dd4d542a2e4bef9a6"
 };
 
 // Initialize Firebase
