@@ -3,6 +3,18 @@ import type { User } from 'firebase/auth';
 import { fetchResource } from './api';
 import { Resource, type HalDocument } from './hal';
 
+const ALLOWED_DOMAIN = 'api.checklists.keeoon.dev';
+
+function validateHref(href: string): void {
+  const url = URL.parse(href);
+  if (url === null) {
+    throw new Error(`Invalid href: ${href}`);
+  }
+  if (url.hostname !== ALLOWED_DOMAIN) {
+    throw new Error(`Invalid domain: ${url.hostname}. Only ${ALLOWED_DOMAIN} is allowed.`);
+  }
+}
+
 export type ResourceState = 
   | { status: 'loading'; action: 'get' | 'post' | 'put' | 'delete' }
   | { status: 'error'; error: Error }
@@ -17,6 +29,7 @@ export type UseResourceReturn = {
 };
 
 export function useResource(href: string, user: User): UseResourceReturn {
+  validateHref(href);
   const [state, setState] = useState<ResourceState>({ status: 'loading', action: 'get' });
 
   const loadResource = useCallback(async () => {
@@ -132,6 +145,7 @@ export type UseHeadlessResourceReturn = {
 };
 
 export function useHeadlessResource(href: string, user: User): UseHeadlessResourceReturn {
+  validateHref(href);
   const [state, setState] = useState<HeadlessResourceState>({ status: 'idle' });
 
   const post = useCallback(async (data: any): Promise<string | null> => {
