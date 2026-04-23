@@ -1,25 +1,25 @@
 import { NavLink } from "react-router";
-import type { Route } from "./+types/checklist-run";
-import { useAuth } from "../lib/auth";
-import { useResource } from "../lib/useResource";
-import { decodeApiUrl } from "../lib/encoding";
 import { ChecklistRunDetail } from "../components/ChecklistRunDetail";
+import { useAuth } from "../lib/auth";
+import { decodeApiUrl } from "../lib/encoding";
+import { useResource } from "../lib/useResource";
+import type { Route } from "./+types/checklist-run";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Checklist Run" },
     { name: "description", content: "View checklist run details" },
   ];
 }
 
-export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="text-red-600 mb-4">
             <p className="font-semibold">Error</p>
-            <p className="text-sm">Invalid run URL. Please go back and try again.</p>
+            <p className="text-sm">{String(error)}</p>
           </div>
           <NavLink
             to="/"
