@@ -30,7 +30,7 @@ export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
     try {
       const location = await post({});
       if (location) {
-        navigate(`/checklist-run/${encodeApiUrl(location)}`);
+        navigate(`/runs/run/${encodeApiUrl(location)}`);
       }
     } catch (error) {
       // Error is handled by the hook state
@@ -44,7 +44,7 @@ export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
       if (location) {
         setIsModalOpen(false);
         setRunTitle('');
-        navigate(`/checklist-run/${encodeApiUrl(location)}`);
+        navigate(`/runs/run/${encodeApiUrl(location)}`);
       }
     } catch (error) {
       // Error is handled by the hook state
@@ -64,7 +64,7 @@ export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
     <>
       <li className="flex justify-between items-center">
         <NavLink
-          to={`/checklists/${encodeApiUrl(item.href)}`}
+          to={`/checklists/show/${encodeApiUrl(item.href)}`}
           className="flex-1 px-4 py-3 text-sm text-gray-800 hover:bg-gray-50 transition-colors"
         >
           <div className="font-medium text-indigo-600">{item.title ?? item.name}</div>

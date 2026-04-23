@@ -1,5 +1,5 @@
 import { NavLink } from "react-router";
-import type { Route } from "./+types/checklist";
+import type { Route } from "./+types/checklists-show";
 import { useAuth } from "../lib/auth";
 import { useResource } from "../lib/useResource";
 import { decodeApiUrl } from "../lib/encoding";
