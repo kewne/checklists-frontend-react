@@ -164,11 +164,21 @@ export function RunItem({ title, description, completed, completeHref, markIncom
 
   return (
     <li className="p-4 border border-gray-200 rounded-md bg-gray-50">
-      <div className="flex items-start gap-3">
-        <div className="flex-1 min-w-0">
-          <p className="font-medium text-gray-900 text-sm">{title}</p>
-          {description && (
-            <p className="text-gray-500 text-sm mt-1">{description}</p>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-gray-900 text-sm">{title}</p>
+        {description && (
+          <p className="text-gray-500 text-sm mt-1">{description}</p>
+        )}
+      </div>
+      <div className="mt-3 pt-3 border-t border-gray-200 flex items-start justify-between gap-3">
+        <div className="text-xs text-gray-400">
+          {completed && (
+            <>
+              <span>Completed on {completedAt}</span>
+              {completed.note && (
+                <p className="mt-1 text-gray-500 italic">{completed.note}</p>
+              )}
+            </>
           )}
         </div>
         <RunItemActions
@@ -178,14 +188,6 @@ export function RunItem({ title, description, completed, completeHref, markIncom
           onItemUpdated={onItemUpdated}
         />
       </div>
-      {completed && (
-        <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-400">
-          <span>Completed on {completedAt}</span>
-          {completed.note && (
-            <p className="mt-1 text-gray-500 italic">{completed.note}</p>
-          )}
-        </div>
-      )}
     </li>
   );
 }
