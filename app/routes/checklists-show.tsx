@@ -67,7 +67,8 @@ export default function ChecklistDetail({
                 (item) => ({ title: item.title ?? '', description: item.description ?? '' })
               ),
             }}
-            onSuccess={put}
+            submitLabel="Save"
+            onSubmit={put}
           />
         )}
       </div>

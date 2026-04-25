@@ -12,23 +12,18 @@ export interface ChecklistFormData {
 
 interface ChecklistFormProps {
   initialValues?: ChecklistFormData;
-  onSuccess?: (data: ChecklistFormData) => Promise<void>;
+  submitLabel: string,
+  onSubmit?: (data: ChecklistFormData) => Promise<void>;
+  onCancel?: () => void;
 }
 
-export function ChecklistForm({ initialValues, onSuccess }: ChecklistFormProps) {
-  const isEdit = initialValues !== undefined;
-  const [isFormOpen, setIsFormOpen] = useState(isEdit);
+export function ChecklistForm({ initialValues, submitLabel, onSubmit, onCancel }: ChecklistFormProps) {
   const [title, setTitle] = useState(initialValues?.title ?? '');
   const [items, setItems] = useState<ChecklistItemData[]>(initialValues?.items ?? []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSuccess?.({ title, items });
-    if (!isEdit) {
-      setTitle('');
-      setItems([]);
-      setIsFormOpen(false);
-    }
+    await onSubmit?.({ title, items });
   };
 
   const addItem = () => {
@@ -45,111 +40,104 @@ export function ChecklistForm({ initialValues, onSuccess }: ChecklistFormProps) 
     setItems((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleCancel = () => {
-    setTitle('');
-    setItems([]);
-    setIsFormOpen(false);
-  };
-
   return (
     <>
-      {!isEdit && (
-        <button
-          onClick={() => (isFormOpen ? handleCancel() : setIsFormOpen(true))}
-          className="mb-4 bg-indigo-600 px-4 py-2 rounded-md font-medium hover:bg-indigo-700"
-        >
-          {isFormOpen ? 'Cancel' : 'Create Checklist'}
-        </button>
-      )}
+      <form onSubmit={handleSubmit} className="mb-4 p-4 border border-gray-200 rounded-md bg-gray-50">
+        <div className="mb-3">
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+            Title
+          </label>
+          <input
+            id="title"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter checklist title"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700"
+            required
+          />
+        </div>
 
-      {isFormOpen && (
-        <form onSubmit={handleSubmit} className="mb-4 p-4 border border-gray-200 rounded-md bg-gray-50">
-          <div className="mb-3">
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-              Title
-            </label>
-            <input
-              id="title"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter checklist title"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700"
-              required
-            />
+        <div className="mb-4">
+          <div className="flex items-center justify-end mb-2">
+            <button
+              type="button"
+              onClick={addItem}
+              className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+            >
+              + Add Item
+            </button>
           </div>
 
-          <div className="mb-4">
-            <div className="flex items-center justify-end mb-2">
-              <button
-                type="button"
-                onClick={addItem}
-                className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
-              >
-                + Add Item
-              </button>
-            </div>
-
-            {items.length > 0 && (
-              <div className="space-y-3">
-                {items.map((item, index) => (
-                  <div key={index} className="p-3 border border-gray-200 rounded-md bg-white">
-                    <div className="flex items-center justify-end mb-2">
-                      <button
-                        type="button"
-                        onClick={() => removeItem(index)}
-                        className="text-xs text-red-600 hover:text-red-700 font-medium"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                    <div className="mb-2">
-                      <label
-                        htmlFor={`item-title-${index}`}
-                        className="block text-xs font-medium text-gray-600 mb-1"
-                      >
-                        Title
-                      </label>
-                      <input
-                        id={`item-title-${index}`}
-                        type="text"
-                        value={item.title}
-                        onChange={(e) => updateItem(index, 'title', e.target.value)}
-                        placeholder="Item title"
-                        className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor={`item-description-${index}`}
-                        className="block text-xs font-medium text-gray-600 mb-1"
-                      >
-                        Description
-                      </label>
-                      <textarea
-                        id={`item-description-${index}`}
-                        value={item.description}
-                        onChange={(e) => updateItem(index, 'description', e.target.value)}
-                        placeholder="Item description"
-                        rows={2}
-                        className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm resize-none"
-                      />
-                    </div>
+          {items.length > 0 && (
+            <div className="space-y-3">
+              {items.map((item, index) => (
+                <div key={index} className="p-3 border border-gray-200 rounded-md bg-white">
+                  <div className="flex items-center justify-end mb-2">
+                    <button
+                      type="button"
+                      onClick={() => removeItem(index)}
+                      className="text-xs text-red-600 hover:text-red-700 font-medium"
+                    >
+                      Remove
+                    </button>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  <div className="mb-2">
+                    <label
+                      htmlFor={`item-title-${index}`}
+                      className="block text-xs font-medium text-gray-600 mb-1"
+                    >
+                      Title
+                    </label>
+                    <input
+                      id={`item-title-${index}`}
+                      type="text"
+                      value={item.title}
+                      onChange={(e) => updateItem(index, 'title', e.target.value)}
+                      placeholder="Item title"
+                      className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor={`item-description-${index}`}
+                      className="block text-xs font-medium text-gray-600 mb-1"
+                    >
+                      Description
+                    </label>
+                    <textarea
+                      id={`item-description-${index}`}
+                      value={item.description}
+                      onChange={(e) => updateItem(index, 'description', e.target.value)}
+                      placeholder="Item description"
+                      rows={2}
+                      className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm resize-none"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
+        <div className="flex gap-3">
+          {onCancel && (
+            <button
+              onClick={onCancel}
+              className="flex-1 px-4 py-2 rounded-md font-medium text-gray-700 border border-gray-300 hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+          )}
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700"
+            className="flex-[2] bg-green-600 text-white px-4 py-2 rounded-md font-medium hover:bg-green-700"
           >
-            {isEdit ? 'Save' : 'Create'}
+            {submitLabel}
           </button>
-        </form>
-      )}
+        </div>
+      </form>
     </>
   );
 }
