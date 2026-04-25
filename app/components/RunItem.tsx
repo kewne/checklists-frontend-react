@@ -14,20 +14,20 @@ interface RunItemProps {
   completeHref?: string;
   markIncompleteHref?: string;
   user: User;
-  onItemUpdated: () => void;
+  onItemUpdated: () => Promise<void>;
 }
 
 interface RunItemActionsProps {
   completeHref?: string;
   markIncompleteHref?: string;
   user: User;
-  onItemUpdated: () => void;
+  onItemUpdated: () => Promise<void>;
 }
 
 interface CompleteButtonProps {
   href: string;
   user: User;
-  onItemUpdated: () => void;
+  onItemUpdated: () => Promise<void>;
 }
 
 function CompleteButton({ href, user, onItemUpdated }: CompleteButtonProps) {
@@ -36,20 +36,16 @@ function CompleteButton({ href, user, onItemUpdated }: CompleteButtonProps) {
   const [note, setNote] = useState('');
 
   const handleCompleted = async () => {
-    await post({});
-    onItemUpdated();
+    await post({}, { onSuccess: onItemUpdated});
   };
 
   const handleCompleteWithNote = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      await post({ note });
+    await post({ note }, { onSuccess: async () => {
       setIsNoteModalOpen(false);
       setNote('');
-      onItemUpdated();
-    } catch (error) {
-      // Error is handled by the hook state
-    }
+      await onItemUpdated();
+    }});
   };
 
   const handleNoteModalCancel = () => {
@@ -123,15 +119,14 @@ function CompleteButton({ href, user, onItemUpdated }: CompleteButtonProps) {
 interface MarkIncompleteButtonProps {
   href: string;
   user: User;
-  onItemUpdated: () => void;
+  onItemUpdated: () => Promise<void>;
 }
 
 function MarkIncompleteButton({ href, user, onItemUpdated }: MarkIncompleteButtonProps) {
   const { state, post } = useHeadlessResource(href, user);
 
   const handleMarkIncomplete = async () => {
-    await post({});
-    onItemUpdated();
+    await post({}, { onSuccess: onItemUpdated });
   };
 
   const isPosting = state.status === 'updating' && state.action === 'post';

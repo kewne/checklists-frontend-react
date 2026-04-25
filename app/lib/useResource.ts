@@ -128,7 +128,7 @@ export type HeadlessResourceState =
 
 export type UseHeadlessResourceReturn = {
   state: HeadlessResourceState;
-  post: (data: any) => Promise<string | null>;
+  post: (data: any, options?: { onSuccess?: () => Promise<void> }) => Promise<string | null>;
   delete: () => Promise<void>;
 };
 
@@ -136,7 +136,7 @@ export function useHeadlessResource(href: string, user: User): UseHeadlessResour
   const hrefUrl = validateHref(href);
   const [state, setState] = useState<HeadlessResourceState>({ status: 'idle' });
 
-  const post = useCallback(async (data: any): Promise<string | null> => {
+  const post = useCallback(async (data: any, options?: { onSuccess?: () => Promise<void>}): Promise<string | null> => {
     setState({ status: 'updating', action: 'post' });
     try {
       const idToken = await user.getIdToken();
@@ -148,10 +148,13 @@ export function useHeadlessResource(href: string, user: User): UseHeadlessResour
         },
         body: JSON.stringify(data),
       });
-      setState({ status: 'idle' });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
+      if (options?.onSuccess) {
+        await options.onSuccess();
+      }
+      setState({ status: 'idle' });
       return response.headers.get('Location');
     } catch (error) {
       setState({ status: 'error', error: error instanceof Error ? error : new Error(String(error)) });
