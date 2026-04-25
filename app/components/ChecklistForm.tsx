@@ -132,7 +132,7 @@ export function ChecklistForm({ initialValues, submitLabel, onSubmit, onCancel }
           )}
           <button
             type="submit"
-            className="flex-[2] bg-green-600 text-white px-4 py-2 rounded-md font-medium hover:bg-green-700"
+            className="flex-[2] bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700"
           >
             {submitLabel}
           </button>
