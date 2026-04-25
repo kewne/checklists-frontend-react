@@ -67,7 +67,7 @@ function CompleteButton({ href, user, onItemUpdated }: CompleteButtonProps) {
           disabled={isPosting}
           className="px-3 py-1 text-sm font-medium rounded text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Complete
+          {isPosting ? 'Marking complete...' : 'Mark complete'}
         </button>
         <button
           onClick={() => setIsNoteModalOpen(true)}
@@ -109,7 +109,7 @@ function CompleteButton({ href, user, onItemUpdated }: CompleteButtonProps) {
                   disabled={isPosting}
                   className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isPosting ? 'Completing...' : 'Complete'}
+                  {isPosting ? 'Marking complete...' : 'Mark complete'}
                 </button>
               </div>
             </form>
@@ -127,19 +127,22 @@ interface MarkIncompleteButtonProps {
 }
 
 function MarkIncompleteButton({ href, user, onItemUpdated }: MarkIncompleteButtonProps) {
-  const { post } = useHeadlessResource(href, user);
+  const { state, post } = useHeadlessResource(href, user);
 
   const handleMarkIncomplete = async () => {
     await post({});
     onItemUpdated();
   };
 
+  const isPosting = state.status === 'updating' && state.action === 'post';
+
   return (
     <button
       onClick={handleMarkIncomplete}
-      className="px-3 py-1 text-sm font-medium rounded text-white bg-red-600 hover:bg-red-700"
+      disabled={isPosting}
+      className="px-3 py-1 text-sm font-medium rounded text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      Mark Incomplete
+      {isPosting ? 'Marking incomplete...' : 'Mark Incomplete'}
     </button>
   );
 }

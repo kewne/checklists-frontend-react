@@ -1,7 +1,6 @@
 import { NavLink, Outlet } from "react-router";
 import { useAuth } from "../lib/auth";
 import { useResource } from "../lib/useResource";
-import { encodeApiUrl } from "../lib/encoding";
 
 export default function MenuLayout() {
   const { user, signOut } = useAuth();
