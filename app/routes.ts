@@ -8,6 +8,7 @@ export default [
       index("routes/home.tsx"),
       ...prefix("/checklists", [
         index("routes/checklists-redirect.tsx"),
+        route("create/:apiUrlEncoded", "routes/checklist-create.tsx"),
         route("list/:apiUrlEncoded", "routes/checklists-list.tsx"),
         route("show/:apiUrlEncoded", "routes/checklists-show.tsx"),
       ]),

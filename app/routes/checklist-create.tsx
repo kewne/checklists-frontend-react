@@ -1,13 +1,14 @@
-import { NavLink } from "react-router";
-import type { Route } from "./+types/checklists-list";
+import { Link, useNavigate } from "react-router";
+import type { Route } from "./+types/checklist-create";
 import { useAuth } from "../lib/auth";
 import { decodeApiUrl } from "../lib/encoding";
-import { ChecklistHome } from "../components/ChecklistHome";
+import { ChecklistForm } from "../components/ChecklistForm";
+import { useResource } from "../lib/useResource";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Checklists" },
-    { name: "description", content: "Manage your checklists" },
+    { title: "Create Checklist" },
+    { name: "description", content: "Create a new checklist" },
   ];
 }
 
@@ -20,27 +21,40 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
             <p className="font-semibold">Error</p>
             <p className="text-sm">Invalid checklists URL. Please go back and try again.</p>
           </div>
-          <NavLink
+          <Link
             to="/"
             className="inline-block bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700"
           >
             Back to Home
-          </NavLink>
+          </Link>
         </div>
       </div>
     </div>
   );
 }
 
-export default function Checklists({ params }: Route.ComponentProps) {
+export default function CreateChecklist({ params }: Route.ComponentProps) {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
+
+  const { post } = useResource(decodedUrl, user!);
+
+  const handleSubmit = async (data: { title: string; items: Array<{ title: string; description: string }> }) => {
+    await post(data);
+    navigate(`/checklists/list/${params.apiUrlEncoded}`);
+  };
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="bg-white rounded-lg shadow p-6">
-        <ChecklistHome href={decodedUrl} user={user!} apiUrlEncoded={params.apiUrlEncoded} />
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">Create New Checklist</h1>
+        <ChecklistForm
+          submitLabel="Create"
+          onSubmit={handleSubmit}
+          onCancel={() => navigate(`/checklists/list/${params.apiUrlEncoded}`)}
+        />
       </div>
     </div>
   );

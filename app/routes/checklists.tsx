@@ -40,7 +40,7 @@ export default function Checklists({ params }: Route.ComponentProps) {
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="bg-white rounded-lg shadow p-6">
-        <ChecklistHome href={decodedUrl} user={user!} />
+        <ChecklistHome href={decodedUrl} user={user!} apiUrlEncoded={params.apiUrlEncoded} />
       </div>
     </div>
   );
