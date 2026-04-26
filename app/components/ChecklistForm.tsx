@@ -44,6 +44,7 @@ function ChecklistItemComponent({ index, item, onUpdate, onRemove }: ChecklistIt
         <div className="flex items-center gap-2">
           <input
             id={`item-title-${index}`}
+            autoFocus={true}
             type="text"
             value={item.title}
             onChange={(e) => onUpdate(index, 'title', e.target.value)}
@@ -81,6 +82,7 @@ function ChecklistItemComponent({ index, item, onUpdate, onRemove }: ChecklistIt
             <textarea
               id={`item-description-${index}`}
               value={item.description}
+              autoFocus={true}
               onChange={(e) => onUpdate(index, 'description', e.target.value)}
               placeholder="Item description"
               rows={2}
