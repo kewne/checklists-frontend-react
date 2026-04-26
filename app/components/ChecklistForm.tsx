@@ -35,13 +35,22 @@ function ChecklistItemComponent({ index, item, onUpdate, onRemove }: ChecklistIt
   return (
     <div className="p-3 border border-gray-200 rounded-md bg-white">
       <div className="mb-2">
-        <label
-          htmlFor={`item-title-${index}`}
-          className="block text-xs font-medium text-gray-600 mb-1"
-        >
-          Title
-        </label>
-        <div className="flex items-center gap-2">
+        <div className="flex justify-between items-center mb-1">
+          <label
+            htmlFor={`item-title-${index}`}
+            className="text-xs font-medium text-gray-600"
+          >
+            Title
+          </label>
+          <button
+            type="button"
+            onClick={() => onRemove(index)}
+            className="text-xs text-red-600 hover:text-red-700 font-medium whitespace-nowrap"
+          >
+            Remove
+          </button>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
           <input
             id={`item-title-${index}`}
             autoFocus={true}
@@ -52,33 +61,20 @@ function ChecklistItemComponent({ index, item, onUpdate, onRemove }: ChecklistIt
             className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm"
             required
           />
-          {!showDescription && (
-            <button
-              type="button"
-              onClick={() => setShowDescription(true)}
-              className="text-xs text-indigo-600 hover:text-indigo-700 font-medium whitespace-nowrap"
-            >
-              Add description
-            </button>
-          )}
           <button
             type="button"
-            onClick={() => onRemove(index)}
-            className="text-xs text-red-600 hover:text-red-700 font-medium whitespace-nowrap"
+            onClick={showDescription ? handleRemoveDescription : () => setShowDescription(true)}
+            className="text-xs text-indigo-600 hover:text-indigo-700 font-medium whitespace-nowrap"
           >
-            Remove
+            <label htmlFor={`item-description-${index}`}>
+              {showDescription ? 'Description -' : 'Description +'}
+            </label>
           </button>
         </div>
       </div>
       {showDescription && (
         <div>
-          <label
-            htmlFor={`item-description-${index}`}
-            className="block text-xs font-medium text-gray-600 mb-1"
-          >
-            Description
-          </label>
-          <div className="flex items-start gap-2">
+          <div className="flex items-start gap-2 flex-wrap">
             <textarea
               id={`item-description-${index}`}
               value={item.description}
@@ -88,13 +84,6 @@ function ChecklistItemComponent({ index, item, onUpdate, onRemove }: ChecklistIt
               rows={2}
               className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm resize-none"
             />
-            <button
-              type="button"
-              onClick={handleRemoveDescription}
-              className="text-xs text-gray-600 hover:text-gray-700 font-medium whitespace-nowrap pt-1.5"
-            >
-              Remove
-            </button>
           </div>
         </div>
       )}
