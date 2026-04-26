@@ -63,15 +63,6 @@ export function ChecklistForm({ initialValues, submitLabel, onSubmit, onCancel }
             <div className="space-y-3 mb-3">
               {items.map((item, index) => (
                 <div key={index} className="p-3 border border-gray-200 rounded-md bg-white">
-                  <div className="flex items-center justify-end mb-2">
-                    <button
-                      type="button"
-                      onClick={() => removeItem(index)}
-                      className="text-xs text-red-600 hover:text-red-700 font-medium"
-                    >
-                      Remove
-                    </button>
-                  </div>
                   <div className="mb-2">
                     <label
                       htmlFor={`item-title-${index}`}
@@ -79,15 +70,24 @@ export function ChecklistForm({ initialValues, submitLabel, onSubmit, onCancel }
                     >
                       Title
                     </label>
-                    <input
-                      id={`item-title-${index}`}
-                      type="text"
-                      value={item.title}
-                      onChange={(e) => updateItem(index, 'title', e.target.value)}
-                      placeholder="Item title"
-                      className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm"
-                      required
-                    />
+                    <div className="flex items-center gap-2">
+                      <input
+                        id={`item-title-${index}`}
+                        type="text"
+                        value={item.title}
+                        onChange={(e) => updateItem(index, 'title', e.target.value)}
+                        placeholder="Item title"
+                        className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeItem(index)}
+                        className="text-xs text-red-600 hover:text-red-700 font-medium whitespace-nowrap"
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <label
