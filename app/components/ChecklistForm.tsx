@@ -25,6 +25,13 @@ interface ChecklistItemComponentProps {
 }
 
 function ChecklistItemComponent({ index, item, onUpdate, onRemove }: ChecklistItemComponentProps) {
+  const [showDescription, setShowDescription] = useState(item.description.length > 0);
+
+  const handleRemoveDescription = () => {
+    onUpdate(index, 'description', '');
+    setShowDescription(false);
+  };
+
   return (
     <div className="p-3 border border-gray-200 rounded-md bg-white">
       <div className="mb-2">
@@ -44,6 +51,15 @@ function ChecklistItemComponent({ index, item, onUpdate, onRemove }: ChecklistIt
             className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm"
             required
           />
+          {!showDescription && (
+            <button
+              type="button"
+              onClick={() => setShowDescription(true)}
+              className="text-xs text-indigo-600 hover:text-indigo-700 font-medium whitespace-nowrap"
+            >
+              Add description
+            </button>
+          )}
           <button
             type="button"
             onClick={() => onRemove(index)}
@@ -53,22 +69,33 @@ function ChecklistItemComponent({ index, item, onUpdate, onRemove }: ChecklistIt
           </button>
         </div>
       </div>
-      <div>
-        <label
-          htmlFor={`item-description-${index}`}
-          className="block text-xs font-medium text-gray-600 mb-1"
-        >
-          Description
-        </label>
-        <textarea
-          id={`item-description-${index}`}
-          value={item.description}
-          onChange={(e) => onUpdate(index, 'description', e.target.value)}
-          placeholder="Item description"
-          rows={2}
-          className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm resize-none"
-        />
-      </div>
+      {showDescription && (
+        <div>
+          <label
+            htmlFor={`item-description-${index}`}
+            className="block text-xs font-medium text-gray-600 mb-1"
+          >
+            Description
+          </label>
+          <div className="flex items-start gap-2">
+            <textarea
+              id={`item-description-${index}`}
+              value={item.description}
+              onChange={(e) => onUpdate(index, 'description', e.target.value)}
+              placeholder="Item description"
+              rows={2}
+              className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm resize-none"
+            />
+            <button
+              type="button"
+              onClick={handleRemoveDescription}
+              className="text-xs text-gray-600 hover:text-gray-700 font-medium whitespace-nowrap pt-1.5"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
