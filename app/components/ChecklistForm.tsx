@@ -17,6 +17,62 @@ interface ChecklistFormProps {
   onCancel?: () => void;
 }
 
+interface ChecklistItemComponentProps {
+  index: number;
+  item: ChecklistItemData;
+  onUpdate: (index: number, field: keyof ChecklistItemData, value: string) => void;
+  onRemove: (index: number) => void;
+}
+
+function ChecklistItemComponent({ index, item, onUpdate, onRemove }: ChecklistItemComponentProps) {
+  return (
+    <div className="p-3 border border-gray-200 rounded-md bg-white">
+      <div className="mb-2">
+        <label
+          htmlFor={`item-title-${index}`}
+          className="block text-xs font-medium text-gray-600 mb-1"
+        >
+          Title
+        </label>
+        <div className="flex items-center gap-2">
+          <input
+            id={`item-title-${index}`}
+            type="text"
+            value={item.title}
+            onChange={(e) => onUpdate(index, 'title', e.target.value)}
+            placeholder="Item title"
+            className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm"
+            required
+          />
+          <button
+            type="button"
+            onClick={() => onRemove(index)}
+            className="text-xs text-red-600 hover:text-red-700 font-medium whitespace-nowrap"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+      <div>
+        <label
+          htmlFor={`item-description-${index}`}
+          className="block text-xs font-medium text-gray-600 mb-1"
+        >
+          Description
+        </label>
+        <textarea
+          id={`item-description-${index}`}
+          value={item.description}
+          onChange={(e) => onUpdate(index, 'description', e.target.value)}
+          placeholder="Item description"
+          rows={2}
+          className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm resize-none"
+        />
+      </div>
+    </div>
+  );
+}
+
 export function ChecklistForm({ initialValues, submitLabel, onSubmit, onCancel }: ChecklistFormProps) {
   const [title, setTitle] = useState(initialValues?.title ?? '');
   const [items, setItems] = useState<ChecklistItemData[]>(initialValues?.items ?? []);
@@ -62,50 +118,13 @@ export function ChecklistForm({ initialValues, submitLabel, onSubmit, onCancel }
           {items.length > 0 && (
             <div className="space-y-3 mb-3">
               {items.map((item, index) => (
-                <div key={index} className="p-3 border border-gray-200 rounded-md bg-white">
-                  <div className="mb-2">
-                    <label
-                      htmlFor={`item-title-${index}`}
-                      className="block text-xs font-medium text-gray-600 mb-1"
-                    >
-                      Title
-                    </label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        id={`item-title-${index}`}
-                        type="text"
-                        value={item.title}
-                        onChange={(e) => updateItem(index, 'title', e.target.value)}
-                        placeholder="Item title"
-                        className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeItem(index)}
-                        className="text-xs text-red-600 hover:text-red-700 font-medium whitespace-nowrap"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                  <div>
-                    <label
-                      htmlFor={`item-description-${index}`}
-                      className="block text-xs font-medium text-gray-600 mb-1"
-                    >
-                      Description
-                    </label>
-                    <textarea
-                      id={`item-description-${index}`}
-                      value={item.description}
-                      onChange={(e) => updateItem(index, 'description', e.target.value)}
-                      placeholder="Item description"
-                      rows={2}
-                      className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm resize-none"
-                    />
-                  </div>
-                </div>
+                <ChecklistItemComponent
+                  key={index}
+                  index={index}
+                  item={item}
+                  onUpdate={updateItem}
+                  onRemove={removeItem}
+                />
               ))}
             </div>
           )}
