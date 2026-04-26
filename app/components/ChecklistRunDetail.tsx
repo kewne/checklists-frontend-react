@@ -12,7 +12,7 @@ interface RunItemData {
 interface ChecklistRunDetailProps {
   resource: Resource;
   user: User;
-  onItemUpdated: () => void;
+  onItemUpdated: () => Promise<void>;
 }
 
 export function ChecklistRunDetail({ resource, user, onItemUpdated }: ChecklistRunDetailProps) {

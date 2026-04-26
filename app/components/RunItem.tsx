@@ -36,16 +36,18 @@ function CompleteButton({ href, user, onItemUpdated }: CompleteButtonProps) {
   const [note, setNote] = useState('');
 
   const handleCompleted = async () => {
-    await post({}, { onSuccess: onItemUpdated});
+    await post({}, { onSuccess: onItemUpdated });
   };
 
   const handleCompleteWithNote = async (e: React.FormEvent) => {
     e.preventDefault();
-    await post({ note }, { onSuccess: async () => {
-      setIsNoteModalOpen(false);
-      setNote('');
-      await onItemUpdated();
-    }});
+    await post({ note }, {
+      onSuccess: async () => {
+        setIsNoteModalOpen(false);
+        setNote('');
+        await onItemUpdated();
+      }
+    });
   };
 
   const handleNoteModalCancel = () => {
@@ -144,7 +146,7 @@ function MarkIncompleteButton({ href, user, onItemUpdated }: MarkIncompleteButto
 
 function RunItemActions({ completeHref, markIncompleteHref, user, onItemUpdated }: RunItemActionsProps) {
   return (
-    <div className="flex flex-col items-end gap-1 flex-shrink-0">
+    <div className="flex flex-wrap gap-1">
       {completeHref && (
         <CompleteButton href={completeHref} user={user} onItemUpdated={onItemUpdated} />
       )}
@@ -162,21 +164,11 @@ export function RunItem({ title, description, completed, completeHref, markIncom
 
   return (
     <li className="p-4 border border-gray-200 rounded-md bg-gray-50">
-      <div className="flex-1 min-w-0">
-        <p className="font-medium text-gray-900 text-sm">{title}</p>
-        {description && (
-          <p className="text-gray-500 text-sm mt-1">{description}</p>
-        )}
-      </div>
-      <div className="mt-3 pt-3 border-t border-gray-200 flex items-start justify-between gap-3">
-        <div className="text-xs text-gray-400">
-          {completed && (
-            <>
-              <span>Completed on {completedAt}</span>
-              {completed.note && (
-                <p className="mt-1 text-gray-500 italic">{completed.note}</p>
-              )}
-            </>
+      <div className="flex flex-wrap items-start gap-3 mb-3">
+        <div className="flex-1">
+          <p className="font-medium text-gray-900 text-sm">{title}</p>
+          {description && (
+            <p className="text-gray-500 text-sm mt-1">{description}</p>
           )}
         </div>
         <RunItemActions
@@ -186,6 +178,14 @@ export function RunItem({ title, description, completed, completeHref, markIncom
           onItemUpdated={onItemUpdated}
         />
       </div>
+      {completed && (
+        <div className="pt-3 border-t border-gray-200 text-xs text-gray-400">
+          <span>Completed on {completedAt}</span>
+          {completed.note && (
+            <p className="mt-1 text-gray-500 italic">{completed.note}</p>
+          )}
+        </div>
+      )}
     </li>
   );
 }
