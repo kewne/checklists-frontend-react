@@ -22,7 +22,8 @@
     "isbot": "^5.1.31",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-router": "7.12.0"
+    "react-router": "7.12.0",
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
@@ -33,6 +34,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-basic-ssl": "^2.1.4",
     "dotenv": "^17.3.1",
+    "prettier": "^3.8.3",
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
