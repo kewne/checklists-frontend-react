@@ -168,7 +168,7 @@ export function RunItem({ title, description, completed, completeHref, markIncom
         <div className="flex-1">
           <p className="font-medium text-gray-900 text-sm">{title}</p>
           {description && (
-            <p className="text-gray-500 text-sm mt-1">{description}</p>
+            <p className="text-gray-500 text-sm mt-1 whitespace-pre-wrap">{description}</p>
           )}
         </div>
         <RunItemActions
