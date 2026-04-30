@@ -1,0 +1,9 @@
+{
+  "features": {
+    "ghcr.io/devcontainers-extra/features/firebase-cli:2": {
+      "version": "2.0.16",
+      "resolved": "ghcr.io/devcontainers-extra/features/firebase-cli@sha256:6912e0e1c88d9130890711bc9a553a40af17909f02f33b36b1a8ce992e2bce3d",
+      "integrity": "sha256:6912e0e1c88d9130890711bc9a553a40af17909f02f33b36b1a8ce992e2bce3d"
+    }
+  }
+}
