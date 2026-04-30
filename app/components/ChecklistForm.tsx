@@ -81,7 +81,7 @@ function ChecklistItemComponent({ item, onUpdate, onRemove }: ChecklistItemCompo
               autoFocus={true}
               onChange={(e) => onUpdate(item.id, 'description', e.target.value)}
               placeholder="Item description"
-              rows={2}
+              rows={5}
               className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm resize-none"
             />
           </div>
@@ -93,7 +93,7 @@ function ChecklistItemComponent({ item, onUpdate, onRemove }: ChecklistItemCompo
 
 export function ChecklistForm({ initialValues, submitLabel, onSubmit, onCancel }: ChecklistFormProps) {
   const [title, setTitle] = useState(initialValues?.title ?? '');
-  const [items, setItems] = useState<ChecklistItemData[]>((initialValues?.items ?? []).map((item) => ({...item, id: v4()})));
+  const [items, setItems] = useState<ChecklistItemData[]>((initialValues?.items ?? []).map((item) => ({ ...item, id: v4() })));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,31 +133,31 @@ export function ChecklistForm({ initialValues, submitLabel, onSubmit, onCancel }
         </div>
 
         <div className="mb-4">
-            <ol className="space-y-3 my-1">
-              <button
-                type="button"
-                onClick={() => addItem(0)}
-                className="px-2 w-full rounded-md text-xs text-indigo-600 border border-indigo-600 hover:bg-indigo-50"
-              >
-                + Add Item
-              </button>
-              {items.map((item, index) => (
-                <li key={item.id}>
-                  <ChecklistItemComponent
-                    item={item}
-                    onUpdate={updateItem}
-                    onRemove={() => removeItem(item.id)}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => addItem(index + 1)}
-                    className="px-2 w-full rounded-md text-xs text-indigo-600 border border-indigo-600 hover:bg-indigo-50"
-                  >
-                    + Add Item
-                  </button>
-                </li>
-              ))}
-            </ol>
+          <ol className="space-y-3 my-1">
+            <button
+              type="button"
+              onClick={() => addItem(0)}
+              className="px-2 w-full rounded-md text-xs text-indigo-600 border border-indigo-600 hover:bg-indigo-50"
+            >
+              + Add Item
+            </button>
+            {items.map((item, index) => (
+              <li key={item.id}>
+                <ChecklistItemComponent
+                  item={item}
+                  onUpdate={updateItem}
+                  onRemove={() => removeItem(item.id)}
+                />
+                <button
+                  type="button"
+                  onClick={() => addItem(index + 1)}
+                  className="px-2 w-full rounded-md text-xs text-indigo-600 border border-indigo-600 hover:bg-indigo-50"
+                >
+                  + Add Item
+                </button>
+              </li>
+            ))}
+          </ol>
         </div>
 
         <div className="flex gap-3">
