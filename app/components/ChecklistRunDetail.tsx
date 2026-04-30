@@ -1,5 +1,5 @@
 import type { User } from 'firebase/auth';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Resource } from '../lib/hal';
 import { RunItem } from './RunItem';
 
@@ -98,8 +98,22 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete }: 
   const title = resource.properties.title as string | undefined;
   const items = (resource.properties.items as RunItemData[]) ?? [];
   const allItemsCompleted = items.length > 0 && items.every((item) => item.completed);
+  const firstToDoItemIndex = items.findIndex((item) => item.completed == null)
 
+  const listRef = useRef<HTMLUListElement>(null)
   const confirmationText = allItemsCompleted ? undefined : 'This run has incomplete items. Delete anyway?';
+
+  useEffect(() => {
+    const listNode = listRef.current
+    if (listNode && firstToDoItemIndex !== -1) {
+      const itemNodes = listNode?.querySelectorAll('li')
+      itemNodes[Math.max(firstToDoItemIndex - 1, 0)].scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    }
+
+  }, [resource, user])
 
   return (
     <div>
@@ -125,7 +139,7 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete }: 
       {items.length === 0 ? (
         <p className="text-gray-500 text-sm">No items in this run.</p>
       ) : (
-        <ul className="space-y-3">
+        <ul className="space-y-3 overflow-y-auto overscroll-y-contain max-h-100 snap-y snap-mandatory" ref={listRef}>
           {items.map((item) => {
             const completeLink = resource.getLinkArray('complete-item').find(
               (l) => l.name === item.name
@@ -133,9 +147,8 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete }: 
             const markIncompleteLink = resource.getLinkArray('mark-incomplete-item').find(
               (l) => l.name === item.name
             );
-            return (
+            return <li key={item.name}>
               <RunItem
-                key={item.name}
                 title={item.title ?? item.name}
                 description={item.description}
                 completed={item.completed}
@@ -144,7 +157,7 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete }: 
                 user={user}
                 onItemUpdated={onItemUpdated}
               />
-            );
+            </li>
           })}
         </ul>
       )}

@@ -137,7 +137,7 @@ function MarkIncompleteButton({ href, user, onItemUpdated }: MarkIncompleteButto
     <button
       onClick={handleMarkIncomplete}
       disabled={isPosting}
-      className="px-3 py-1 text-sm font-medium rounded text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+      className="px-3 py-1 text-sm font-medium rounded text-white bg-red-600 saturate-100 brightness-100 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {isPosting ? 'Marking incomplete...' : 'Mark Incomplete'}
     </button>
@@ -162,9 +162,10 @@ export function RunItem({ title, description, completed, completeHref, markIncom
     ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(completed.completed_at))
     : null;
 
+  const style = completed ? 'opacity-65' : ''
   return (
-    <li className="p-4 border border-gray-200 rounded-md bg-gray-50">
-      <div className="flex flex-wrap items-start gap-3 mb-3">
+    <div className={`p-4 border border-gray-200 rounded-md snap-start bg-gray-50 ${style}`}>
+      <div className='flex flex-wrap items-start gap-3 mb-3'>
         <div className="flex-1">
           <p className="font-medium text-gray-900 text-sm">{title}</p>
           {description && (
@@ -186,6 +187,6 @@ export function RunItem({ title, description, completed, completeHref, markIncom
           )}
         </div>
       )}
-    </li>
+    </div>
   );
 }
