@@ -1,4 +1,5 @@
 import type { User } from 'firebase/auth';
+import { useState } from 'react';
 import type { Resource } from '../lib/hal';
 import { RunItem } from './RunItem';
 
@@ -13,16 +14,106 @@ interface ChecklistRunDetailProps {
   resource: Resource;
   user: User;
   onItemUpdated: () => Promise<void>;
+  onDelete?: () => void;
 }
 
-export function ChecklistRunDetail({ resource, user, onItemUpdated }: ChecklistRunDetailProps) {
+interface DeleteRunButtonProps {
+  resource: Resource;
+  confirmationText?: string;
+  user: User;
+  onDelete?: () => void;
+}
+
+function DeleteRunButton({ confirmationText, onDelete }: DeleteRunButtonProps) {
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteClick = () => {
+    if (confirmationText) {
+      setIsConfirmDialogOpen(true);
+    } else {
+      performDelete();
+    }
+  };
+
+  const performDelete = async () => {
+    setIsConfirmDialogOpen(false);
+    setIsDeleting(true);
+    try {
+      onDelete?.();
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    performDelete();
+  };
+
+  const handleCancelDelete = () => {
+    setIsConfirmDialogOpen(false);
+  };
+
+  return (
+    <>
+      <button
+        onClick={handleDeleteClick}
+        disabled={isDeleting}
+        className="px-3 py-2 text-red-600 hover:bg-red-50 rounded text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-red-300 hover:border-red-400"
+      >
+        {isDeleting ? 'Deleting...' : 'Delete'}
+      </button>
+
+      {isConfirmDialogOpen && confirmationText && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-sm mx-4 p-6">
+            <h2 className="text-base font-semibold text-gray-800 mb-2">Delete run?</h2>
+            <p className="text-gray-600 text-sm mb-6">
+              {confirmationText}
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={handleCancelDelete}
+                disabled={isDeleting}
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete }: ChecklistRunDetailProps) {
   const title = resource.properties.title as string | undefined;
   const items = (resource.properties.items as RunItemData[]) ?? [];
   const allItemsCompleted = items.length > 0 && items.every((item) => item.completed);
 
+  const confirmationText = allItemsCompleted ? undefined : 'This run has incomplete items. Delete anyway?';
+
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">{title ?? 'Checklist Run'}</h1>
+      <div className="flex justify-between items-start mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">{title ?? 'Checklist Run'}</h1>
+        </div>
+        <DeleteRunButton
+          resource={resource}
+          confirmationText={confirmationText}
+          user={user}
+          onDelete={onDelete}
+        />
+      </div>
 
       {allItemsCompleted && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md">

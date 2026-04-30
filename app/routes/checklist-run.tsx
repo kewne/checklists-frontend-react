@@ -1,4 +1,4 @@
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import { ChecklistRunDetail } from "../components/ChecklistRunDetail";
 import { useAuth } from "../lib/auth";
 import { decodeApiUrl } from "../lib/encoding";
@@ -35,10 +35,16 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
 export default function ChecklistRun({ params }: Route.ComponentProps) {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
 
-  const { state, get } = useResource(decodedUrl, user!);
+  const { state, get, delete: del } = useResource(decodedUrl, user!);
+
+  const doDelete = async () => {
+    await del()
+    navigate('/');
+  };
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
@@ -58,7 +64,7 @@ export default function ChecklistRun({ params }: Route.ComponentProps) {
         )}
 
         {state.status === "success" && (
-          <ChecklistRunDetail resource={state.resource} user={user!} onItemUpdated={get} />
+          <ChecklistRunDetail resource={state.resource} user={user!} onItemUpdated={get} onDelete={doDelete} />
         )}
       </div>
     </div>
