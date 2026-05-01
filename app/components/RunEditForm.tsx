@@ -1,18 +1,20 @@
 import { useState } from 'react';
+import { v4 } from 'uuid';
 
 interface RunEditFormProps {
   initialValues: ChecklistRun;
   submitLabel: string;
-  onSubmit?: (data: ChecklistRun) => Promise<void>;
+  onSubmit?: (data: WriteableChecklistRun) => Promise<void>;
   onCancel?: () => void;
 }
 
 interface RunItemComponentProps {
-  item: ChecklistRun['items'][number];
+  item: WriteableChecklistRun['items'][number];
   onUpdate: (name: string, field: 'title' | 'description', value: string) => void;
+  onRemove: () => void;
 }
 
-function RunItemComponent({ item, onUpdate }: RunItemComponentProps) {
+function RunItemComponent({ item, onUpdate, onRemove }: RunItemComponentProps) {
   const [showDescription, setShowDescription] = useState(item.description?.length > 0);
 
   const handleRemoveDescription = () => {
@@ -30,6 +32,13 @@ function RunItemComponent({ item, onUpdate }: RunItemComponentProps) {
           >
             Title
           </label>
+          <button
+            type="button"
+            onClick={onRemove}
+            className="text-xs text-red-600 hover:text-red-700 font-medium whitespace-nowrap"
+          >
+            Remove
+          </button>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <input
@@ -72,17 +81,27 @@ function RunItemComponent({ item, onUpdate }: RunItemComponentProps) {
 
 export function RunEditForm({ initialValues, submitLabel, onSubmit, onCancel }: RunEditFormProps) {
   const [title, setTitle] = useState(initialValues.title);
-  const [items, setItems] = useState(initialValues.items);
+  const [items, setItems] = useState<WriteableChecklistRun['items']>(
+    initialValues.items.map(({ completed: _completed, ...item }) => item)
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await onSubmit?.({ title, items });
   };
 
+  const addItem = (index: number) => {
+    setItems((prev) => prev.toSpliced(index, 0, { name: v4(), title: '', description: '' }));
+  };
+
   const updateItem = (name: string, field: 'title' | 'description', value: string) => {
     setItems((prev) =>
       prev.map((item) => (item.name === name ? { ...item, [field]: value } : item))
     );
+  };
+
+  const removeItem = (name: string) => {
+    setItems((prev) => prev.filter((item) => item.name !== name));
   };
 
   return (
@@ -105,12 +124,27 @@ export function RunEditForm({ initialValues, submitLabel, onSubmit, onCancel }: 
 
         <div className="mb-4">
           <ol className="space-y-3 my-1">
-            {items.map((item) => (
+            <button
+              type="button"
+              onClick={() => addItem(0)}
+              className="px-2 w-full rounded-md text-xs text-indigo-600 border border-indigo-600 hover:bg-indigo-50"
+            >
+              + Add Item
+            </button>
+            {items.map((item, index) => (
               <li key={item.name}>
                 <RunItemComponent
                   item={item}
                   onUpdate={updateItem}
+                  onRemove={() => removeItem(item.name)}
                 />
+                <button
+                  type="button"
+                  onClick={() => addItem(index + 1)}
+                  className="px-2 w-full rounded-md text-xs text-indigo-600 border border-indigo-600 hover:bg-indigo-50"
+                >
+                  + Add Item
+                </button>
               </li>
             ))}
           </ol>

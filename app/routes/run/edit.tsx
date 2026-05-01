@@ -5,7 +5,7 @@ import { decodeApiUrl } from "../../lib/encoding";
 import { useResource } from "../../lib/useResource";
 import type { Route } from "./+types/edit";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Edit Run" },
     { name: "description", content: "Edit checklist run details" },
@@ -41,7 +41,7 @@ export default function EditRun({ params }: Route.ComponentProps) {
 
   const { state, put } = useResource<ChecklistRun>(decodedUrl, user!);
 
-  const handleSubmit = async (data: ChecklistRun) => {
+  const handleSubmit = async (data: WriteableChecklistRun) => {
     await put(data);
     navigate(`/runs/show/${params.apiUrlEncoded}`);
   };

@@ -9,6 +9,15 @@ type ChecklistItem = {
   description: string;
 };
 
+type WriteableChecklistRun = {
+  title: string;
+  items: {
+    name: string;
+    title: string;
+    description: string;
+  }[];
+};
+
 type ChecklistRun = {
   title: string;
   items: {
@@ -16,8 +25,8 @@ type ChecklistRun = {
     title: string;
     description: string;
     completed: {
-        completed_at: string
-        note: string
+      completed_at: string
+      note: string
     }
   }[];
 };
