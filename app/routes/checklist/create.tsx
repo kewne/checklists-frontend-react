@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router";
-import type { Route } from "./+types/checklist-create";
-import { useAuth } from "../lib/auth";
-import { decodeApiUrl } from "../lib/encoding";
-import { ChecklistForm } from "../components/ChecklistForm";
-import { useResource } from "../lib/useResource";
+import type { Route } from "../+types/checklist-create";
+import { useAuth } from "../../lib/auth";
+import { decodeApiUrl } from "../../lib/encoding";
+import { ChecklistForm } from "../../components/ChecklistForm";
+import { useResource } from "../../lib/useResource";
 
 export function meta({}: Route.MetaArgs) {
   return [

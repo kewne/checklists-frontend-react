@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { encodeApiUrl } from "~/lib/encoding";
 import { useResource } from "~/lib/useResource";
-import { useAuth } from "../lib/auth";
-import type { Route } from "./+types/checklists-redirect";
+import { useAuth } from "../../lib/auth";
+import type { Route } from "../+types/checklists-redirect";
 
 export function meta({ }: Route.MetaArgs) {
   return [

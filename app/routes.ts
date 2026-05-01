@@ -7,10 +7,10 @@ export default [
     layout("components/MenuLayout.tsx", [
       index("routes/home.tsx"),
       ...prefix("/checklists", [
-        index("routes/checklists-redirect.tsx"),
-        route("create/:apiUrlEncoded", "routes/checklist-create.tsx"),
-        route("list/:apiUrlEncoded", "routes/checklists-list.tsx"),
-        route("show/:apiUrlEncoded", "routes/checklists-show.tsx"),
+        index("routes/checklist/index.tsx"),
+        route("create/:apiUrlEncoded", "routes/checklist/create.tsx"),
+        route("list/:apiUrlEncoded", "routes/checklist/list.tsx"),
+        route("show/:apiUrlEncoded", "routes/checklist/show.tsx"),
       ]),
       ...prefix("/runs", [
         index("routes/runs-redirect.tsx"),
