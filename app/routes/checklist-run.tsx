@@ -39,7 +39,7 @@ export default function ChecklistRun({ params }: Route.ComponentProps) {
 
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
 
-  const { state, get, delete: del } = useResource(decodedUrl, user!);
+  const { state, get, delete: del } = useResource<ChecklistRun>(decodedUrl, user!);
 
   const doDelete = async () => {
     await del();

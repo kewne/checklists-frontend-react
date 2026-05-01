@@ -1,27 +1,16 @@
 import { useState } from 'react';
 import { v4 } from 'uuid';
 
-export interface ChecklistItemData {
-  id: string;
-  title: string;
-  description: string;
-}
-
-export interface ChecklistFormData {
-  title: string;
-  items: ChecklistItemData[];
-}
-
 interface ChecklistFormProps {
-  initialValues?: ChecklistFormData;
+  initialValues?: Checklist;
   submitLabel: string,
-  onSubmit?: (data: ChecklistFormData) => Promise<void>;
+  onSubmit?: (data: Checklist) => Promise<void>;
   onCancel?: () => void;
 }
 
 interface ChecklistItemComponentProps {
-  item: ChecklistItemData;
-  onUpdate: (id: string, field: keyof ChecklistItemData, value: string) => void;
+  item:  ChecklistItem;
+  onUpdate: (id: string, field: keyof ChecklistItem, value: string) => void;
   onRemove: () => void;
 }
 
@@ -93,7 +82,7 @@ function ChecklistItemComponent({ item, onUpdate, onRemove }: ChecklistItemCompo
 
 export function ChecklistForm({ initialValues, submitLabel, onSubmit, onCancel }: ChecklistFormProps) {
   const [title, setTitle] = useState(initialValues?.title ?? '');
-  const [items, setItems] = useState<ChecklistItemData[]>((initialValues?.items ?? []).map((item) => ({ ...item, id: v4() })));
+  const [items, setItems] = useState<ChecklistItem[]>((initialValues?.items ?? []).map((item) => ({ ...item, id: v4() })));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,7 +93,7 @@ export function ChecklistForm({ initialValues, submitLabel, onSubmit, onCancel }
     setItems((prev) => prev.toSpliced(index, 0, { title: '', description: '', id: v4() }));
   };
 
-  const updateItem = (id: string, field: keyof ChecklistItemData, value: string) => {
+  const updateItem = (id: string, field: keyof ChecklistItem, value: string) => {
     setItems((prev) =>
       prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
     );

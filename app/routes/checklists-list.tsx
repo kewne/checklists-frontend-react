@@ -18,7 +18,9 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="text-red-600 mb-4">
             <p className="font-semibold">Error</p>
-            <p className="text-sm">Invalid checklists URL. Please go back and try again.</p>
+            <p className="text-sm">
+              Invalid checklists URL. Please go back and try again.
+            </p>
           </div>
           <NavLink
             to="/"
@@ -32,16 +34,16 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
   );
 }
 
-export default function Checklists({ params }: Route.ComponentProps) {
+export default function ChecklistList({ params }: Route.ComponentProps) {
   const { user } = useAuth();
 
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <div className="bg-white rounded-lg shadow p-6">
-        <ChecklistHome href={decodedUrl} user={user!} apiUrlEncoded={params.apiUrlEncoded} />
-      </div>
-    </div>
+    <ChecklistHome
+      href={decodedUrl}
+      user={user!}
+      apiUrlEncoded={params.apiUrlEncoded}
+    />
   );
 }
