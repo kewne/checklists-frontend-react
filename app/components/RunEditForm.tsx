@@ -58,7 +58,6 @@ function RunItemComponent({ item, onUpdate }: RunItemComponentProps) {
             <textarea
               id={`item-description-${item.name}`}
               value={item.description}
-              autoFocus={true}
               onChange={(e) => onUpdate(item.name, 'description', e.target.value)}
               placeholder="Item description"
               rows={5}
