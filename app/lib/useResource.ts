@@ -1,36 +1,51 @@
-import type { User } from 'firebase/auth';
-import { useCallback, useEffect, useState } from 'react';
-import { Resource } from './hal';
+import type { User } from "firebase/auth";
+import { useCallback, useEffect, useState } from "react";
+import { Resource } from "./hal";
 
-const ALLOWED_DOMAIN = 'api.checklists.keeoon.dev';
+const ALLOWED_DOMAIN = "api.checklists.keeoon.dev";
 
 function validateHref(href: string): URL {
-  const url = URL.parse(href, 'https://api.checklists.keeoon.dev/');
+  const url = URL.parse(href, "https://api.checklists.keeoon.dev/");
   if (url === null) {
     throw new Error(`Invalid href: ${href}`);
   }
   if (url.hostname !== ALLOWED_DOMAIN) {
-    throw new Error(`Invalid domain: ${url.hostname}. Only ${ALLOWED_DOMAIN} is allowed.`);
+    throw new Error(
+      `Invalid domain: ${url.hostname}. Only ${ALLOWED_DOMAIN} is allowed.`,
+    );
   }
-  return url
+  return url;
 }
 
-export type ResourceState<T extends Record<string, unknown> = Record<string, unknown>> =
-  | { status: 'loading'; action: 'get' | 'post' | 'put' | 'delete' }
-  | { status: 'error'; error: Error }
-  | { status: 'success'; resource: Resource<T> };
+type Properties = Record<string, unknown>
 
-export type UseResourceReturn<T extends Record<string, unknown>> = {
-  state: ResourceState<T>;
+export type ResourceState<
+  T extends Properties = Properties,
+> =
+  | { status: "loading"; action: "get" | "post" | "put" | "delete" }
+  | { status: "error"; error: Error }
+  | { status: "success"; resource: Resource<T> };
+
+export type UseResourceReturn<
+  GET extends Properties,
+  PUT extends Properties = GET,
+> = {
+  state: ResourceState<GET>;
   get: () => Promise<void>;
   post: (data: any) => Promise<void>;
-  put: (data: any) => Promise<void>;
+  put: (data: PUT) => Promise<void>;
   delete: () => Promise<void>;
 };
 
-export function useResource<T extends Record<string, unknown>>(href: string, user: User): UseResourceReturn<T> {
+export function useResource<
+  GET extends Properties,
+  PUT extends Properties = GET,
+>(href: string, user: User): UseResourceReturn<GET> {
   const hrefUrl = validateHref(href);
-  const [state, setState] = useState<ResourceState<T>>({ status: 'loading', action: 'get' });
+  const [state, setState] = useState<ResourceState<GET>>({
+    status: "loading",
+    action: "get",
+  });
 
   useEffect(() => {
     get();
@@ -41,10 +56,10 @@ export function useResource<T extends Record<string, unknown>>(href: string, use
       const idToken = await user.getIdToken();
 
       const response = await fetch(href, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Authorization': `Bearer ${idToken}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
         },
       });
 
@@ -53,63 +68,69 @@ export function useResource<T extends Record<string, unknown>>(href: string, use
       }
 
       const json = await response.json();
-      setState({ status: 'success', resource: new Resource(json) });
+      setState({ status: "success", resource: new Resource(json) });
     } catch (error) {
       setState({
-        status: 'error',
+        status: "error",
         error: error instanceof Error ? error : new Error(String(error)),
       });
     }
   }, [href, user]);
 
-  const post = useCallback(async (data: any): Promise<void> => {
-    setState({ status: 'loading', action: 'post' });
-    const idToken = await user.getIdToken();
+  const post = useCallback(
+    async (data: any): Promise<void> => {
+      setState({ status: "loading", action: "post" });
+      const idToken = await user.getIdToken();
 
-    const response = await fetch(hrefUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${idToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    await get();
+      const response = await fetch(hrefUrl, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      await get();
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-  }, [href, user, get]);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+    },
+    [href, user, get],
+  );
 
-  const put = useCallback(async (data: any): Promise<void> => {
-    setState({ status: 'loading', action: 'put' });
-    const idToken = await user.getIdToken();
+  const put = useCallback(
+    async (data: PUT): Promise<void> => {
+      setState({ status: "loading", action: "put" });
+      const idToken = await user.getIdToken();
 
-    const response = await fetch(hrefUrl, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${idToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
+      const response = await fetch(hrefUrl, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
 
-    await get();
-  }, [href, user, get]);
+      await get();
+    },
+    [href, user, get],
+  );
 
   const deleteResource = useCallback(async (): Promise<void> => {
-    setState({ status: 'loading', action: 'delete' });
+    setState({ status: "loading", action: "delete" });
     const idToken = await user.getIdToken();
 
     const response = await fetch(hrefUrl, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
-        'Authorization': `Bearer ${idToken}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${idToken}`,
+        "Content-Type": "application/json",
       },
     });
 
@@ -122,63 +143,81 @@ export function useResource<T extends Record<string, unknown>>(href: string, use
 }
 
 export type HeadlessResourceState =
-  | { status: 'idle' }
-  | { status: 'updating'; action: 'post' | 'delete' }
-  | { status: 'error'; error: Error };
+  | { status: "idle" }
+  | { status: "updating"; action: "post" | "delete" }
+  | { status: "error"; error: Error };
 
 export type UseHeadlessResourceReturn = {
   state: HeadlessResourceState;
-  post: (data: any, options?: { onSuccess?: () => Promise<void> }) => Promise<string | null>;
+  post: (
+    data: any,
+    options?: { onSuccess?: () => Promise<void> },
+  ) => Promise<string | null>;
   delete: () => Promise<void>;
 };
 
-export function useHeadlessResource(href: string, user: User): UseHeadlessResourceReturn {
+export function useHeadlessResource(
+  href: string,
+  user: User,
+): UseHeadlessResourceReturn {
   const hrefUrl = validateHref(href);
-  const [state, setState] = useState<HeadlessResourceState>({ status: 'idle' });
+  const [state, setState] = useState<HeadlessResourceState>({ status: "idle" });
 
-  const post = useCallback(async (data: any, options?: { onSuccess?: () => Promise<void>}): Promise<string | null> => {
-    setState({ status: 'updating', action: 'post' });
-    try {
-      const idToken = await user.getIdToken();
-      const response = await fetch(hrefUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${idToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  const post = useCallback(
+    async (
+      data: any,
+      options?: { onSuccess?: () => Promise<void> },
+    ): Promise<string | null> => {
+      setState({ status: "updating", action: "post" });
+      try {
+        const idToken = await user.getIdToken();
+        const response = await fetch(hrefUrl, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        if (options?.onSuccess) {
+          await options.onSuccess();
+        }
+        setState({ status: "idle" });
+        return response.headers.get("Location");
+      } catch (error) {
+        setState({
+          status: "error",
+          error: error instanceof Error ? error : new Error(String(error)),
+        });
+        return null;
       }
-      if (options?.onSuccess) {
-        await options.onSuccess();
-      }
-      setState({ status: 'idle' });
-      return response.headers.get('Location');
-    } catch (error) {
-      setState({ status: 'error', error: error instanceof Error ? error : new Error(String(error)) });
-      return null;
-    }
-  }, [href, user]);
+    },
+    [href, user],
+  );
 
   const deleteResource = useCallback(async (): Promise<void> => {
-    setState({ status: 'updating', action: 'delete' });
+    setState({ status: "updating", action: "delete" });
     try {
       const idToken = await user.getIdToken();
       const response = await fetch(hrefUrl, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${idToken}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
         },
       });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      setState({ status: 'idle' });
+      setState({ status: "idle" });
     } catch (error) {
-      setState({ status: 'error', error: error instanceof Error ? error : new Error(String(error)) });
+      setState({
+        status: "error",
+        error: error instanceof Error ? error : new Error(String(error)),
+      });
     }
   }, [href, user]);
 

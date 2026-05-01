@@ -1,9 +1,10 @@
 import { NavLink } from "react-router";
-import type { Route } from "../+types/checklists-show";
+
 import { useAuth } from "../../lib/auth";
 import { useResource } from "../../lib/useResource";
 import { decodeApiUrl } from "../../lib/encoding";
 import { ChecklistForm } from "../../components/ChecklistForm";
+import type { Route } from "./+types/show";
 
 export function meta({}: Route.MetaArgs) {
   return [
