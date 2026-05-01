@@ -13,7 +13,7 @@ interface RunItemComponentProps {
 }
 
 function RunItemComponent({ item, onUpdate }: RunItemComponentProps) {
-  const [showDescription, setShowDescription] = useState(item.description.length > 0);
+  const [showDescription, setShowDescription] = useState(item.description?.length > 0);
 
   const handleRemoveDescription = () => {
     onUpdate(item.name, 'description', '');
