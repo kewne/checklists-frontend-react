@@ -21,7 +21,7 @@ export default function Home() {
     if (state.status === 'success') {
       const instancesLink = state.resource.getNamedLink('related', 'checklist-instances');
       if (instancesLink) {
-        navigate(`/runs/instances/${encodeApiUrl(instancesLink.href)}`, { replace: true });
+        navigate(`/runs/list/${encodeApiUrl(instancesLink.href)}`, { replace: true });
       }
     }
   }, [state, navigate]);

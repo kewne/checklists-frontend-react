@@ -14,8 +14,8 @@ export default [
       ]),
       ...prefix("/runs", [
         index("routes/run/index.tsx"),
-        route("run/:apiUrlEncoded", "routes/run/show.tsx"),
-        route("instances/:apiUrlEncoded", "routes/run/list.tsx"),
+        route("show/:apiUrlEncoded", "routes/run/show.tsx"),
+        route("list/:apiUrlEncoded", "routes/run/list.tsx"),
       ]),
     ]),
   ]),

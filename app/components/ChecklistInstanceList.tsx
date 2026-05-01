@@ -30,7 +30,7 @@ function ChecklistInstanceItem({ item, user, onDeleted }: ChecklistInstanceItemP
   return (
     <li className="flex items-center text-sm text-gray-800">
       <Link
-        to={`/runs/run/${encodeApiUrl(item.href)}`}
+        to={`/runs/show/${encodeApiUrl(item.href)}`}
         className="flex-1 px-4 py-3 hover:bg-gray-50 transition-colors"
       >
         <div className="font-medium text-indigo-600">{item.title ?? item.name}</div>
