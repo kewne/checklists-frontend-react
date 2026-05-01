@@ -3,13 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 import type { Resource } from '../lib/hal';
 import { RunItem } from './RunItem';
 
-interface RunItemData {
-  name: string;
-  title?: string;
-  description?: string;
-  completed?: { completed_at: string; note?: string };
-}
-
 interface ChecklistRunDetailProps {
   resource: Resource<ChecklistRun>;
   user: User;
