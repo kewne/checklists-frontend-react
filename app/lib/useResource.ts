@@ -15,22 +15,22 @@ function validateHref(href: string): URL {
   return url
 }
 
-export type ResourceState =
+export type ResourceState<T extends Record<string, unknown> = Record<string, unknown>> =
   | { status: 'loading'; action: 'get' | 'post' | 'put' | 'delete' }
   | { status: 'error'; error: Error }
-  | { status: 'success'; resource: Resource };
+  | { status: 'success'; resource: Resource<T> };
 
-export type UseResourceReturn = {
-  state: ResourceState;
+export type UseResourceReturn<T extends Record<string, unknown>> = {
+  state: ResourceState<T>;
   get: () => Promise<void>;
   post: (data: any) => Promise<void>;
   put: (data: any) => Promise<void>;
   delete: () => Promise<void>;
 };
 
-export function useResource(href: string, user: User): UseResourceReturn {
+export function useResource<T extends Record<string, unknown>>(href: string, user: User): UseResourceReturn<T> {
   const hrefUrl = validateHref(href);
-  const [state, setState] = useState<ResourceState>({ status: 'loading', action: 'get' });
+  const [state, setState] = useState<ResourceState<T>>({ status: 'loading', action: 'get' });
 
   useEffect(() => {
     get();

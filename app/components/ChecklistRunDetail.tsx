@@ -117,7 +117,7 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete }: 
 
   return (
     <div>
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex flex-wrap justify-between items-start mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{title ?? 'Checklist Run'}</h1>
         </div>

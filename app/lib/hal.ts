@@ -11,7 +11,7 @@ export interface HalDocument {
   [key: string]: unknown;
 }
 
-export class Resource {
+export class Resource<T extends Record<string, unknown>> {
   private readonly doc: HalDocument;
 
   constructor(doc: HalDocument) {
@@ -32,8 +32,8 @@ export class Resource {
     return this.getLinkArray(rel).find((l) => l.name === name);
   }
 
-  get properties(): Record<string, unknown> {
+  get properties(): T {
     const { _links, ...rest } = this.doc;
-    return rest;
+    return rest as T;
   }
 }

@@ -4,10 +4,16 @@ import { useResource } from "../lib/useResource";
 
 export default function MenuLayout() {
   const { user, signOut } = useAuth();
-  const { state } = useResource('https://api.checklists.keeoon.dev/', user!);
+  const { state } = useResource("https://api.checklists.keeoon.dev/", user!);
 
-  const checklistsLink = state.status === 'success' ? state.resource.getNamedLink('related', 'checklists') : null;
-  const instancesLink = state.status === 'success' ? state.resource.getNamedLink('related', 'checklist-instances') : null;
+  const checklistsLink =
+    state.status === "success"
+      ? state.resource.getNamedLink("related", "checklists")
+      : null;
+  const instancesLink =
+    state.status === "success"
+      ? state.resource.getNamedLink("related", "checklist-instances")
+      : null;
 
   const handleSignOut = async () => {
     await signOut();
@@ -24,8 +30,8 @@ export default function MenuLayout() {
                 className={({ isActive }) =>
                   `px-4 py-2 rounded-md font-medium text-sm ${
                     isActive
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50'
+                      ? "bg-indigo-600 text-white"
+                      : "bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50"
                   }`
                 }
               >
@@ -38,8 +44,8 @@ export default function MenuLayout() {
                 className={({ isActive }) =>
                   `px-4 py-2 rounded-md font-medium text-sm ${
                     isActive
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50'
+                      ? "bg-indigo-600 text-white"
+                      : "bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50"
                   }`
                 }
               >
@@ -55,7 +61,11 @@ export default function MenuLayout() {
           </button>
         </div>
       </nav>
-      <Outlet />
+      <div className="max-w-4xl mx-auto py-8 px-4">
+        <div className="bg-white rounded-lg shadow p-6">
+          <Outlet />
+        </div>
+      </div>
     </div>
   );
 }

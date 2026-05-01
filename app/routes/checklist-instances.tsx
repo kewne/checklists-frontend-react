@@ -38,11 +38,9 @@ export default function ChecklistInstances({ params }: Route.ComponentProps) {
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <div className="bg-white rounded-lg shadow p-6">
+    <>
         <h1 className="text-2xl font-bold text-gray-900 mb-4">Checklist Runs</h1>
         <ChecklistInstanceList href={decodedUrl} user={user!} />
-      </div>
-    </div>
+    </>
   );
 }

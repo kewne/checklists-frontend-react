@@ -5,7 +5,7 @@ import { decodeApiUrl } from "../lib/encoding";
 import { useResource } from "../lib/useResource";
 import type { Route } from "./+types/checklist-run";
 
-export function meta({ }: Route.MetaArgs) {
+export function meta({}: Route.MetaArgs) {
   return [
     { title: "Checklist Run" },
     { name: "description", content: "View checklist run details" },
@@ -42,31 +42,32 @@ export default function ChecklistRun({ params }: Route.ComponentProps) {
   const { state, get, delete: del } = useResource(decodedUrl, user!);
 
   const doDelete = async () => {
-    await del()
-    navigate('/');
+    await del();
+    navigate("/");
   };
+  if (state.status === "loading") {
+    return (
+      <div className="flex items-center">
+        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600 mr-3"></div>
+        <span className="text-gray-600">Loading run...</span>
+      </div>
+    );
+  }
+  if (state.status === "error") {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-md p-4">
+        <p className="text-red-700 font-semibold">Failed to load run</p>
+        <p className="text-red-600 text-sm mt-1">{state.error.message}</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <div className="bg-white rounded-lg shadow p-6">
-        {state.status === "loading" && (
-          <div className="flex items-center">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600 mr-3"></div>
-            <span className="text-gray-600">Loading run...</span>
-          </div>
-        )}
-
-        {state.status === "error" && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-4">
-            <p className="text-red-700 font-semibold">Failed to load run</p>
-            <p className="text-red-600 text-sm mt-1">{state.error.message}</p>
-          </div>
-        )}
-
-        {state.status === "success" && (
-          <ChecklistRunDetail resource={state.resource} user={user!} onItemUpdated={get} onDelete={doDelete} />
-        )}
-      </div>
-    </div>
+    <ChecklistRunDetail
+      resource={state.resource}
+      user={user!}
+      onItemUpdated={get}
+      onDelete={doDelete}
+    />
   );
 }

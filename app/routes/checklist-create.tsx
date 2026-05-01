@@ -19,7 +19,9 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="text-red-600 mb-4">
             <p className="font-semibold">Error</p>
-            <p className="text-sm">Invalid checklists URL. Please go back and try again.</p>
+            <p className="text-sm">
+              Invalid checklists URL. Please go back and try again.
+            </p>
           </div>
           <Link
             to="/"
@@ -41,21 +43,24 @@ export default function CreateChecklist({ params }: Route.ComponentProps) {
 
   const { post } = useResource(decodedUrl, user!);
 
-  const handleSubmit = async (data: { title: string; items: Array<{ title: string; description: string }> }) => {
+  const handleSubmit = async (data: {
+    title: string;
+    items: Array<{ title: string; description: string }>;
+  }) => {
     await post(data);
     navigate(`/checklists/list/${params.apiUrlEncoded}`);
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <div className="bg-white rounded-lg shadow p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Create New Checklist</h1>
-        <ChecklistForm
-          submitLabel="Create"
-          onSubmit={handleSubmit}
-          onCancel={() => navigate(`/checklists/list/${params.apiUrlEncoded}`)}
-        />
-      </div>
-    </div>
+    <>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+        Create New Checklist
+      </h1>
+      <ChecklistForm
+        submitLabel="Create"
+        onSubmit={handleSubmit}
+        onCancel={() => navigate(`/checklists/list/${params.apiUrlEncoded}`)}
+      />
+    </>
   );
 }
