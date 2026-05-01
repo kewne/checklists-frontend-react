@@ -1,17 +1,17 @@
-import { NavLink } from "react-router";
-import type { Route } from "../+types/checklist-instances";
+import { Link, NavLink } from "react-router";
+import { ChecklistInstanceList } from "../../components/ChecklistInstanceList";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
-import { ChecklistInstanceList } from "../../components/ChecklistInstanceList";
+import type { Route } from "./+types/list";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Checklist Runs" },
     { name: "description", content: "View checklist runs" },
   ];
 }
 
-export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
@@ -39,8 +39,14 @@ export default function ChecklistInstances({ params }: Route.ComponentProps) {
 
   return (
     <>
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Checklist Runs</h1>
-        <ChecklistInstanceList href={decodedUrl} user={user!} />
+      <h1 className="text-2xl font-bold text-gray-900 mb-4">Checklist Runs</h1>
+      <Link
+        to={`/runs/create/${params.apiUrlEncoded}`}
+        className="inline-block mb-4 bg-indigo-600 px-4 py-2 rounded-md font-medium text-white hover:bg-indigo-700"
+      >
+        Create run
+      </Link>
+      <ChecklistInstanceList href={decodedUrl} user={user!} />
     </>
   );
 }
