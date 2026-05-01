@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import type { Route } from "./+types/runs-redirect";
-import { useAuth } from "../lib/auth";
+import { useAuth } from "~/lib/auth";
 import { useResource } from "~/lib/useResource";
 import { encodeApiUrl } from "~/lib/encoding";
+import type { Route } from "./+types";
 
 export function meta({}: Route.MetaArgs) {
   return [

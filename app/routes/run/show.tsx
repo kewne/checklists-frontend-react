@@ -1,9 +1,9 @@
 import { NavLink, useNavigate } from "react-router";
-import { ChecklistRunDetail } from "../components/ChecklistRunDetail";
-import { useAuth } from "../lib/auth";
-import { decodeApiUrl } from "../lib/encoding";
-import { useResource } from "../lib/useResource";
-import type { Route } from "./+types/checklist-run";
+import { ChecklistRunDetail } from "../../components/ChecklistRunDetail";
+import { useAuth } from "../../lib/auth";
+import { decodeApiUrl } from "../../lib/encoding";
+import { useResource } from "../../lib/useResource";
+import type { Route } from "../+types/checklist-run";
 
 export function meta({}: Route.MetaArgs) {
   return [

@@ -13,9 +13,9 @@ export default [
         route("show/:apiUrlEncoded", "routes/checklist/show.tsx"),
       ]),
       ...prefix("/runs", [
-        index("routes/runs-redirect.tsx"),
-        route("run/:apiUrlEncoded", "routes/checklist-run.tsx"),
-        route("instances/:apiUrlEncoded", "routes/checklist-instances.tsx"),
+        index("routes/run/index.tsx"),
+        route("run/:apiUrlEncoded", "routes/run/show.tsx"),
+        route("instances/:apiUrlEncoded", "routes/run/list.tsx"),
       ]),
     ]),
   ]),

@@ -1,8 +1,8 @@
 import { NavLink } from "react-router";
-import type { Route } from "./+types/checklist-instances";
-import { useAuth } from "../lib/auth";
-import { decodeApiUrl } from "../lib/encoding";
-import { ChecklistInstanceList } from "../components/ChecklistInstanceList";
+import type { Route } from "../+types/checklist-instances";
+import { useAuth } from "../../lib/auth";
+import { decodeApiUrl } from "../../lib/encoding";
+import { ChecklistInstanceList } from "../../components/ChecklistInstanceList";
 
 export function meta({}: Route.MetaArgs) {
   return [
