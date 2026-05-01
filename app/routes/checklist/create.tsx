@@ -3,7 +3,7 @@ import type { Route } from "../+types/checklist-create";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
 import { ChecklistForm } from "../../components/ChecklistForm";
-import { useResource } from "../../lib/useResource";
+import { useHeadlessResource, useResource } from "../../lib/useResource";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -41,7 +41,7 @@ export default function CreateChecklist({ params }: Route.ComponentProps) {
 
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
 
-  const { post } = useResource(decodedUrl, user!);
+  const { post } = useHeadlessResource(decodedUrl, user!);
 
   const handleSubmit = async (data: {
     title: string;
