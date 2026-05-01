@@ -8,6 +8,7 @@ interface ChecklistRunDetailProps {
   user: User;
   onItemUpdated: () => Promise<void>;
   onDelete?: () => void;
+  onEdit?: () => void;
 }
 
 interface DeleteRunButtonProps {
@@ -85,7 +86,7 @@ function DeleteRunButton({ confirmationText, onDelete }: DeleteRunButtonProps) {
   );
 }
 
-export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete }: ChecklistRunDetailProps) {
+export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, onEdit }: ChecklistRunDetailProps) {
   const items = resource.properties.items;
   const allItemsCompleted = items.length > 0 && items.every((item) => item.completed);
   const firstToDoItemIndex = items.findIndex((item) => item.completed == null)
@@ -111,10 +112,20 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete }: 
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{resource.properties.title}</h1>
         </div>
-        <DeleteRunButton
-          confirmationText={confirmationText}
-          onDelete={onDelete}
-        />
+        <div className="flex gap-2">
+          {onEdit && (
+            <button
+              onClick={onEdit}
+              className="px-3 py-2 text-indigo-600 hover:bg-indigo-50 rounded text-sm font-medium border border-indigo-300 hover:border-indigo-400"
+            >
+              Edit
+            </button>
+          )}
+          <DeleteRunButton
+            confirmationText={confirmationText}
+            onDelete={onDelete}
+          />
+        </div>
       </div>
 
       {allItemsCompleted && (

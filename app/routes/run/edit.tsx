@@ -1,14 +1,14 @@
 import { NavLink, useNavigate } from "react-router";
-import { ChecklistRunDetail } from "../../components/ChecklistRunDetail";
+import { RunEditForm } from "../../components/RunEditForm";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
 import { useResource } from "../../lib/useResource";
-import type { Route } from "./+types/show";
+import type { Route } from "./+types/edit";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Checklist Run" },
-    { name: "description", content: "View checklist run details" },
+    { title: "Edit Run" },
+    { name: "description", content: "Edit checklist run details" },
   ];
 }
 
@@ -33,18 +33,23 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   );
 }
 
-export default function ChecklistRun({ params }: Route.ComponentProps) {
+export default function EditRun({ params }: Route.ComponentProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
 
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
 
-  const { state, get, delete: del } = useResource<ChecklistRun>(decodedUrl, user!);
+  const { state, put } = useResource<ChecklistRun>(decodedUrl, user!);
 
-  const doDelete = async () => {
-    await del();
-    navigate("/");
+  const handleSubmit = async (data: ChecklistRun) => {
+    await put(data);
+    navigate(`/runs/show/${params.apiUrlEncoded}`);
   };
+
+  const handleCancel = () => {
+    navigate(`/runs/show/${params.apiUrlEncoded}`);
+  };
+
   if (state.status === "loading") {
     return (
       <div className="flex items-center">
@@ -53,6 +58,7 @@ export default function ChecklistRun({ params }: Route.ComponentProps) {
       </div>
     );
   }
+
   if (state.status === "error") {
     return (
       <div className="bg-red-50 border border-red-200 rounded-md p-4">
@@ -63,12 +69,11 @@ export default function ChecklistRun({ params }: Route.ComponentProps) {
   }
 
   return (
-    <ChecklistRunDetail
-      resource={state.resource}
-      user={user!}
-      onItemUpdated={get}
-      onDelete={doDelete}
-      onEdit={() => navigate(`/runs/edit/${params.apiUrlEncoded}`)}
+    <RunEditForm
+      initialValues={state.resource.properties}
+      submitLabel="Save"
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
     />
   );
 }

@@ -16,6 +16,7 @@ export default [
         index("routes/run/index.tsx"),
         route("show/:apiUrlEncoded", "routes/run/show.tsx"),
         route("list/:apiUrlEncoded", "routes/run/list.tsx"),
+        route("edit/:apiUrlEncoded", "routes/run/edit.tsx"),
       ]),
     ]),
   ]),
