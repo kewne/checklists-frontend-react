@@ -12,8 +12,12 @@ type ChecklistItem = {
 type ChecklistRun = {
   title: string;
   items: {
-    id: string;
+    name: string;
     title: string;
     description: string;
+    completed: {
+        completed_at: string
+        note: string
+    }
   }[];
 };

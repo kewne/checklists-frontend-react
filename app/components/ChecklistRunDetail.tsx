@@ -11,16 +11,14 @@ interface RunItemData {
 }
 
 interface ChecklistRunDetailProps {
-  resource: Resource;
+  resource: Resource<ChecklistRun>;
   user: User;
   onItemUpdated: () => Promise<void>;
   onDelete?: () => void;
 }
 
 interface DeleteRunButtonProps {
-  resource: Resource;
   confirmationText?: string;
-  user: User;
   onDelete?: () => void;
 }
 
@@ -95,8 +93,7 @@ function DeleteRunButton({ confirmationText, onDelete }: DeleteRunButtonProps) {
 }
 
 export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete }: ChecklistRunDetailProps) {
-  const title = resource.properties.title as string | undefined;
-  const items = (resource.properties.items as RunItemData[]) ?? [];
+  const items = resource.properties.items;
   const allItemsCompleted = items.length > 0 && items.every((item) => item.completed);
   const firstToDoItemIndex = items.findIndex((item) => item.completed == null)
 
@@ -119,12 +116,10 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete }: 
     <div>
       <div className="flex flex-wrap justify-between items-start mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{title ?? 'Checklist Run'}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{resource.properties.title}</h1>
         </div>
         <DeleteRunButton
-          resource={resource}
           confirmationText={confirmationText}
-          user={user}
           onDelete={onDelete}
         />
       </div>
