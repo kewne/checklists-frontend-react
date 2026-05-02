@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { v4 } from 'uuid';
+import chevronUpSvg from '/chevron-up.svg?url';
+import chevronDownSvg from '/chevron-down.svg?url';
 
 interface ChecklistFormProps {
   initialValues?: Checklist;
@@ -12,9 +14,11 @@ interface ChecklistItemComponentProps {
   item:  ChecklistItem;
   onUpdate: (id: string, field: keyof ChecklistItem, value: string) => void;
   onRemove: () => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }
 
-function ChecklistItemComponent({ item, onUpdate, onRemove }: ChecklistItemComponentProps) {
+function ChecklistItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown }: ChecklistItemComponentProps) {
   const [showDescription, setShowDescription] = useState(item.description.length > 0);
 
   const handleRemoveDescription = () => {
@@ -32,13 +36,35 @@ function ChecklistItemComponent({ item, onUpdate, onRemove }: ChecklistItemCompo
           >
             Title
           </label>
-          <button
-            type="button"
-            onClick={() => onRemove()}
-            className="text-xs text-red-600 hover:text-red-700 font-medium whitespace-nowrap"
-          >
-            Remove
-          </button>
+          <div className="flex items-center gap-1">
+            {onMoveUp && (
+              <button
+                type="button"
+                onClick={onMoveUp}
+                className="p-1 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
+                aria-label={`Move "${item.title || 'item'}" up`}
+              >
+                <img src={chevronUpSvg} alt="" aria-hidden="true" className="w-4 h-4" />
+              </button>
+            )}
+            {onMoveDown && (
+              <button
+                type="button"
+                onClick={onMoveDown}
+                className="p-1 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
+                aria-label={`Move "${item.title || 'item'}" down`}
+              >
+                <img src={chevronDownSvg} alt="" aria-hidden="true" className="w-4 h-4" />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => onRemove()}
+              className="text-xs text-red-600 hover:text-red-700 font-medium whitespace-nowrap"
+            >
+              Remove
+            </button>
+          </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <input
@@ -103,6 +129,15 @@ export function ChecklistForm({ initialValues, submitLabel, onSubmit, onCancel }
     setItems((prev) => prev.filter((item) => item.id !== id));
   };
 
+  const moveItem = (fromIndex: number, toIndex: number) => {
+    setItems((prev) => {
+      const newItems = [...prev];
+      const [movedItem] = newItems.splice(fromIndex, 1);
+      newItems.splice(toIndex, 0, movedItem);
+      return newItems;
+    });
+  };
+
   return (
     <>
       <form onSubmit={handleSubmit} className="mb-4 p-4 border border-gray-200 rounded-md bg-gray-50">
@@ -136,6 +171,8 @@ export function ChecklistForm({ initialValues, submitLabel, onSubmit, onCancel }
                   item={item}
                   onUpdate={updateItem}
                   onRemove={() => removeItem(item.id)}
+                  onMoveUp={index > 0 ? () => moveItem(index, index - 1) : undefined}
+                  onMoveDown={index < items.length - 1 ? () => moveItem(index, index + 1) : undefined}
                 />
                 <button
                   type="button"
