@@ -1,6 +1,9 @@
 import type { User } from 'firebase/auth';
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router';
 import type { Resource } from '../lib/hal';
+import { encodeApiUrl } from '../lib/encoding';
+import { useResource } from '../lib/useResource';
 import { RunItem } from './RunItem';
 
 interface ChecklistRunDetailProps {
@@ -14,6 +17,33 @@ interface ChecklistRunDetailProps {
 interface DeleteRunButtonProps {
   confirmationText?: string;
   onDelete?: () => void;
+}
+
+function CreatedFromChecklist({ checklistHref, user }: { checklistHref: string; user: User }) {
+  const { state } = useResource<Checklist>(checklistHref, user);
+
+  if (state.status === 'loading') {
+    return (
+      <div className="text-sm text-gray-600 mb-4">
+        Created from...
+      </div>
+    );
+  }
+
+  if (state.status === 'error') {
+    return null;
+  }
+
+  return (
+    <div className="text-sm text-gray-600 mb-4">
+      Created from <Link
+        to={`/checklists/show/${encodeApiUrl(checklistHref)}`}
+        className="text-indigo-600 hover:underline"
+      >
+        {state.resource.properties.title}
+      </Link>
+    </div>
+  );
 }
 
 function DeleteRunButton({ confirmationText, onDelete }: DeleteRunButtonProps) {
@@ -90,6 +120,7 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
   const items = resource.properties.items;
   const allItemsCompleted = items.length > 0 && items.every((item) => item.completed);
   const firstToDoItemIndex = items.findIndex((item) => item.completed == null)
+  const checklistLink = resource.getNamedLink('related', 'checklist');
 
   const listRef = useRef<HTMLUListElement>(null)
   const confirmationText = allItemsCompleted ? undefined : 'This run has incomplete items. Delete anyway?';
@@ -111,6 +142,7 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
       <div className="flex flex-wrap justify-between items-start mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{resource.properties.title}</h1>
+          {checklistLink && <CreatedFromChecklist checklistHref={checklistLink.href} user={user} />}
         </div>
         <div className="flex gap-2">
           {onEdit && (
