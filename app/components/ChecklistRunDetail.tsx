@@ -1,9 +1,9 @@
 import type { User } from 'firebase/auth';
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import type { Resource } from '../lib/hal';
 import { encodeApiUrl } from '../lib/encoding';
-import { useResource } from '../lib/useResource';
+import { useResource, useHeadlessResource } from '../lib/useResource';
 import { RunItem } from './RunItem';
 
 interface ChecklistRunDetailProps {
@@ -116,11 +116,91 @@ function DeleteRunButton({ confirmationText, onDelete }: DeleteRunButtonProps) {
   );
 }
 
+interface CreateChecklistButtonProps {
+  href: string;
+  defaultTitle: string;
+  user: User;
+}
+
+function CreateChecklistButton({ href, defaultTitle: defaultTitle, user }: CreateChecklistButtonProps) {
+  const navigate = useNavigate();
+  const { state, post } = useHeadlessResource(href, user);
+  const isCreating = state.status === 'updating';
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [title, setTitle] = useState(defaultTitle);
+
+  const handleOpenModal = () => {
+    setTitle(defaultTitle);
+    setIsModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleConfirm = async () => {
+    setIsModalOpen(false);
+    try {
+      const location = await post({ title });
+      if (location) {
+        navigate(`/checklists/show/${encodeApiUrl(location)}`);
+      }
+    } catch (error) {
+      console.error('Failed to create checklist:', error);
+    }
+  };
+
+  return (
+    <>
+      <button
+        onClick={handleOpenModal}
+        disabled={isCreating}
+        className="px-3 py-2 text-indigo-600 hover:bg-indigo-50 rounded text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-indigo-300 hover:border-indigo-400"
+      >
+        {isCreating ? 'Creating...' : 'Create Checklist'}
+      </button>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-sm mx-4 p-6">
+            <h2 className="text-base font-semibold text-gray-800 mb-4">Create Checklist</h2>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Checklist title"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-6"
+              autoFocus
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={handleCancel}
+                disabled={isCreating}
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirm}
+                disabled={isCreating || !title.trim()}
+                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isCreating ? 'Creating...' : 'Create'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, onEdit }: ChecklistRunDetailProps) {
   const items = resource.properties.items;
   const allItemsCompleted = items.length > 0 && items.every((item) => item.completed);
   const firstToDoItemIndex = items.findIndex((item) => item.completed == null)
   const checklistLink = resource.getNamedLink('related', 'checklist');
+  const createChecklistLink = resource.getNamedLink('create-from', 'checklist');
 
   const listRef = useRef<HTMLUListElement>(null)
   const confirmationText = allItemsCompleted ? undefined : 'This run has incomplete items. Delete anyway?';
@@ -145,6 +225,9 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
           {checklistLink && <CreatedFromChecklist checklistHref={checklistLink.href} user={user} />}
         </div>
         <div className="flex gap-2">
+          {createChecklistLink && (
+            <CreateChecklistButton href={createChecklistLink.href} defaultTitle={resource.properties.title} user={user} />
+          )}
           {onEdit && (
             <button
               onClick={onEdit}
