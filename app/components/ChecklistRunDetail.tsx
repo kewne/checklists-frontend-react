@@ -1,9 +1,9 @@
 import type { User } from 'firebase/auth';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
-import type { Resource } from '../lib/hal';
 import { encodeApiUrl } from '../lib/encoding';
-import { useResource, useHeadlessResource } from '../lib/useResource';
+import type { Resource } from '../lib/hal';
+import { useHeadlessResource, useResource } from '../lib/useResource';
 import { RunItem } from './RunItem';
 
 interface ChecklistRunDetailProps {
@@ -197,8 +197,12 @@ function CreateChecklistButton({ href, defaultTitle: defaultTitle, user }: Creat
 
 export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, onEdit }: ChecklistRunDetailProps) {
   const items = resource.properties.items;
-  const allItemsCompleted = items.length > 0 && items.every((item) => item.completed);
-  const firstToDoItemIndex = items.findIndex((item) => item.completed == null)
+  const sortedItems = [
+    ...items.filter((item) => item.completed != null),
+    ...items.filter((item) => item.completed == null),
+  ];
+  const allItemsCompleted = sortedItems.length > 0 && sortedItems.every((item) => item.completed);
+  const firstToDoItemIndex = sortedItems.findIndex((item) => item.completed == null)
   const checklistLink = resource.getNamedLink('related', 'checklist');
   const createChecklistLink = resource.getNamedLink('create-from', 'checklist');
 
@@ -250,11 +254,11 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
         </div>
       )}
 
-      {items.length === 0 ? (
+      {sortedItems.length === 0 ? (
         <p className="text-gray-500 text-sm">No items in this run.</p>
       ) : (
         <ul className="space-y-3 overflow-y-auto overscroll-y-contain max-h-100 snap-y snap-mandatory" ref={listRef}>
-          {items.map((item) => {
+          {sortedItems.map((item) => {
             const completeLink = resource.getLinkArray('complete-item').find(
               (l) => l.name === item.name
             );
