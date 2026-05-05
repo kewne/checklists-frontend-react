@@ -40,7 +40,7 @@ export type UseResourceReturn<
 export function useResource<
   GET extends Properties,
   PUT extends Properties = GET,
->(href: string, user: User): UseResourceReturn<GET> {
+>(href: string, user: User): UseResourceReturn<GET, PUT> {
   const hrefUrl = validateHref(href);
   const [state, setState] = useState<ResourceState<GET>>({
     status: "loading",

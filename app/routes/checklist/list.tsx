@@ -1,17 +1,17 @@
 import { NavLink } from "react-router";
-import type { Route } from "../+types/checklists-list";
+import { ChecklistHome } from "../../components/ChecklistHome";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
-import { ChecklistHome } from "../../components/ChecklistHome";
+import type { Route } from "./+types/list";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Checklists" },
     { name: "description", content: "Manage your checklists" },
   ];
 }
 
-export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">

@@ -1,18 +1,18 @@
 import { Link, useNavigate } from "react-router";
-import type { Route } from "../+types/checklist-create";
+import { ChecklistForm } from "../../components/ChecklistForm";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
-import { ChecklistForm } from "../../components/ChecklistForm";
-import { useHeadlessResource, useResource } from "../../lib/useResource";
+import { useHeadlessResource } from "../../lib/useResource";
+import type { Route } from "./+types/create";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Create Checklist" },
     { name: "description", content: "Create a new checklist" },
   ];
 }
 
-export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">

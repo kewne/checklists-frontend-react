@@ -39,7 +39,7 @@ export default function EditRun({ params }: Route.ComponentProps) {
 
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
 
-  const { state, put } = useResource<ChecklistRun>(decodedUrl, user!);
+  const { state, put } = useResource<ChecklistRun, WriteableChecklistRun>(decodedUrl, user!);
 
   const handleSubmit = async (data: WriteableChecklistRun) => {
     await put(data);

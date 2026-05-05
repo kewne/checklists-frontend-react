@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { encodeApiUrl } from "~/lib/encoding";
 import { useResource } from "~/lib/useResource";
 import { useAuth } from "../../lib/auth";
-import type { Route } from "../+types/checklists-redirect";
+import type { Route } from "./+types/index";
 
 export function meta({ }: Route.MetaArgs) {
   return [

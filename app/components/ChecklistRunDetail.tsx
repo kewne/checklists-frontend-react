@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router';
 import { encodeApiUrl } from '../lib/encoding';
 import type { Resource } from '../lib/hal';
 import { useHeadlessResource, useResource } from '../lib/useResource';
+import { Button, type AdditionalAction } from './Button';
 import { RunItem } from './RunItem';
 
 interface ChecklistRunDetailProps {
@@ -12,11 +13,6 @@ interface ChecklistRunDetailProps {
   onItemUpdated: () => Promise<void>;
   onDelete?: () => void;
   onEdit?: () => void;
-}
-
-interface DeleteRunButtonProps {
-  confirmationText?: string;
-  onDelete?: () => void;
 }
 
 function CreatedFromChecklist({ checklistHref, user }: { checklistHref: string; user: User }) {
@@ -46,155 +42,6 @@ function CreatedFromChecklist({ checklistHref, user }: { checklistHref: string; 
   );
 }
 
-function DeleteRunButton({ confirmationText, onDelete }: DeleteRunButtonProps) {
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const handleDeleteClick = () => {
-    if (confirmationText) {
-      setIsConfirmDialogOpen(true);
-    } else {
-      performDelete();
-    }
-  };
-
-  const performDelete = async () => {
-    setIsConfirmDialogOpen(false);
-    setIsDeleting(true);
-    try {
-      onDelete?.();
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  const handleConfirmDelete = () => {
-    performDelete();
-  };
-
-  const handleCancelDelete = () => {
-    setIsConfirmDialogOpen(false);
-  };
-
-  return (
-    <>
-      <button
-        onClick={handleDeleteClick}
-        disabled={isDeleting}
-        className="px-3 py-2 text-red-600 hover:bg-red-50 rounded text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-red-300 hover:border-red-400"
-      >
-        {isDeleting ? 'Deleting...' : 'Delete'}
-      </button>
-
-      {isConfirmDialogOpen && confirmationText && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-sm mx-4 p-6">
-            <h2 className="text-base font-semibold text-gray-800 mb-2">Delete run?</h2>
-            <p className="text-gray-600 text-sm mb-6">
-              {confirmationText}
-            </p>
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={handleCancelDelete}
-                disabled={isDeleting}
-                className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirmDelete}
-                disabled={isDeleting}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isDeleting ? 'Deleting...' : 'Delete'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
-
-interface CreateChecklistButtonProps {
-  href: string;
-  defaultTitle: string;
-  user: User;
-}
-
-function CreateChecklistButton({ href, defaultTitle: defaultTitle, user }: CreateChecklistButtonProps) {
-  const navigate = useNavigate();
-  const { state, post } = useHeadlessResource(href, user);
-  const isCreating = state.status === 'updating';
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [title, setTitle] = useState(defaultTitle);
-
-  const handleOpenModal = () => {
-    setTitle(defaultTitle);
-    setIsModalOpen(true);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleConfirm = async () => {
-    setIsModalOpen(false);
-    try {
-      const location = await post({ title });
-      if (location) {
-        navigate(`/checklists/show/${encodeApiUrl(location)}`);
-      }
-    } catch (error) {
-      console.error('Failed to create checklist:', error);
-    }
-  };
-
-  return (
-    <>
-      <button
-        onClick={handleOpenModal}
-        disabled={isCreating}
-        className="px-3 py-2 text-indigo-600 hover:bg-indigo-50 rounded text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-indigo-300 hover:border-indigo-400"
-      >
-        {isCreating ? 'Creating...' : 'Create Checklist'}
-      </button>
-
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-sm mx-4 p-6">
-            <h2 className="text-base font-semibold text-gray-800 mb-4">Create Checklist</h2>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Checklist title"
-              className="w-full px-3 py-2 border border-gray-300 text-gray-800 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-6"
-              autoFocus
-            />
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={handleCancel}
-                disabled={isCreating}
-                className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirm}
-                disabled={isCreating || !title.trim()}
-                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isCreating ? 'Creating...' : 'Create'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
-
 export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, onEdit }: ChecklistRunDetailProps) {
   const items = resource.properties.items;
   const sortedItems = [
@@ -207,6 +54,16 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
   const createChecklistLink = resource.getNamedLink('create-from', 'checklist');
 
   const listRef = useRef<HTMLUListElement>(null)
+  const navigate = useNavigate();
+  const { state: createState, post: createPost } = useHeadlessResource(createChecklistLink?.href || '', user);
+  const isCreating = createState.status === 'updating';
+
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [isDeleteProcessing, setIsDeleteProcessing] = useState(false);
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [createTitle, setCreateTitle] = useState(resource.properties.title);
+
   const confirmationText = allItemsCompleted ? undefined : 'This run has incomplete items. Delete anyway?';
 
   useEffect(() => {
@@ -221,6 +78,53 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
 
   }, [resource, user])
 
+  const handleDeleteClick = () => {
+    if (confirmationText) {
+      setIsDeleteConfirmOpen(true);
+    } else {
+      performDelete();
+    }
+  };
+
+  const performDelete = async () => {
+    setIsDeleteConfirmOpen(false);
+    setIsDeleteProcessing(true);
+    try {
+      onDelete?.();
+    } finally {
+      setIsDeleteProcessing(false);
+    }
+  };
+
+  const handleCreateChecklist = async () => {
+    setIsCreateModalOpen(false);
+    try {
+      const location = await createPost({ title: createTitle });
+      if (location) {
+        navigate(`/checklists/show/${encodeApiUrl(location)}`);
+      }
+    } catch (error) {
+      console.error('Failed to create checklist:', error);
+    }
+  };
+
+  const additionalActions: AdditionalAction[] = [];
+
+  if (createChecklistLink) {
+    additionalActions.push({
+      title: 'Create Checklist',
+      action: () => {
+        setCreateTitle(resource.properties.title);
+        setIsCreateModalOpen(true);
+      },
+    });
+  }
+
+  additionalActions.push({
+    title: 'Delete',
+    action: handleDeleteClick,
+  });
+
   return (
     <div>
       <div className="flex flex-wrap justify-between items-start mb-6">
@@ -228,22 +132,28 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
           <h1 className="text-2xl font-bold text-gray-900">{resource.properties.title}</h1>
           {checklistLink && <CreatedFromChecklist checklistHref={checklistLink.href} user={user} />}
         </div>
-        <div className="flex gap-2">
-          {createChecklistLink && (
-            <CreateChecklistButton href={createChecklistLink.href} defaultTitle={resource.properties.title} user={user} />
-          )}
-          {onEdit && (
-            <button
-              onClick={onEdit}
-              className="px-3 py-2 text-indigo-600 hover:bg-indigo-50 rounded text-sm font-medium border border-indigo-300 hover:border-indigo-400"
+        <div>
+          {onEdit && additionalActions.length > 0 && (
+            <Button
+              type="secondary"
+              variant="outline"
+              action={onEdit}
+              additionalActions={additionalActions}
+              disabled={isCreating || isDeleteProcessing}
             >
               Edit
-            </button>
+            </Button>
           )}
-          <DeleteRunButton
-            confirmationText={confirmationText}
-            onDelete={onDelete}
-          />
+          {onEdit && additionalActions.length === 0 && (
+            <Button
+              type="secondary"
+              variant="outline"
+              action={onEdit}
+              disabled={isCreating || isDeleteProcessing}
+            >
+              Edit
+            </Button>
+          )}
         </div>
       </div>
 
@@ -278,6 +188,69 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
             </li>
           })}
         </ul>
+      )}
+
+      {isDeleteConfirmOpen && confirmationText && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-sm mx-4 p-6">
+            <h2 className="text-base font-semibold text-gray-800 mb-2">Delete run?</h2>
+            <p className="text-gray-600 text-sm mb-6">
+              {confirmationText}
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button
+                type="secondary"
+                variant="text"
+                action={() => setIsDeleteConfirmOpen(false)}
+                disabled={isDeleteProcessing}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="danger"
+                variant="normal"
+                action={performDelete}
+                disabled={isDeleteProcessing}
+              >
+                {isDeleteProcessing ? 'Deleting...' : 'Delete'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-sm mx-4 p-6">
+            <h2 className="text-base font-semibold text-gray-800 mb-4">Create Checklist</h2>
+            <input
+              type="text"
+              value={createTitle}
+              onChange={(e) => setCreateTitle(e.target.value)}
+              placeholder="Checklist title"
+              className="w-full px-3 py-2 border border-gray-300 text-gray-800 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-6"
+              autoFocus
+            />
+            <div className="flex justify-end gap-2">
+              <Button
+                type="secondary"
+                variant="text"
+                action={() => setIsCreateModalOpen(false)}
+                disabled={isCreating}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="primary"
+                variant="normal"
+                action={handleCreateChecklist}
+                disabled={isCreating || !createTitle.trim()}
+              >
+                {isCreating ? 'Creating...' : 'Create'}
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

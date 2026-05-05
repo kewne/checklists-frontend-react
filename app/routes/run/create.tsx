@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router";
-import type { Route } from "../+types/run-create";
 import { RunEditForm } from "../../components/RunEditForm";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
 import { useHeadlessResource } from "../../lib/useResource";
+import type { Route } from "./+types/create";
 
 export function meta({ }: Route.MetaArgs) {
     return [
