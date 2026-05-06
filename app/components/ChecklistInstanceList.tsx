@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { encodeApiUrl } from "../lib/encoding";
 import type { HalLink } from "../lib/hal";
 import { useHeadlessResource, useResource } from "../lib/useResource";
+import { Button } from "./Button";
 
 interface ChecklistInstanceListProps {
   href: string;
@@ -35,13 +36,11 @@ function ChecklistInstanceItem({ item, user, onDeleted }: ChecklistInstanceItemP
       >
         <div className="font-medium text-indigo-600">{item.title ?? item.name}</div>
       </Link>
-      <button
-        onClick={handleDelete}
-        disabled={isDeleting}
-        className="mr-4 px-3 py-1 text-red-600 hover:bg-red-50 rounded border border-red-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {isDeleting ? 'Deleting...' : 'Delete'}
-      </button>
+      <span className="mr-4">
+        <Button type="danger" variant="outline" action={handleDelete} disabled={isDeleting}>
+          {isDeleting ? 'Deleting...' : 'Delete'}
+        </Button>
+      </span>
     </li>
   );
 }
