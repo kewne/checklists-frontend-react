@@ -1,5 +1,5 @@
-import { NavLink } from "react-router";
-import { ChecklistHome } from "../../components/ChecklistHome";
+import { Link, NavLink } from "react-router";
+import { ChecklistList } from "~/components/ChecklistList";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
 import type { Route } from "./+types/list";
@@ -34,16 +34,21 @@ export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
   );
 }
 
-export default function ChecklistList({ params }: Route.ComponentProps) {
+export default function List({ params }: Route.ComponentProps) {
   const { user } = useAuth();
 
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
 
+
   return (
-    <ChecklistHome
-      href={decodedUrl}
-      user={user!}
-      apiUrlEncoded={params.apiUrlEncoded}
-    />
+    <div>
+      <Link
+        to={`/checklists/create/${params.apiUrlEncoded}`}
+        className="inline-block mb-4 bg-indigo-600 px-4 py-2 rounded-md font-medium text-white hover:bg-indigo-700"
+      >
+        Create Checklist
+      </Link>
+      <ChecklistList href={decodedUrl} user={user} />
+    </div>
   );
 }

@@ -1,14 +1,15 @@
 import type { User } from "firebase/auth";
-import type { ResourceState } from "../lib/useResource";
+import { useResource } from "~/lib/useResource";
 import { ChecklistItem } from "./ChecklistItem";
 
 interface ChecklistListProps {
-  state: ResourceState;
-  get: () => Promise<void>;
+  href: string;
   user: User;
 }
 
-export function ChecklistList({ state, get, user }: ChecklistListProps) {
+export function ChecklistList({ href, user }: ChecklistListProps) {
+  const { state, get } = useResource(href, user!);
+
 
   if (state.status === 'loading') {
     return (
