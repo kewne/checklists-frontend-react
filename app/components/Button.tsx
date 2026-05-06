@@ -71,7 +71,7 @@ export function Button({
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const baseClasses = 'px-3 py-2 text-sm font-medium rounded disabled:opacity-50 disabled:cursor-not-allowed';
+    const baseClasses = 'px-2 py-1 text-sm font-medium rounded disabled:opacity-50 disabled:cursor-not-allowed';
     const colorClasses = getColorClasses(type, variant);
 
     // Handle click-outside for dropdown
