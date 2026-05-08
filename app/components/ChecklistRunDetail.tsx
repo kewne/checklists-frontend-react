@@ -137,6 +137,7 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
             <Button
               type="secondary"
               variant="outline"
+              size="large"
               action={onEdit}
               additionalActions={additionalActions}
               disabled={isCreating || isDeleteProcessing}
@@ -148,6 +149,7 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
             <Button
               type="secondary"
               variant="outline"
+              size="large"
               action={onEdit}
               disabled={isCreating || isDeleteProcessing}
             >

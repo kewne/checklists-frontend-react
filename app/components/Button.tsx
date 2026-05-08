@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 export type ButtonType = 'primary' | 'secondary' | 'success' | 'danger';
 export type ButtonVariant = 'normal' | 'outline' | 'text';
+export type ButtonSize = 'medium' | 'large';
 
 export interface AdditionalAction {
     title: string;
@@ -11,10 +12,20 @@ export interface AdditionalAction {
 export interface ButtonProps {
     type?: ButtonType;
     variant?: ButtonVariant;
+    size?: ButtonSize;
     action: () => void;
     additionalActions?: AdditionalAction[];
     disabled?: boolean;
     children: React.ReactNode;
+}
+
+function getSizeClasses(size: ButtonSize) {
+    switch (size) {
+        case 'medium':
+            return 'px-2 py-1';
+        case 'large':
+            return 'px-4 py-2';
+    }
 }
 
 function getColorClasses(type: ButtonType, variant: ButtonVariant) {
@@ -63,6 +74,7 @@ function getColorClasses(type: ButtonType, variant: ButtonVariant) {
 export function Button({
     type = 'primary',
     variant = 'normal',
+    size = 'medium',
     action,
     additionalActions,
     disabled = false,
@@ -71,7 +83,8 @@ export function Button({
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const baseClasses = 'px-2 py-1 text-sm font-medium rounded disabled:opacity-50 disabled:cursor-not-allowed';
+    const sizeClasses = getSizeClasses(size);
+    const baseClasses = `${sizeClasses} text-sm font-medium rounded disabled:opacity-50 disabled:cursor-not-allowed`;
     const colorClasses = getColorClasses(type, variant);
 
     // Handle click-outside for dropdown

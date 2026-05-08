@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from "react-router";
 import { useAuth } from "../lib/auth";
 import { useResource } from "../lib/useResource";
+import { Button } from "./Button";
 
 interface MenuLinkProps {
   link: unknown | null;
@@ -51,12 +52,14 @@ export default function MenuLayout() {
             <MenuLink link={instancesLink} to="/runs">Runs</MenuLink>
             <MenuLink link={checklistsLink} to="/checklists">Checklists</MenuLink>
           </div>
-          <button
-            onClick={handleSignOut}
-            className="px-4 py-2 rounded-md font-medium text-sm bg-white border border-red-600 text-red-600 hover:bg-red-50"
+          <Button
+            type="danger"
+            variant="outline"
+            size="large"
+            action={handleSignOut}
           >
             Sign Out
-          </button>
+          </Button>
         </div>
       </nav>
       <div className="max-w-4xl mx-auto py-8 px-4">
