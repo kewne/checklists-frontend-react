@@ -2,6 +2,30 @@ import { NavLink, Outlet } from "react-router";
 import { useAuth } from "../lib/auth";
 import { useResource } from "../lib/useResource";
 
+interface MenuLinkProps {
+  link: unknown | null;
+  to: string;
+  children: React.ReactNode;
+}
+
+function MenuLink({ link, to, children }: MenuLinkProps) {
+  if (!link) return null;
+
+  return (
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        `px-4 py-2 rounded-md font-medium text-sm ${isActive
+          ? "bg-indigo-600 text-white"
+          : "bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50"
+        }`
+      }
+    >
+      {children}
+    </NavLink>
+  );
+}
+
 export default function MenuLayout() {
   const { user, signOut } = useAuth();
   const { state } = useResource("https://api.checklists.keeoon.dev/", user!);
@@ -24,34 +48,8 @@ export default function MenuLayout() {
       <nav className="bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 py-3 flex gap-3 justify-between items-center">
           <div className="flex gap-3">
-            {instancesLink && (
-              <NavLink
-                to={`/runs`}
-                className={({ isActive }) =>
-                  `px-4 py-2 rounded-md font-medium text-sm ${
-                    isActive
-                      ? "bg-indigo-600 text-white"
-                      : "bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50"
-                  }`
-                }
-              >
-                Runs
-              </NavLink>
-            )}
-            {checklistsLink && (
-              <NavLink
-                to={`/checklists`}
-                className={({ isActive }) =>
-                  `px-4 py-2 rounded-md font-medium text-sm ${
-                    isActive
-                      ? "bg-indigo-600 text-white"
-                      : "bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50"
-                  }`
-                }
-              >
-                Checklists
-              </NavLink>
-            )}
+            <MenuLink link={instancesLink} to="/runs">Runs</MenuLink>
+            <MenuLink link={checklistsLink} to="/checklists">Checklists</MenuLink>
           </div>
           <button
             onClick={handleSignOut}
