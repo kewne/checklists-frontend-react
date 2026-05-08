@@ -1,6 +1,7 @@
 import type { User } from "firebase/auth";
 import { useState } from "react";
 import { useHeadlessResource } from "../lib/useResource";
+import { Button } from "./Button";
 
 interface RunItemCompleted {
   completed_at: string;
@@ -62,23 +63,19 @@ function CompleteButton({ href, user, onItemUpdated }: CompleteButtonProps) {
 
   return (
     <div>
-      <div className="flex">
-        <button
-          onClick={handleCompleted}
-          disabled={isPosting}
-          className="px-3 py-1 text-sm font-medium rounded-l text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isPosting ? "Marking complete..." : "Mark complete"}
-        </button>
-        <button
-          onClick={() => setIsNoteModalOpen(true)}
-          disabled={isPosting}
-          className="px-2 py-1 text-sm font-medium rounded-r text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          aria-label="Complete with note"
-        >
-          &hellip;
-        </button>
-      </div>
+      <Button
+        type="primary"
+        action={handleCompleted}
+        disabled={isPosting}
+        additionalActions={[
+          {
+            title: "Complete with note",
+            action: () => setIsNoteModalOpen(true),
+          },
+        ]}
+      >
+        {isPosting ? "Marking complete..." : "Mark complete"}
+      </Button>
 
       {isNoteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -146,13 +143,13 @@ function MarkIncompleteButton({
   const isPosting = state.status === "updating" && state.action === "post";
 
   return (
-    <button
-      onClick={handleMarkIncomplete}
+    <Button
+      type="danger"
+      action={handleMarkIncomplete}
       disabled={isPosting}
-      className="px-3 py-1 text-sm font-medium rounded text-white bg-red-600 saturate-100 brightness-100 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {isPosting ? "Marking incomplete..." : "Mark incomplete"}
-    </button>
+    </Button>
   );
 }
 
@@ -193,9 +190,9 @@ export function RunItem({
 }: RunItemProps) {
   const completedAt = completed
     ? new Intl.DateTimeFormat(undefined, {
-        dateStyle: "medium",
-        timeStyle: "short",
-      }).format(new Date(completed.completed_at))
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(new Date(completed.completed_at))
     : null;
 
   const style = completed ? "opacity-60" : "";
