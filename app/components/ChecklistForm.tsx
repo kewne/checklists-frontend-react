@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { v4 } from 'uuid';
-import chevronUpSvg from '/chevron-up.svg?url';
 import chevronDownSvg from '/chevron-down.svg?url';
+import chevronUpSvg from '/chevron-up.svg?url';
 
 interface ChecklistFormProps {
   initialValues?: Checklist;
@@ -11,14 +11,15 @@ interface ChecklistFormProps {
 }
 
 interface ChecklistItemComponentProps {
-  item:  ChecklistItem;
+  item: ChecklistItem;
   onUpdate: (id: string, field: keyof ChecklistItem, value: string) => void;
   onRemove: () => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
+  ref?: React.Ref<HTMLInputElement>;
 }
 
-function ChecklistItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown }: ChecklistItemComponentProps) {
+function ChecklistItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown, ref }: ChecklistItemComponentProps) {
   const [showDescription, setShowDescription] = useState(item.description.length > 0);
 
   const handleRemoveDescription = () => {
@@ -68,6 +69,7 @@ function ChecklistItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <input
+            ref={ref}
             id={`item-title-${item.id}`}
             type="text"
             value={item.title}
@@ -93,7 +95,6 @@ function ChecklistItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown
             <textarea
               id={`item-description-${item.id}`}
               value={item.description}
-              autoFocus={true}
               onChange={(e) => onUpdate(item.id, 'description', e.target.value)}
               placeholder="Item description"
               rows={5}
@@ -109,6 +110,8 @@ function ChecklistItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown
 export function ChecklistForm({ initialValues, submitLabel, onSubmit, onCancel }: ChecklistFormProps) {
   const [title, setTitle] = useState(initialValues?.title ?? '');
   const [items, setItems] = useState<ChecklistItem[]>((initialValues?.items ?? []).map((item) => ({ ...item, id: v4() })));
+  const addedItemRef = useRef<HTMLInputElement>(null);
+  const lastAddedId = useRef<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,7 +119,9 @@ export function ChecklistForm({ initialValues, submitLabel, onSubmit, onCancel }
   };
 
   const addItem = (index: number) => {
-    setItems((prev) => prev.toSpliced(index, 0, { title: '', description: '', id: v4() }));
+    const newId = v4();
+    lastAddedId.current = newId;
+    setItems((prev) => prev.toSpliced(index, 0, { title: '', description: '', id: newId }));
   };
 
   const updateItem = (id: string, field: keyof ChecklistItem, value: string) => {
@@ -137,6 +142,14 @@ export function ChecklistForm({ initialValues, submitLabel, onSubmit, onCancel }
       return newItems;
     });
   };
+
+  useEffect(() => {
+    if (addedItemRef.current) {
+      addedItemRef.current.focus();
+      addedItemRef.current = null;
+      lastAddedId.current = null;
+    }
+  }, [items]);
 
   return (
     <>
@@ -173,6 +186,7 @@ export function ChecklistForm({ initialValues, submitLabel, onSubmit, onCancel }
                   onRemove={() => removeItem(item.id)}
                   onMoveUp={index > 0 ? () => moveItem(index, index - 1) : undefined}
                   onMoveDown={index < items.length - 1 ? () => moveItem(index, index + 1) : undefined}
+                  ref={item.id === lastAddedId.current ? addedItemRef : undefined}
                 />
                 <button
                   type="button"
