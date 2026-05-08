@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { v4 } from 'uuid';
-import chevronUpSvg from '/chevron-up.svg?url';
 import chevronDownSvg from '/chevron-down.svg?url';
+import chevronUpSvg from '/chevron-up.svg?url';
 
 interface RunEditFormProps {
   initialValues: ChecklistRun;
@@ -16,9 +16,10 @@ interface RunItemComponentProps {
   onRemove: () => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
+  ref?: React.Ref<HTMLInputElement>;
 }
 
-function RunItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown }: RunItemComponentProps) {
+function RunItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown, ref }: RunItemComponentProps) {
   const [showDescription, setShowDescription] = useState(item.description?.length > 0);
 
   const handleRemoveDescription = () => {
@@ -68,6 +69,7 @@ function RunItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown }: Ru
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <input
+            ref={ref}
             id={`item-title-${item.name}`}
             type="text"
             value={item.title}
@@ -110,6 +112,8 @@ export function RunEditForm({ initialValues, submitLabel, onSubmit, onCancel }: 
   const [items, setItems] = useState<WriteableChecklistRun['items']>(
     initialValues.items.map(({ completed: _completed, ...item }) => item)
   );
+  const addedItemRef = useRef<HTMLInputElement>(null);
+  const lastAddedId = useRef<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,7 +121,9 @@ export function RunEditForm({ initialValues, submitLabel, onSubmit, onCancel }: 
   };
 
   const addItem = (index: number) => {
-    setItems((prev) => prev.toSpliced(index, 0, { name: v4(), title: '', description: '' }));
+    const newId = v4();
+    lastAddedId.current = newId;
+    setItems((prev) => prev.toSpliced(index, 0, { name: newId, title: '', description: '' }));
   };
 
   const updateItem = (name: string, field: 'title' | 'description', value: string) => {
@@ -138,6 +144,14 @@ export function RunEditForm({ initialValues, submitLabel, onSubmit, onCancel }: 
       return newItems;
     });
   };
+
+  useEffect(() => {
+    if (addedItemRef.current) {
+      addedItemRef.current.focus();
+      addedItemRef.current = null;
+      lastAddedId.current = null;
+    }
+  }, [items]);
 
   return (
     <>
@@ -174,6 +188,7 @@ export function RunEditForm({ initialValues, submitLabel, onSubmit, onCancel }: 
                   onRemove={() => removeItem(item.name)}
                   onMoveUp={index > 0 ? () => moveItem(index, index - 1) : undefined}
                   onMoveDown={index < items.length - 1 ? () => moveItem(index, index + 1) : undefined}
+                  ref={item.name === lastAddedId.current ? addedItemRef : undefined}
                 />
                 <button
                   type="button"
