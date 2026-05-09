@@ -33,11 +33,11 @@ export default function MenuLayout() {
 
   const checklistsLink =
     state.status === "success"
-      ? state.resource.getNamedLink("related", "checklists")
+      ? state.resource.getFirstLinkMatching("related", (link) => link.name === "checklists")
       : null;
   const instancesLink =
     state.status === "success"
-      ? state.resource.getNamedLink("related", "checklist-instances")
+      ? state.resource.getFirstLinkMatching("related", (link) => link.name === "checklist-instances")
       : null;
 
   const handleSignOut = async () => {

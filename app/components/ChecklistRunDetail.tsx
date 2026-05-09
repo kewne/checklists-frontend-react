@@ -50,8 +50,8 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
   ];
   const allItemsCompleted = sortedItems.length > 0 && sortedItems.every((item) => item.completed);
   const firstToDoItemIndex = sortedItems.findIndex((item) => item.completed == null)
-  const checklistLink = resource.getNamedLink('related', 'checklist');
-  const createChecklistLink = resource.getNamedLink('create-from', 'checklist');
+  const checklistLink = resource.getFirstLinkMatching('related', (link) => link.name === 'checklist');
+  const createChecklistLink = resource.getFirstLinkMatching('create-from', (link) => link.name === 'checklist');
 
   const listRef = useRef<HTMLUListElement>(null)
   const navigate = useNavigate();

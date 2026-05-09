@@ -19,7 +19,7 @@ export default function Home() {
 
   useEffect(() => {
     if (state.status === 'success') {
-      const instancesLink = state.resource.getNamedLink('related', 'checklist-instances');
+      const instancesLink = state.resource.getFirstLinkMatching('related', (link) => link.name === 'checklist-instances');
       if (instancesLink) {
         navigate(`/runs/list/${encodeApiUrl(instancesLink.href)}`, { replace: true });
       }

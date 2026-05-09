@@ -19,7 +19,7 @@ export default function ChecklistsRedirect({ params }: Route.ComponentProps) {
 
   useEffect(() => {
     if (state.status === 'success') {
-      const checklistsLink = state.resource.getNamedLink('related', 'checklists');
+      const checklistsLink = state.resource.getFirstLinkMatching('related', (link) => link.name === 'checklists');
       if (checklistsLink) {
         navigate(`/checklists/list/${encodeApiUrl(checklistsLink.href)}`, { replace: true });
       }

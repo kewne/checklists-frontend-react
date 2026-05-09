@@ -28,8 +28,12 @@ export class Resource<T extends Record<string, unknown>> {
     return Array.isArray(link) ? link : [link];
   }
 
-  getNamedLink(rel: string, name: string): HalLink | undefined {
-    return this.getLinkArray(rel).find((l) => l.name === name);
+  getFirstLinkMatching(rel: string, filter?: (link: HalLink) => boolean): HalLink | undefined {
+    const links = this.getLinkArray(rel);
+    if (!filter) {
+      return links[0];
+    }
+    return links.find(filter);
   }
 
   get properties(): T {
