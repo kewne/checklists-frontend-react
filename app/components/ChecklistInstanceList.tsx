@@ -2,12 +2,13 @@ import type { User } from "firebase/auth";
 import { Link } from "react-router";
 import { encodeApiUrl } from "../lib/encoding";
 import type { HalLink } from "../lib/hal";
-import { useHeadlessResource, useResource } from "../lib/useResource";
+import { useHeadlessResource } from "../lib/useResource";
 import { Button } from "./Button";
 
 interface ChecklistInstanceListProps {
-  href: string;
+  items: HalLink[];
   user: User;
+  onRefresh: () => void;
 }
 
 interface ChecklistInstanceItemProps {
@@ -19,9 +20,7 @@ interface ChecklistInstanceItemProps {
 function ChecklistInstanceItem({ item, user, onDeleted }: ChecklistInstanceItemProps) {
   const { state, delete: deleteInstance } = useHeadlessResource(item.href, user);
 
-  const handleDelete = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleDelete = async () => {
     await deleteInstance();
     onDeleted();
   };
@@ -45,32 +44,14 @@ function ChecklistInstanceItem({ item, user, onDeleted }: ChecklistInstanceItemP
   );
 }
 
-export function ChecklistInstanceList({ href, user }: ChecklistInstanceListProps) {
-  const { state, get } = useResource(href, user);
-
-  if (state.status === 'loading') {
-    return (
-      <div className="mt-4">
-        <div className="animate-pulse text-gray-500 text-sm">Loading checklist instances...</div>
-      </div>
-    );
-  }
-
-  if (state.status === 'error') {
-    return (
-      <div className="mt-4 text-red-600 text-sm">Failed to load checklist instances: {state.error.message}</div>
-    );
-  }
-
-  const items = state.resource.getLinkArray('items');
-
+export function ChecklistInstanceList({ items, user, onRefresh }: ChecklistInstanceListProps) {
   return (
     <ul aria-label="checklist instances" className="mt-4 divide-y divide-gray-100 border border-gray-200 rounded-md">
       {items.length === 0 ? (
         <li className="px-4 py-3 text-gray-500 text-sm">No checklist instances found.</li>
       ) : (
         items.map((item) => (
-          <ChecklistInstanceItem key={item.href} item={item} user={user} onDeleted={get} />
+          <ChecklistInstanceItem key={item.href} item={item} user={user} onDeleted={onRefresh} />
         ))
       )}
     </ul>
