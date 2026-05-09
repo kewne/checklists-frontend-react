@@ -1,14 +1,13 @@
 import { NavLink, useNavigate } from "react-router";
 
 import { useAuth } from "../../lib/auth";
-import { useResource, useHeadlessResource } from "../../lib/useResource";
+import { useResource } from "../../lib/useResource";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import { ChecklistForm } from "../../components/ChecklistForm";
 import { Button } from "../../components/Button";
 import type { Route } from "./+types/show";
-import type { Resource } from "~/lib/hal";
 import type { User } from "firebase/auth";
-import type { Checklist } from "~/lib/api";
+import { apiResourceActions, type Checklist } from "~/lib/api";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -47,7 +46,7 @@ interface RunButtonProps {
 
 function RunButton({ href, user }: RunButtonProps) {
   const navigate = useNavigate();
-  const { post: createRun } = useHeadlessResource(href, user);
+  const { post: createRun } = apiResourceActions(href, user);
 
   const handleRun = async () => {
     const location = await createRun({});

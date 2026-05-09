@@ -1,6 +1,6 @@
 import type { User } from "firebase/auth";
-import { useHeadlessResource } from "../lib/useResource";
 import { Button } from "./Button";
+import { apiResourceActions } from "~/lib/api";
 
 interface RunItemCompleted {
   completed_at: string;
@@ -31,17 +31,15 @@ interface CompleteButtonProps {
 }
 
 function CompleteButton({ href, user, onItemUpdated }: CompleteButtonProps) {
-  const { post } = useHeadlessResource(href, user);
+  const { post } = apiResourceActions(href, user);
 
   const handleCompleted = async () => {
-    await post({}, { onSuccess: onItemUpdated });
+    await post({});
+    await onItemUpdated();
   };
 
   return (
-    <Button
-      type="primary"
-      action={handleCompleted}
-    >
+    <Button type="primary" action={handleCompleted}>
       Mark Complete
     </Button>
   );
@@ -58,17 +56,15 @@ function MarkIncompleteButton({
   user,
   onItemUpdated,
 }: MarkIncompleteButtonProps) {
-  const { post } = useHeadlessResource(href, user);
+  const { post } = apiResourceActions(href, user);
 
   const handleMarkIncomplete = async () => {
-    await post({}, { onSuccess: onItemUpdated });
+    await post({});
+    await onItemUpdated();
   };
 
   return (
-    <Button
-      type="danger"
-      action={handleMarkIncomplete}
-    >
+    <Button type="danger" action={handleMarkIncomplete}>
       Mark Incomplete
     </Button>
   );
@@ -111,9 +107,9 @@ export function RunItem({
 }: RunItemProps) {
   const completedAt = completed
     ? new Intl.DateTimeFormat(undefined, {
-      dateStyle: "medium",
-      timeStyle: "short",
-    }).format(new Date(completed.completed_at))
+        dateStyle: "medium",
+        timeStyle: "short",
+      }).format(new Date(completed.completed_at))
     : null;
 
   const style = completed ? "opacity-60" : "";

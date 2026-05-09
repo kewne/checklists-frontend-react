@@ -2,8 +2,8 @@ import { Link, useNavigate } from "react-router";
 import { ChecklistForm } from "../../components/ChecklistForm";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
-import { useHeadlessResource } from "../../lib/useResource";
 import type { Route } from "./+types/create";
+import { apiResourceActions } from "~/lib/api";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -41,7 +41,7 @@ export default function CreateChecklist({ params }: Route.ComponentProps) {
 
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
 
-  const { post } = useHeadlessResource(decodedUrl, user!);
+  const { post } = apiResourceActions(decodedUrl, user!);
 
   const handleSubmit = async (data: {
     title: string;
