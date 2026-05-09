@@ -23,55 +23,8 @@ const handleClick = async () => {
 
 ## Buttons
 
-All interactive buttons must use the `Button` component from `app/components/Button.tsx`. Never use native `<button>` elements with custom styling.
+Use buttons for actions that change state or perform API calls.
 
-### Usage Examples
+Use [the Button component](./button/button.md) for relevant actions that will be commonly used in the context.
 
-```tsx
-import { Button } from './Button';
-
-// Simple primary button
-<Button action={() => handleSave()}>Save</Button>
-
-// Secondary outline button for secondary actions
-<Button type="secondary" variant="outline" action={() => handleEdit()}>
-  Edit
-</Button>
-
-// Danger button for destructive actions
-<Button type="danger" variant="normal" action={() => handleDelete()}>
-  Delete
-</Button>
-
-// Text-only button (typically for cancel/dismiss actions)
-<Button type="secondary" variant="text" action={() => handleCancel()}>
-  Cancel
-</Button>
-
-// Split button with additional actions
-<Button
-  type="secondary"
-  variant="outline"
-  action={() => handleEdit()}
-  additionalActions={[
-    { title: 'Export', action: () => handleExport() },
-    { title: 'Duplicate', action: () => handleDuplicate() },
-    { title: 'Delete', action: () => handleDelete() },
-  ]}
->
-  Edit
-</Button>
-```
-
-### When to Use Each Type
-
-- **`primary`** — Use for the main call-to-action or primary confirmation (Create, Save, Submit, etc.)
-- **`secondary`** — Use for supporting actions (Edit, Cancel, auxiliary controls)
-- **`success`** — Use for actions that represent a positive outcome or approval
-- **`danger`** — Use for destructive actions that cannot be undone (Delete, Remove, etc.)
-
-### When to Use Each Variant
-
-- **`normal`** — Default for primary actions; use when the button is the main call-to-action
-- **`outline`** — Use for secondary or supporting actions that need visual hierarchy
-- **`text`** — Use for dismissal or low-priority actions (Cancel, Close) in dialogs and modals
+Use [the Menu Button component](./button/menubutton.md) for actions that less common and for which it is better to save screen space and require an extra click.
