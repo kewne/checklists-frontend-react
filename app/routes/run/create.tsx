@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router";
 import { RunEditForm } from "../../components/RunEditForm";
 import { useAuth } from "../../lib/auth";
-import { decodeApiUrl } from "../../lib/encoding";
+import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import { useHeadlessResource } from "../../lib/useResource";
 import type { Route } from "./+types/create";
 
@@ -44,8 +44,12 @@ export default function CreateRun({ params }: Route.ComponentProps) {
     const { post } = useHeadlessResource(decodedUrl, user!);
 
     const handleSubmit = async (data: WriteableChecklistRun) => {
-        await post(data);
-        navigate(`/runs/list/${params.apiUrlEncoded}`);
+        const url = await post(data);
+        if (!url) {
+            return navigate('/runs')
+        }
+        const encodedUrl = encodeApiUrl(url);
+        navigate(`/runs/show/${encodedUrl}`);
     };
 
     const initialValues: ChecklistRun = {
