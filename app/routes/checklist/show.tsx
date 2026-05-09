@@ -6,6 +6,8 @@ import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import { ChecklistForm } from "../../components/ChecklistForm";
 import { Button } from "../../components/Button";
 import type { Route } from "./+types/show";
+import type { Resource } from "~/lib/hal";
+import type { User } from "firebase/auth";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -38,19 +40,13 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
 }
 
 interface RunButtonProps {
-  resource: Resource<ChecklistRun>;
-  user: firebase.User;
+  href: string;
+  user: User;
 }
 
-function RunButton({ resource, user }: RunButtonProps) {
+function RunButton({ href, user }: RunButtonProps) {
   const navigate = useNavigate();
-  const { state: runState, post: createRun } = useHeadlessResource(
-    resource.getFirstLinkMatching(
-      "create-from",
-      (link) => link.name === "instance",
-    )?.href || "",
-    user,
-  );
+  const { post: createRun } = useHeadlessResource(href, user);
 
   const handleRun = async () => {
     const location = await createRun({});
@@ -62,12 +58,7 @@ function RunButton({ resource, user }: RunButtonProps) {
 
   return (
     <div className="mb-4 flex justify-end">
-      <Button
-        type="primary"
-        size="large"
-        action={handleRun}
-        disabled={runState.status === "updating"}
-      >
+      <Button type="primary" size="large" action={handleRun}>
         Run
       </Button>
     </div>
@@ -99,9 +90,16 @@ export default function ChecklistDetail({ params }: Route.ComponentProps) {
     );
   }
 
+  const createInstance = state.resource.getFirstLinkMatching(
+    "create-from",
+    (link) => link.name === "instance",
+  );
+
   return (
     <div>
-      <RunButton resource={state.resource} user={user!} />
+      {createInstance ? (
+        <RunButton href={createInstance.href} user={user!} />
+      ) : null}
       <ChecklistForm
         initialValues={state.resource.properties}
         submitLabel="Save"

@@ -18,14 +18,12 @@ interface ChecklistInstanceItemProps {
 }
 
 function ChecklistInstanceItem({ item, user, onDeleted }: ChecklistInstanceItemProps) {
-  const { state, delete: deleteInstance } = useHeadlessResource(item.href, user);
+  const { delete: deleteInstance } = useHeadlessResource(item.href, user);
 
   const handleDelete = async () => {
     await deleteInstance();
     onDeleted();
   };
-
-  const isDeleting = state.status === 'updating' && state.action === 'delete';
 
   return (
     <li className="flex items-center text-sm text-gray-800">
@@ -36,9 +34,7 @@ function ChecklistInstanceItem({ item, user, onDeleted }: ChecklistInstanceItemP
         <div className="font-medium text-indigo-600">{item.title ?? item.name}</div>
       </Link>
       <span className="mr-4">
-        <Button type="danger" variant="outline" action={handleDelete} disabled={isDeleting}>
-          {isDeleting ? 'Deleting...' : 'Delete'}
-        </Button>
+        <Button type="danger" variant="outline" action={handleDelete}>Delete</Button>
       </span>
     </li>
   );

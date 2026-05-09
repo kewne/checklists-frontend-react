@@ -31,19 +31,16 @@ interface CompleteButtonProps {
 }
 
 function CompleteButton({ href, user, onItemUpdated }: CompleteButtonProps) {
-  const { state, post } = useHeadlessResource(href, user);
+  const { post } = useHeadlessResource(href, user);
 
   const handleCompleted = async () => {
     await post({}, { onSuccess: onItemUpdated });
   };
 
-  const isPosting = state.status === "updating" && state.action === "post";
-
   return (
     <Button
       type="primary"
       action={handleCompleted}
-      disabled={isPosting}
     >
       Mark Complete
     </Button>
@@ -61,7 +58,7 @@ function MarkIncompleteButton({
   user,
   onItemUpdated,
 }: MarkIncompleteButtonProps) {
-  const { state, post } = useHeadlessResource(href, user);
+  const { post } = useHeadlessResource(href, user);
 
   const handleMarkIncomplete = async () => {
     await post({}, { onSuccess: onItemUpdated });
@@ -71,7 +68,6 @@ function MarkIncompleteButton({
     <Button
       type="danger"
       action={handleMarkIncomplete}
-      disabled={state.status === 'updating'}
     >
       Mark Incomplete
     </Button>

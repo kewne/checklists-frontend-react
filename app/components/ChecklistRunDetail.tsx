@@ -1,12 +1,12 @@
-import type { User } from 'firebase/auth';
-import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router';
-import { encodeApiUrl } from '../lib/encoding';
-import type { Resource } from '../lib/hal';
-import { useHeadlessResource, useResource } from '../lib/useResource';
-import { Button } from './Button';
-import { MenuButton, type MenuItem } from './MenuButton';
-import { RunItem } from './RunItem';
+import type { User } from "firebase/auth";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { encodeApiUrl } from "../lib/encoding";
+import type { Resource } from "../lib/hal";
+import { useHeadlessResource, useResource } from "../lib/useResource";
+import { Button } from "./Button";
+import { MenuButton, type MenuItem } from "./MenuButton";
+import { RunItem } from "./RunItem";
 
 interface ChecklistRunDetailProps {
   resource: Resource<ChecklistRun>;
@@ -16,24 +16,27 @@ interface ChecklistRunDetailProps {
   onEdit?: () => Promise<void>;
 }
 
-function CreatedFromChecklist({ checklistHref, user }: { checklistHref: string; user: User }) {
+function CreatedFromChecklist({
+  checklistHref,
+  user,
+}: {
+  checklistHref: string;
+  user: User;
+}) {
   const { state } = useResource<Checklist>(checklistHref, user);
 
-  if (state.status === 'loading') {
-    return (
-      <div className="text-sm text-gray-600 mb-4">
-        Created from...
-      </div>
-    );
+  if (state.status === "loading") {
+    return <div className="text-sm text-gray-600 mb-4">Created from...</div>;
   }
 
-  if (state.status === 'error') {
+  if (state.status === "error") {
     return null;
   }
 
   return (
     <div className="text-sm text-gray-600 mb-4">
-      Created from <Link
+      Created from{" "}
+      <Link
         to={`/checklists/show/${encodeApiUrl(checklistHref)}`}
         className="text-indigo-600 hover:underline"
       >
@@ -43,46 +46,64 @@ function CreatedFromChecklist({ checklistHref, user }: { checklistHref: string; 
   );
 }
 
-export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, onEdit }: ChecklistRunDetailProps) {
+export function ChecklistRunDetail({
+  resource,
+  user,
+  onItemUpdated,
+  onDelete,
+  onEdit,
+}: ChecklistRunDetailProps) {
   const items = resource.properties.items;
   const sortedItems = [
     ...items.filter((item) => item.completed != null),
     ...items.filter((item) => item.completed == null),
   ];
-  const allItemsCompleted = sortedItems.length > 0 && sortedItems.every((item) => item.completed);
-  const firstToDoItemIndex = sortedItems.findIndex((item) => item.completed == null)
-  const checklistLink = resource.getFirstLinkMatching('related', (link) => link.name === 'checklist');
-  const createChecklistLink = resource.getFirstLinkMatching('create-from', (link) => link.name === 'checklist');
+  const allItemsCompleted =
+    sortedItems.length > 0 && sortedItems.every((item) => item.completed);
+  const firstToDoItemIndex = sortedItems.findIndex(
+    (item) => item.completed == null,
+  );
+  const checklistLink = resource.getFirstLinkMatching(
+    "related",
+    (link) => link.name === "checklist",
+  );
+  const createChecklistLink = resource.getFirstLinkMatching(
+    "create-from",
+    (link) => link.name === "checklist",
+  );
 
-  const listRef = useRef<HTMLUListElement>(null)
+  const listRef = useRef<HTMLUListElement>(null);
   const navigate = useNavigate();
-  const { state: createState, post: createPost } = useHeadlessResource(createChecklistLink?.href || '', user);
-  const isCreating = createState.status === 'updating';
+  const { post: createPost } = useHeadlessResource(
+    createChecklistLink?.href || "",
+    user,
+  );
 
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createTitle, setCreateTitle] = useState(resource.properties.title);
 
-  const confirmationText = allItemsCompleted ? undefined : 'This run has incomplete items. Delete anyway?';
+  const confirmationText = allItemsCompleted
+    ? undefined
+    : "This run has incomplete items. Delete anyway?";
 
   useEffect(() => {
-    const listNode = listRef.current
+    const listNode = listRef.current;
     if (listNode && firstToDoItemIndex !== -1) {
-      const itemNodes = listNode?.querySelectorAll('li')
+      const itemNodes = listNode?.querySelectorAll("li");
       itemNodes[Math.max(firstToDoItemIndex - 1, 0)].scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      })
+        behavior: "smooth",
+        block: "start",
+      });
     }
+  }, [resource, user]);
 
-  }, [resource, user])
-
-  const handleDeleteClick = () => {
+  const handleDeleteClick = async () => {
     if (confirmationText) {
       setIsDeleteConfirmOpen(true);
     } else {
-      performDelete();
+      return performDelete();
     }
   };
 
@@ -99,16 +120,22 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
         navigate(`/checklists/show/${encodeApiUrl(location)}`);
       }
     } catch (error) {
-      console.error('Failed to create checklist:', error);
+      console.error("Failed to create checklist:", error);
     }
   };
 
   const additionalActions: MenuItem[] = [];
+  if (onEdit) {
+    additionalActions.push({
+      title: "Edit",
+      action: onEdit,
+    });
+  }
 
   if (createChecklistLink) {
     additionalActions.push({
-      title: 'Create Checklist',
-      action: () => {
+      title: "Create Checklist",
+      action: async () => {
         setCreateTitle(resource.properties.title);
         setIsCreateModalOpen(true);
       },
@@ -116,7 +143,7 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
   }
 
   additionalActions.push({
-    title: 'Delete',
+    title: "Delete",
     action: handleDeleteClick,
   });
 
@@ -124,71 +151,67 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
     <div>
       <div className="flex flex-wrap justify-between items-start mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{resource.properties.title}</h1>
-          {checklistLink && <CreatedFromChecklist checklistHref={checklistLink.href} user={user} />}
+          <h1 className="text-2xl font-bold text-gray-900">
+            {resource.properties.title}
+          </h1>
+          {checklistLink && (
+            <CreatedFromChecklist
+              checklistHref={checklistLink.href}
+              user={user}
+            />
+          )}
         </div>
         <div>
-          {onEdit && additionalActions.length > 0 && (
-            <MenuButton
-              type="secondary"
-              variant="outline"
-              size="large"
-              items={[
-                {
-                  title: 'Edit',
-                  action: onEdit,
-                },
-                ...additionalActions,
-              ]}
-              disabled={isCreating}
-              ariaLabel="More actions"
-            >
-              ⋮
-            </MenuButton>
-          )}
-          {onEdit && additionalActions.length === 0 && (
-            <Button
-              type="secondary"
-              variant="outline"
-              size="large"
-              action={onEdit}
-              disabled={isCreating}
-            >
-              Edit
-            </Button>
-          )}
+          <MenuButton
+            type="secondary"
+            variant="outline"
+            size="large"
+            items={additionalActions}
+            ariaLabel="More actions"
+          >
+            ⋮
+          </MenuButton>
         </div>
       </div>
 
       {allItemsCompleted && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-green-800 font-semibold text-lg">🎉 Congratulations!</p>
-          <p className="text-green-700 text-sm mt-1">You've completed all items in this checklist.</p>
+          <p className="text-green-800 font-semibold text-lg">
+            🎉 Congratulations!
+          </p>
+          <p className="text-green-700 text-sm mt-1">
+            You've completed all items in this checklist.
+          </p>
         </div>
       )}
 
       {sortedItems.length === 0 ? (
         <p className="text-gray-500 text-sm">No items in this run.</p>
       ) : (
-        <ul className="space-y-3 overflow-y-auto overscroll-y-contain max-h-100 snap-y snap-mandatory" ref={listRef}>
+        <ul
+          className="space-y-3 overflow-y-auto overscroll-y-contain max-h-100 snap-y snap-mandatory"
+          ref={listRef}
+        >
           {sortedItems.map((item) => {
-            const completeLink = resource.getLinkArray('complete-item').find(
-              (l) => l.name === item.name
+            const completeLink = resource
+              .getLinkArray("complete-item")
+              .find((l) => l.name === item.name);
+            const markIncompleteLink = resource
+              .getLinkArray("mark-incomplete-item")
+              .find((l) => l.name === item.name);
+            return (
+              <li key={item.name}>
+                <RunItem
+                  title={item.title ?? item.name}
+                  description={item.description}
+                  completed={item.completed}
+                  completeHref={completeLink?.href}
+                  markIncompleteHref={markIncompleteLink?.href}
+                  user={user}
+                  onItemUpdated={onItemUpdated}
+                />
+              </li>
             );
-            const markIncompleteLink = resource.getLinkArray('mark-incomplete-item').find(
-              (l) => l.name === item.name
-            );
-            return <li key={item.name}>
-              <RunItem
-                title={item.title ?? item.name}
-                description={item.description}
-                completed={item.completed}
-                completeHref={completeLink?.href}
-                markIncompleteHref={markIncompleteLink?.href}
-                user={user}
-                onItemUpdated={onItemUpdated}
-              />
-            </li>
           })}
         </ul>
       )}
@@ -196,10 +219,10 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
       {isDeleteConfirmOpen && confirmationText && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-sm mx-4 p-6">
-            <h2 className="text-base font-semibold text-gray-800 mb-2">Delete run?</h2>
-            <p className="text-gray-600 text-sm mb-6">
-              {confirmationText}
-            </p>
+            <h2 className="text-base font-semibold text-gray-800 mb-2">
+              Delete run?
+            </h2>
+            <p className="text-gray-600 text-sm mb-6">{confirmationText}</p>
             <div className="flex justify-end gap-2">
               <Button
                 type="secondary"
@@ -208,11 +231,7 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
               >
                 Cancel
               </Button>
-              <Button
-                type="danger"
-                variant="normal"
-                action={performDelete}
-              >
+              <Button type="danger" variant="normal" action={performDelete}>
                 Delete
               </Button>
             </div>
@@ -223,7 +242,9 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-sm mx-4 p-6">
-            <h2 className="text-base font-semibold text-gray-800 mb-4">Create Checklist</h2>
+            <h2 className="text-base font-semibold text-gray-800 mb-4">
+              Create Checklist
+            </h2>
             <input
               type="text"
               value={createTitle}
@@ -237,7 +258,6 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
                 type="secondary"
                 variant="text"
                 action={async () => setIsCreateModalOpen(false)}
-                disabled={isCreating}
               >
                 Cancel
               </Button>
@@ -245,9 +265,9 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
                 type="primary"
                 variant="normal"
                 action={handleCreateChecklist}
-                disabled={isCreating || !createTitle.trim()}
+                disabled={!createTitle.trim()}
               >
-                {isCreating ? 'Creating...' : 'Create'}
+                Create
               </Button>
             </div>
           </div>

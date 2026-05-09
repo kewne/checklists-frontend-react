@@ -4,7 +4,7 @@ import { getSizeClasses, getColorClasses } from './Button';
 
 export interface MenuItem {
     title: string;
-    action: () => void;
+    action: () => Promise<void>;
 }
 
 export interface MenuButtonProps {
