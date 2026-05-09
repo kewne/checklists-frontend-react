@@ -8,6 +8,7 @@ import { Button } from "../../components/Button";
 import type { Route } from "./+types/show";
 import type { Resource } from "~/lib/hal";
 import type { User } from "firebase/auth";
+import type { Checklist } from "~/lib/api";
 
 export function meta({}: Route.MetaArgs) {
   return [

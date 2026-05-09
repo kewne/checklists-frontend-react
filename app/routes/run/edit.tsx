@@ -4,6 +4,7 @@ import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
 import { useResource } from "../../lib/useResource";
 import type { Route } from "./+types/edit";
+import type { ChecklistRun, WriteableChecklistRun } from "~/lib/api";
 
 export function meta({ }: Route.MetaArgs) {
   return [

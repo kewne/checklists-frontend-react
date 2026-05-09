@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { v4 } from 'uuid';
 import chevronDownSvg from '/chevron-down.svg?url';
 import chevronUpSvg from '/chevron-up.svg?url';
+import type { Checklist, ChecklistItem } from '~/lib/api';
 
 interface ChecklistFormProps {
   initialValues?: Checklist;

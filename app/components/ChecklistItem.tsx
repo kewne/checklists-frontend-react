@@ -2,8 +2,8 @@ import type { User } from "firebase/auth";
 import { Link } from "react-router";
 import { encodeApiUrl } from "../lib/encoding";
 import type { HalLink } from "../lib/hal";
-import { useHeadlessResource } from "../lib/useResource";
 import { Button } from "./Button";
+import { apiResourceActions } from "~/lib/api";
 
 interface ChecklistItemProps {
   item: HalLink;
@@ -12,10 +12,7 @@ interface ChecklistItemProps {
 }
 
 export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
-  const { delete: deleteResource } = useHeadlessResource(
-    item.href,
-    user,
-  );
+  const { delete: deleteResource } = apiResourceActions(item.href, user);
 
   const handleDelete = async () => {
     await deleteResource();

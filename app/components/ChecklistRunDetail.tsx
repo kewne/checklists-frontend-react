@@ -3,10 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { encodeApiUrl } from "../lib/encoding";
 import type { Resource } from "../lib/hal";
-import { useHeadlessResource, useResource } from "../lib/useResource";
+import { useResource } from "../lib/useResource";
 import { Button } from "./Button";
 import { MenuButton, type MenuItem } from "./MenuButton";
 import { RunItem } from "./RunItem";
+import { apiResourceActions, type Checklist, type ChecklistRun } from "~/lib/api";
 
 interface ChecklistRunDetailProps {
   resource: Resource<ChecklistRun>;
@@ -67,22 +68,11 @@ export function ChecklistRunDetail({
     "related",
     (link) => link.name === "checklist",
   );
-  const createChecklistLink = resource.getFirstLinkMatching(
-    "create-from",
-    (link) => link.name === "checklist",
-  );
 
   const listRef = useRef<HTMLUListElement>(null);
   const navigate = useNavigate();
-  const { post: createPost } = useHeadlessResource(
-    createChecklistLink?.href || "",
-    user,
-  );
 
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
-
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [createTitle, setCreateTitle] = useState(resource.properties.title);
 
   const confirmationText = allItemsCompleted
     ? undefined
@@ -112,18 +102,6 @@ export function ChecklistRunDetail({
     setIsDeleteConfirmOpen(false);
   };
 
-  const handleCreateChecklist = async () => {
-    setIsCreateModalOpen(false);
-    try {
-      const location = await createPost({ title: createTitle });
-      if (location) {
-        navigate(`/checklists/show/${encodeApiUrl(location)}`);
-      }
-    } catch (error) {
-      console.error("Failed to create checklist:", error);
-    }
-  };
-
   const additionalActions: MenuItem[] = [];
   if (onEdit) {
     additionalActions.push({
@@ -132,12 +110,25 @@ export function ChecklistRunDetail({
     });
   }
 
+  const createChecklistLink = resource.getFirstLinkMatching(
+    "create-from",
+    (link) => link.name === "checklist",
+  );
   if (createChecklistLink) {
+    const { post: createChecklist } = apiResourceActions(
+      createChecklistLink.href,
+      user,
+    );
     additionalActions.push({
       title: "Create Checklist",
       action: async () => {
-        setCreateTitle(resource.properties.title);
-        setIsCreateModalOpen(true);
+        const location = await createChecklist({
+          title: `Copy of ${resource.properties.title}`,
+        });
+        if (location) {
+          return navigate(`/checklists/show/${encodeApiUrl(location)}`);
+        }
+        navigate("/checklists/list");
       },
     });
   }
@@ -233,41 +224,6 @@ export function ChecklistRunDetail({
               </Button>
               <Button type="danger" variant="normal" action={performDelete}>
                 Delete
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-sm mx-4 p-6">
-            <h2 className="text-base font-semibold text-gray-800 mb-4">
-              Create Checklist
-            </h2>
-            <input
-              type="text"
-              value={createTitle}
-              onChange={(e) => setCreateTitle(e.target.value)}
-              placeholder="Checklist title"
-              className="w-full px-3 py-2 border border-gray-300 text-gray-800 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-6"
-              autoFocus
-            />
-            <div className="flex justify-end gap-2">
-              <Button
-                type="secondary"
-                variant="text"
-                action={async () => setIsCreateModalOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="primary"
-                variant="normal"
-                action={handleCreateChecklist}
-                disabled={!createTitle.trim()}
-              >
-                Create
               </Button>
             </div>
           </div>

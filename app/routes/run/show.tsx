@@ -4,6 +4,7 @@ import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
 import { useResource } from "../../lib/useResource";
 import type { Route } from "./+types/show";
+import type { ChecklistRun } from "~/lib/api";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -68,7 +69,7 @@ export default function ChecklistRun({ params }: Route.ComponentProps) {
       user={user!}
       onItemUpdated={get}
       onDelete={doDelete}
-      onEdit={() => navigate(`/runs/edit/${params.apiUrlEncoded}`)}
+      onEdit={async () => navigate(`/runs/edit/${params.apiUrlEncoded}`)}
     />
   );
 }

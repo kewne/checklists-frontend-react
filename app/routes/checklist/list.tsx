@@ -48,7 +48,7 @@ export default function List({ params }: Route.ComponentProps) {
       >
         Create Checklist
       </Link>
-      <ChecklistList href={decodedUrl} user={user} />
+      <ChecklistList href={decodedUrl} user={user!} />
     </div>
   );
 }
