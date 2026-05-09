@@ -133,6 +133,27 @@ export function ChecklistRunDetail({
     });
   }
 
+  const updateChecklistLink = resource.getFirstLinkMatching(
+    "update-from",
+    (link) => link.name === "checklist",
+  );
+  if (updateChecklistLink) {
+    const { post: updateChecklist } = apiResourceActions(
+      updateChecklistLink.href,
+      user,
+    );
+    additionalActions.push({
+      title: "Update Checklist",
+      action: async () => {
+        const location = await updateChecklist({});
+        if (location) {
+          return navigate(`/checklists/show/${encodeApiUrl(location)}`);
+        }
+        navigate("/checklists/list");
+      },
+    });
+  }
+
   additionalActions.push({
     title: "Delete",
     action: handleDeleteClick,
