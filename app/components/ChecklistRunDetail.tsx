@@ -11,8 +11,8 @@ interface ChecklistRunDetailProps {
   resource: Resource<ChecklistRun>;
   user: User;
   onItemUpdated: () => Promise<void>;
-  onDelete?: () => void;
-  onEdit?: () => void;
+  onDelete?: () => Promise<void>;
+  onEdit?: () => Promise<void>;
 }
 
 function CreatedFromChecklist({ checklistHref, user }: { checklistHref: string; user: User }) {
@@ -59,7 +59,6 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
   const isCreating = createState.status === 'updating';
 
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
-  const [isDeleteProcessing, setIsDeleteProcessing] = useState(false);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createTitle, setCreateTitle] = useState(resource.properties.title);
@@ -87,13 +86,8 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
   };
 
   const performDelete = async () => {
+    await onDelete?.();
     setIsDeleteConfirmOpen(false);
-    setIsDeleteProcessing(true);
-    try {
-      onDelete?.();
-    } finally {
-      setIsDeleteProcessing(false);
-    }
   };
 
   const handleCreateChecklist = async () => {
@@ -140,7 +134,7 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
               size="large"
               action={onEdit}
               additionalActions={additionalActions}
-              disabled={isCreating || isDeleteProcessing}
+              disabled={isCreating}
             >
               Edit
             </Button>
@@ -151,7 +145,7 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
               variant="outline"
               size="large"
               action={onEdit}
-              disabled={isCreating || isDeleteProcessing}
+              disabled={isCreating}
             >
               Edit
             </Button>
@@ -203,8 +197,7 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
               <Button
                 type="secondary"
                 variant="text"
-                action={() => setIsDeleteConfirmOpen(false)}
-                disabled={isDeleteProcessing}
+                action={async () => setIsDeleteConfirmOpen(false)}
               >
                 Cancel
               </Button>
@@ -212,9 +205,8 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
                 type="danger"
                 variant="normal"
                 action={performDelete}
-                disabled={isDeleteProcessing}
               >
-                {isDeleteProcessing ? 'Deleting...' : 'Delete'}
+                Delete
               </Button>
             </div>
           </div>
@@ -237,7 +229,7 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
               <Button
                 type="secondary"
                 variant="text"
-                action={() => setIsCreateModalOpen(false)}
+                action={async () => setIsCreateModalOpen(false)}
                 disabled={isCreating}
               >
                 Cancel

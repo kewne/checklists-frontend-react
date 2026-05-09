@@ -13,7 +13,7 @@ export interface ButtonProps {
     type?: ButtonType;
     variant?: ButtonVariant;
     size?: ButtonSize;
-    action: () => void;
+    action: () => Promise<void>;
     additionalActions?: AdditionalAction[];
     disabled?: boolean;
     children: React.ReactNode;
@@ -81,6 +81,7 @@ export function Button({
     children,
 }: ButtonProps) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isWorking, setWorking] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const sizeClasses = getSizeClasses(size);
@@ -103,6 +104,15 @@ export function Button({
         };
     }, [isDropdownOpen]);
 
+    const handleAction = async () => {
+        setWorking(true);
+        try {
+            await action();
+        } finally {
+            setWorking(false);
+        }
+    };
+
     const handleAdditionalAction = (action: () => void) => {
         setIsDropdownOpen(false);
         action();
@@ -114,8 +124,8 @@ export function Button({
             <div className="relative inline-flex" ref={dropdownRef}>
                 <button
                     type="button"
-                    onClick={action}
-                    disabled={disabled}
+                    onClick={handleAction}
+                    disabled={disabled || isWorking}
                     className={`${baseClasses} ${colorClasses} rounded-r-none`}
                 >
                     {children}
@@ -123,7 +133,7 @@ export function Button({
                 <button
                     type="button"
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    disabled={disabled}
+                    disabled={disabled || isWorking}
                     className={`${baseClasses} ${colorClasses} rounded-l-none ${variant === 'outline' ? 'border-l-0' : ''
                         }`}
                     aria-label="Additional actions"
@@ -153,8 +163,8 @@ export function Button({
     return (
         <button
             type="button"
-            onClick={action}
-            disabled={disabled}
+            onClick={handleAction}
+            disabled={disabled || isWorking}
             className={`${baseClasses} ${colorClasses}`}
         >
             {children}

@@ -48,7 +48,7 @@ export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
     }
   };
 
-  const handleModalCancel = () => {
+  const handleModalCancel = async () => {
     setIsModalOpen(false);
     setRunTitle('');
   };
@@ -76,24 +76,13 @@ export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
             <div className="text-red-600 text-xs mt-1">{deleteError}</div>
           )}
         </Link>
-        <div className="mr-2">
-          <Button
-            type="primary"
-            variant="outline"
-            action={handleRun}
-            additionalActions={additionalActions}
-            disabled={isRunning || isDeleting}
-          >
-            {isRunning ? 'Creating run...' : 'Run'}
-          </Button>
-        </div>
         <Button
           type="danger"
           variant="outline"
           action={handleDelete}
-          disabled={isDeleting || isRunning}
+          disabled={state.status === 'updating'}
         >
-          {isDeleting ? 'Deleting...' : 'Delete'}
+          Delete
         </Button>
       </li>
 
