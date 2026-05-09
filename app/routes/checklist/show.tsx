@@ -1,9 +1,10 @@
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 
 import { useAuth } from "../../lib/auth";
-import { useResource } from "../../lib/useResource";
-import { decodeApiUrl } from "../../lib/encoding";
+import { useResource, useHeadlessResource } from "../../lib/useResource";
+import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import { ChecklistForm } from "../../components/ChecklistForm";
+import { Button } from "../../components/Button";
 import type { Route } from "./+types/show";
 
 export function meta({}: Route.MetaArgs) {
@@ -36,6 +37,43 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
   );
 }
 
+interface RunButtonProps {
+  resource: Resource<ChecklistRun>;
+  user: firebase.User;
+}
+
+function RunButton({ resource, user }: RunButtonProps) {
+  const navigate = useNavigate();
+  const { state: runState, post: createRun } = useHeadlessResource(
+    resource.getFirstLinkMatching(
+      "create-from",
+      (link) => link.name === "instance",
+    )?.href || "",
+    user,
+  );
+
+  const handleRun = async () => {
+    const location = await createRun({});
+    if (!location) {
+      return navigate("/runs");
+    }
+    navigate(`/runs/show/${encodeApiUrl(location)}`);
+  };
+
+  return (
+    <div className="mb-4 flex justify-end">
+      <Button
+        type="primary"
+        size="large"
+        action={handleRun}
+        disabled={runState.status === "updating"}
+      >
+        Run
+      </Button>
+    </div>
+  );
+}
+
 export default function ChecklistDetail({ params }: Route.ComponentProps) {
   const { user } = useAuth();
 
@@ -62,10 +100,13 @@ export default function ChecklistDetail({ params }: Route.ComponentProps) {
   }
 
   return (
-    <ChecklistForm
-      initialValues={state.resource.properties}
-      submitLabel="Save"
-      onSubmit={put}
-    />
+    <div>
+      <RunButton resource={state.resource} user={user!} />
+      <ChecklistForm
+        initialValues={state.resource.properties}
+        submitLabel="Save"
+        onSubmit={put}
+      />
+    </div>
   );
 }

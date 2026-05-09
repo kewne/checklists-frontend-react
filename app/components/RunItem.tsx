@@ -1,5 +1,4 @@
 import type { User } from "firebase/auth";
-import { useState } from "react";
 import { useHeadlessResource } from "../lib/useResource";
 import { Button } from "./Button";
 
@@ -33,93 +32,21 @@ interface CompleteButtonProps {
 
 function CompleteButton({ href, user, onItemUpdated }: CompleteButtonProps) {
   const { state, post } = useHeadlessResource(href, user);
-  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
-  const [note, setNote] = useState("");
 
   const handleCompleted = async () => {
     await post({}, { onSuccess: onItemUpdated });
   };
 
-  const handleCompleteWithNote = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await post(
-      { note },
-      {
-        onSuccess: async () => {
-          setIsNoteModalOpen(false);
-          setNote("");
-          await onItemUpdated();
-        },
-      },
-    );
-  };
-
-  const handleNoteModalCancel = () => {
-    setIsNoteModalOpen(false);
-    setNote("");
-  };
-
   const isPosting = state.status === "updating" && state.action === "post";
 
   return (
-    <div>
-      <Button
-        type="primary"
-        action={handleCompleted}
-        disabled={isPosting}
-        additionalActions={[
-          {
-            title: "Complete with note",
-            action: () => setIsNoteModalOpen(true),
-          },
-        ]}
-      >
-        {isPosting ? "Marking complete..." : "Mark complete"}
-      </Button>
-
-      {isNoteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-sm mx-4 p-6">
-            <h2 className="text-base font-semibold text-gray-800 mb-4">
-              Complete with note
-            </h2>
-            <form onSubmit={handleCompleteWithNote}>
-              <label
-                htmlFor="complete-note"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Note (optional)
-              </label>
-              <textarea
-                id="complete-note"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="Add a note about this completion"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm mb-4"
-                autoFocus
-                rows={4}
-              />
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={handleNoteModalCancel}
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-md"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPosting}
-                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isPosting ? "Marking complete..." : "Mark complete"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+    <Button
+      type="primary"
+      action={handleCompleted}
+      disabled={isPosting}
+    >
+      Mark Complete
+    </Button>
   );
 }
 
@@ -140,15 +67,13 @@ function MarkIncompleteButton({
     await post({}, { onSuccess: onItemUpdated });
   };
 
-  const isPosting = state.status === "updating" && state.action === "post";
-
   return (
     <Button
       type="danger"
       action={handleMarkIncomplete}
-      disabled={isPosting}
+      disabled={state.status === 'updating'}
     >
-      {isPosting ? "Marking incomplete..." : "Mark incomplete"}
+      Mark Incomplete
     </Button>
   );
 }

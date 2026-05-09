@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router';
 import { encodeApiUrl } from '../lib/encoding';
 import type { HalLink } from '../lib/hal';
 import { useHeadlessResource } from '../lib/useResource';
-import type { AdditionalAction } from './Button';
 import { Button } from './Button';
 
 interface ChecklistItemProps {
@@ -56,13 +55,6 @@ export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
   const isRunning = state.status === 'updating' && state.action === 'post';
   const isDeleting = state.status === 'updating' && state.action === 'delete';
   const deleteError = state.status === 'error' ? state.error.message : null;
-
-  const additionalActions: AdditionalAction[] = [
-    {
-      title: 'Run with title',
-      action: () => setIsModalOpen(true),
-    },
-  ];
 
   return (
     <>

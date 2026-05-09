@@ -4,7 +4,8 @@ import { Link, useNavigate } from 'react-router';
 import { encodeApiUrl } from '../lib/encoding';
 import type { Resource } from '../lib/hal';
 import { useHeadlessResource, useResource } from '../lib/useResource';
-import { Button, type AdditionalAction } from './Button';
+import { Button } from './Button';
+import { MenuButton, type MenuItem } from './MenuButton';
 import { RunItem } from './RunItem';
 
 interface ChecklistRunDetailProps {
@@ -102,7 +103,7 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
     }
   };
 
-  const additionalActions: AdditionalAction[] = [];
+  const additionalActions: MenuItem[] = [];
 
   if (createChecklistLink) {
     additionalActions.push({
@@ -128,16 +129,22 @@ export function ChecklistRunDetail({ resource, user, onItemUpdated, onDelete, on
         </div>
         <div>
           {onEdit && additionalActions.length > 0 && (
-            <Button
+            <MenuButton
               type="secondary"
               variant="outline"
               size="large"
-              action={onEdit}
-              additionalActions={additionalActions}
+              items={[
+                {
+                  title: 'Edit',
+                  action: onEdit,
+                },
+                ...additionalActions,
+              ]}
               disabled={isCreating}
+              ariaLabel="More actions"
             >
-              Edit
-            </Button>
+              ⋮
+            </MenuButton>
           )}
           {onEdit && additionalActions.length === 0 && (
             <Button
