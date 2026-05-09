@@ -7,7 +7,12 @@ import { useResource } from "../lib/useResource";
 import { Button } from "./Button";
 import { MenuButton, type MenuItem } from "./MenuButton";
 import { RunItem } from "./RunItem";
-import { apiResourceActions, type Checklist, type ChecklistRun } from "~/lib/api";
+import {
+  apiResourceActions,
+  type Checklist,
+  type ChecklistRun,
+} from "~/lib/api";
+import { createFrom, updateFrom } from "~/lib/hateoas";
 
 interface ChecklistRunDetailProps {
   resource: Resource<ChecklistRun>;
@@ -110,19 +115,16 @@ export function ChecklistRunDetail({
     });
   }
 
-  const createChecklistLink = resource.getFirstLinkMatching(
-    "create-from",
+  const createChecklistAction = createFrom(
+    resource,
+    user,
     (link) => link.name === "checklist",
   );
-  if (createChecklistLink) {
-    const { post: createChecklist } = apiResourceActions(
-      createChecklistLink.href,
-      user,
-    );
+  if (createChecklistAction) {
     additionalActions.push({
       title: "Create Checklist",
       action: async () => {
-        const location = await createChecklist({
+        const location = await createChecklistAction({
           title: `Copy of ${resource.properties.title}`,
         });
         if (location) {
@@ -133,19 +135,16 @@ export function ChecklistRunDetail({
     });
   }
 
-  const updateChecklistLink = resource.getFirstLinkMatching(
-    "update-from",
+  const updateChecklistFrom = updateFrom(
+    resource,
+    user,
     (link) => link.name === "checklist",
   );
-  if (updateChecklistLink) {
-    const { post: updateChecklist } = apiResourceActions(
-      updateChecklistLink.href,
-      user,
-    );
+  if (updateChecklistFrom) {
     additionalActions.push({
       title: "Update Checklist",
       action: async () => {
-        const location = await updateChecklist({});
+        const location = await updateChecklistFrom();
         if (location) {
           return navigate(`/checklists/show/${encodeApiUrl(location)}`);
         }

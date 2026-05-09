@@ -15,11 +15,11 @@ function validateHref(href: string): URL {
   return url;
 }
 
-export function apiResourceActions(href: string, user: User) {
+export function apiResourceActions<POST = unknown>(href: string, user: User) {
   const hrefUrl = validateHref(href);
 
   return {
-    post: async (data: any): Promise<string | null> => {
+    post: async (data: POST): Promise<string | null> => {
       const idToken = await user.getIdToken();
       const response = await fetch(hrefUrl, {
         method: "POST",

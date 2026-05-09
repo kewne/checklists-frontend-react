@@ -8,6 +8,7 @@ import { Button } from "../../components/Button";
 import type { Route } from "./+types/show";
 import type { User } from "firebase/auth";
 import { apiResourceActions, type Checklist } from "~/lib/api";
+import { createFrom } from "~/lib/hateoas";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -66,6 +67,8 @@ function RunButton({ href, user }: RunButtonProps) {
 }
 
 export default function ChecklistDetail({ params }: Route.ComponentProps) {
+  const navigate = useNavigate();
+
   const { user } = useAuth();
 
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
@@ -90,15 +93,29 @@ export default function ChecklistDetail({ params }: Route.ComponentProps) {
     );
   }
 
-  const createInstance = state.resource.getFirstLinkMatching(
-    "create-from",
+  const createInstanceAction = createFrom(
+    state.resource,
+    user!,
     (link) => link.name === "instance",
   );
-
   return (
     <div>
-      {createInstance ? (
-        <RunButton href={createInstance.href} user={user!} />
+      {createInstanceAction ? (
+        <Button
+          type="primary"
+          size="large"
+          action={async () => {
+            const location = await createInstanceAction({
+              title: state.resource.properties.title,
+            });
+            if (!location) {
+              return navigate("/runs");
+            }
+            navigate(`/runs/show/${encodeApiUrl(location)}`);
+          }}
+        >
+          Run
+        </Button>
       ) : null}
       <ChecklistForm
         initialValues={state.resource.properties}
