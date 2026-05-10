@@ -46,7 +46,7 @@ export default function List({ params }: Route.ComponentProps) {
         to={`/checklists/create/${params.apiUrlEncoded}`}
         className="inline-block mb-4 bg-indigo-600 px-4 py-2 rounded-md font-medium text-white hover:bg-indigo-700"
       >
-        Create Checklist
+        Create Checklist...
       </Link>
       <ChecklistList href={decodedUrl} user={user!} />
     </div>

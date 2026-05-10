@@ -73,7 +73,7 @@ export default function ChecklistInstances({ params }: Route.ComponentProps) {
           to={`/runs/create/${encodeApiUrl(createHref)}`}
           className="inline-block mb-4 bg-indigo-600 px-4 py-2 rounded-md font-medium text-white hover:bg-indigo-700"
         >
-          Create run
+          Create run...
         </Link>
       )}
       <ChecklistInstanceList items={items} user={user!} onRefresh={get} />

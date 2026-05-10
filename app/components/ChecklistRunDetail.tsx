@@ -110,7 +110,7 @@ export function ChecklistRunDetail({
   const additionalActions: MenuItem[] = [];
   if (onEdit) {
     additionalActions.push({
-      title: "Edit",
+      title: "Edit...",
       action: onEdit,
     });
   }
@@ -154,7 +154,7 @@ export function ChecklistRunDetail({
   }
 
   additionalActions.push({
-    title: "Delete",
+    title: confirmationText ? "Delete..." : "Delete",
     action: handleDeleteClick,
   });
 
