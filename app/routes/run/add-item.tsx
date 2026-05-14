@@ -1,0 +1,113 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { Button } from "../../components/Button";
+import { useAuth } from "../../lib/auth";
+import { decodeApiUrl } from "../../lib/encoding";
+import type { Route } from "./+types/add-item";
+import { apiResourceActions } from "~/lib/api";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Add Item" },
+    { name: "description", content: "Add an item to a checklist run" },
+  ];
+}
+
+export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-4xl mx-auto py-8 px-4">
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="text-red-600 mb-4">
+            <p className="font-semibold">Error</p>
+            <p className="text-sm">
+              Invalid URL. Please go back and try again.
+            </p>
+          </div>
+          <Link
+            to="/"
+            className="inline-block bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700"
+          >
+            Back to Home
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function AddItem({ params }: Route.ComponentProps) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
+  const { post } = apiResourceActions<{ title: string; description?: string }>(
+    decodedUrl,
+    user!,
+  );
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await post({ title, description: description || undefined });
+    navigate(-1);
+  };
+
+  const handleCancel = async () => {
+    navigate(-1);
+  };
+
+  return (
+    <>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">Add Item</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Title
+          </label>
+          <input
+            id="title"
+            type="text"
+            required
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            autoFocus
+            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700  focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="description"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Description
+            <span className="text-gray-400 font-normal"> (optional)</span>
+          </label>
+          <textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+        <div className="flex justify-end gap-2 pt-2">
+          <Button type="secondary" variant="text" action={handleCancel}>
+            Cancel
+          </Button>
+          <button
+            type="submit"
+            className="px-2 py-1 text-sm font-medium rounded bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Add Item
+          </button>
+        </div>
+      </form>
+    </>
+  );
+}

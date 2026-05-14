@@ -60,18 +60,16 @@ export function ChecklistRunDetail({
   onEdit,
 }: ChecklistRunDetailProps) {
   const items = resource.properties.items;
-  const sortedItems = [
-    ...items.filter((item) => item.completed != null),
-    ...items.filter((item) => item.completed == null),
-  ];
-  const allItemsCompleted =
-    sortedItems.length > 0 && sortedItems.every((item) => item.completed);
-  const firstToDoItemIndex = sortedItems.findIndex(
-    (item) => item.completed == null,
-  );
+  const completedItems = items.filter((item) => item.completed != null);
+  const todoItems = items.filter((item) => item.completed == null);
+  const allItemsCompleted = todoItems.length === 0 && completedItems.length > 0;
   const checklistLink = resource.getFirstLinkMatching(
     "related",
     (link) => link.name === "checklist",
+  );
+  const addItemLink = resource.getFirstLinkMatching(
+    "update",
+    (link) => link.name === "add-item",
   );
 
   const listRef = useRef<HTMLUListElement>(null);
@@ -85,12 +83,14 @@ export function ChecklistRunDetail({
 
   useEffect(() => {
     const listNode = listRef.current;
-    if (listNode && firstToDoItemIndex !== -1) {
+    if (listNode) {
       const itemNodes = listNode?.querySelectorAll("li");
-      itemNodes[Math.max(firstToDoItemIndex - 1, 0)].scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+      if (itemNodes.length > 0) {
+        itemNodes[0].scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
     }
   }, [resource, user]);
 
@@ -196,35 +196,78 @@ export function ChecklistRunDetail({
         </div>
       )}
 
-      {sortedItems.length === 0 ? (
+      {completedItems.length === 0 && todoItems.length === 0 ? (
         <p className="text-gray-500 text-sm">No items in this run.</p>
       ) : (
-        <ul
-          className="space-y-3 overflow-y-auto overscroll-y-contain max-h-100 snap-y snap-mandatory"
-          ref={listRef}
-        >
-          {sortedItems.map((item) => {
-            const completeLink = resource
-              .getLinkArray("complete-item")
-              .find((l) => l.name === item.name);
-            const markIncompleteLink = resource
-              .getLinkArray("mark-incomplete-item")
-              .find((l) => l.name === item.name);
-            return (
-              <li key={item.name}>
-                <RunItem
-                  title={item.title ?? item.name}
-                  description={item.description}
-                  completed={item.completed}
-                  completeHref={completeLink?.href}
-                  markIncompleteHref={markIncompleteLink?.href}
-                  user={user}
-                  onItemUpdated={onItemUpdated}
-                />
-              </li>
-            );
-          })}
-        </ul>
+        <>
+          {completedItems.length > 0 && (
+            <ul className="space-y-3">
+              {completedItems.map((item) => {
+                const completeLink = resource
+                  .getLinkArray("complete-item")
+                  .find((l) => l.name === item.name);
+                const markIncompleteLink = resource
+                  .getLinkArray("mark-incomplete-item")
+                  .find((l) => l.name === item.name);
+                return (
+                  <li key={item.name}>
+                    <RunItem
+                      title={item.title ?? item.name}
+                      description={item.description}
+                      completed={item.completed}
+                      completeHref={completeLink?.href}
+                      markIncompleteHref={markIncompleteLink?.href}
+                      user={user}
+                      onItemUpdated={onItemUpdated}
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+
+          {addItemLink && (
+            <div className="flex items-center gap-3 my-3">
+              <div className="flex-1 border-t border-gray-200" />
+              <Link
+                to={`/runs/add-item/${encodeApiUrl(addItemLink.href)}`}
+                className="text-indigo-600 hover:underline text-sm whitespace-nowrap"
+              >
+                + Add item
+              </Link>
+              <div className="flex-1 border-t border-gray-200" />
+            </div>
+          )}
+
+          {todoItems.length > 0 && (
+            <ul
+              className="space-y-3 overflow-y-auto overscroll-y-contain max-h-100 snap-y snap-mandatory"
+              ref={listRef}
+            >
+              {todoItems.map((item) => {
+                const completeLink = resource
+                  .getLinkArray("complete-item")
+                  .find((l) => l.name === item.name);
+                const markIncompleteLink = resource
+                  .getLinkArray("mark-incomplete-item")
+                  .find((l) => l.name === item.name);
+                return (
+                  <li key={item.name}>
+                    <RunItem
+                      title={item.title ?? item.name}
+                      description={item.description}
+                      completed={item.completed}
+                      completeHref={completeLink?.href}
+                      markIncompleteHref={markIncompleteLink?.href}
+                      user={user}
+                      onItemUpdated={onItemUpdated}
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </>
       )}
 
       {isDeleteConfirmOpen && confirmationText && (
