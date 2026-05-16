@@ -11,6 +11,12 @@ export default [
         route("create/:apiUrlEncoded", "routes/checklist/create.tsx"),
         route("list/:apiUrlEncoded", "routes/checklist/list.tsx"),
         route("show/:apiUrlEncoded", "routes/checklist/show.tsx"),
+        ...prefix("share-invitations", [
+          route("list/:apiUrlEncoded", "routes/checklist/share-invitations.tsx"),
+          route("create/:apiUrlEncoded", "routes/checklist/share-invitations-create.tsx"),
+          route("show/:apiUrlEncoded", "routes/checklist/share-invitations-show.tsx"),
+          route("accept/:apiUrlEncoded", "routes/checklist/share-invitations-accept.tsx"),
+        ]),
       ]),
       ...prefix("/runs", [
         index("routes/run/index.tsx"),
