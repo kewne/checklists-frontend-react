@@ -16,9 +16,9 @@ function MenuLink({ link, to, children }: MenuLinkProps) {
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `px-4 py-2 rounded-md font-medium text-sm ${isActive
-          ? "bg-indigo-600 text-white"
-          : "bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50"
+        `block px-4 py-2 rounded text-sm text-indigo-600 underline underline-offset-4 ${isActive
+          ? "bg-gray-200 decoration-solid"
+          : "bg-gray-100 decoration-dotted hover:bg-gray-200 hover:decoration-solid"
         }`
       }
     >
