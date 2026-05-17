@@ -29,7 +29,7 @@ export function Link({
   variant = "inline",
   size,
 }: LinkProps) {
-  const baseClasses = "text-indigo-600 active:text-indigo-400 underline-offset-4";
+  const baseClasses = "text-indigo-600 active:text-indigo-400 underline-offset-4 transition ease-in-out";
   const sizeClasses = getSizeClasses(size ?? "medium");
   const classes = [getVariantClasses(variant), sizeClasses, baseClasses, className]
     .filter(Boolean)
