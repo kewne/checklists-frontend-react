@@ -109,7 +109,7 @@ export default function ChecklistDetail({ params }: Route.ComponentProps) {
     <div>
       {shareInvitationsLink && (
         <Link to={`/checklists/share-invitations/list/${encodeApiUrl(shareInvitationsLink.href)}`} className="inline-block mb-4 font-medium">
-          Manage Invitations
+          Invitations
         </Link>
       )}
       {createInstanceAction ? (

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 export type ButtonType = 'primary' | 'secondary' | 'success' | 'danger';
-export type ButtonVariant = 'normal' | 'outline' | 'text';
+export type ButtonVariant = 'normal' | 'outline';
 export type ButtonSize = 'small' | 'medium' | 'large';
 
 export interface ButtonProps {
@@ -53,18 +53,6 @@ export function getColorClasses(type: ButtonType, variant: ButtonVariant) {
             }
             break;
 
-        case 'text':
-            switch (type) {
-                case 'primary':
-                    return 'text-indigo-600 hover:bg-indigo-50';
-                case 'secondary':
-                    return 'text-gray-700 hover:bg-gray-50';
-                case 'success':
-                    return 'text-green-600 hover:bg-green-50';
-                case 'danger':
-                    return 'text-red-600 hover:bg-red-50';
-            }
-            break;
     }
 }
 
