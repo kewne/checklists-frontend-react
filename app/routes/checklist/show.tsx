@@ -107,28 +107,39 @@ export default function ChecklistDetail({ params }: Route.ComponentProps) {
 
   return (
     <div>
-      {shareInvitationsLink && (
-        <Link to={`/checklists/share-invitations/list/${encodeApiUrl(shareInvitationsLink.href)}`} className="inline-block mb-4 font-medium">
-          Invitations
-        </Link>
-      )}
-      {createInstanceAction ? (
-        <Button
-          type="primary"
-          size="large"
-          action={async () => {
-            const location = await createInstanceAction({
-              title: state.resource.properties.title,
-            });
-            if (!location) {
-              return navigate("/runs");
-            }
-            navigate(`/runs/show/${encodeApiUrl(location)}`);
-          }}
-        >
-          Run
-        </Button>
-      ) : null}
+      <div className="flex items-start justify-between gap-x-2">
+        <div>
+          {shareInvitationsLink && (
+            <Link
+              variant="block"
+              size="large"
+              to={`/checklists/share-invitations/list/${encodeApiUrl(shareInvitationsLink.href)}`}
+              className="inline-block mb-4 font-medium"
+            >
+              Invitations
+            </Link>
+          )}
+        </div>
+        <div>
+          {createInstanceAction ? (
+            <Button
+              type="primary"
+              size="large"
+              action={async () => {
+                const location = await createInstanceAction({
+                  title: state.resource.properties.title,
+                });
+                if (!location) {
+                  return navigate("/runs");
+                }
+                navigate(`/runs/show/${encodeApiUrl(location)}`);
+              }}
+            >
+              Run
+            </Button>
+          ) : null}
+        </div>
+      </div>
       <ChecklistForm
         initialValues={state.resource.properties}
         submitLabel="Save"
