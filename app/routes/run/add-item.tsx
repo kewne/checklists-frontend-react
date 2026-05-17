@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
+import { Link } from "~/components/Link";
 import { Button } from "../../components/Button";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
@@ -24,10 +25,7 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
               Invalid URL. Please go back and try again.
             </p>
           </div>
-          <Link
-            to="/"
-            className="inline-block bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700"
-          >
+          <Link to="/">
             Back to Home
           </Link>
         </div>
@@ -97,7 +95,7 @@ export default function AddItem({ params }: Route.ComponentProps) {
           />
         </div>
         <div className="flex justify-end gap-2 pt-2">
-          <Button type="secondary" variant="text" action={handleCancel}>
+          <Button type="secondary" variant="outline" action={handleCancel}>
             Cancel
           </Button>
           <button

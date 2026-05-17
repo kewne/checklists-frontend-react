@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router";
+import { Link } from "~/components/Link";
 import { ChecklistInstanceList } from "../../components/ChecklistInstanceList";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
@@ -21,12 +21,9 @@ export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
             <p className="font-semibold">Error</p>
             <p className="text-sm">Invalid URL. Please go back and try again.</p>
           </div>
-          <NavLink
-            to="/"
-            className="inline-block bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700"
-          >
+          <Link to="/">
             Back to Home
-          </NavLink>
+          </Link>
         </div>
       </div>
     </div>
@@ -69,10 +66,7 @@ export default function ChecklistInstances({ params }: Route.ComponentProps) {
     <>
       <h1 className="text-2xl font-bold text-gray-900 mb-4">Checklist Runs</h1>
       {createHref && (
-        <Link
-          to={`/runs/create/${encodeApiUrl(createHref)}`}
-          className="inline-block mb-4 bg-indigo-600 px-4 py-2 rounded-md font-medium text-white hover:bg-indigo-700"
-        >
+        <Link to={`/runs/create/${encodeApiUrl(createHref)}`}>
           Create run...
         </Link>
       )}

@@ -1,4 +1,5 @@
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
+import { Link } from "~/components/Link";
 import { RunEditForm } from "../../components/RunEditForm";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
@@ -23,10 +24,7 @@ export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
                             Invalid runs URL. Please go back and try again.
                         </p>
                     </div>
-                    <Link
-                        to="/"
-                        className="inline-block bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700"
-                    >
+                    <Link to="/">
                         Back to Home
                     </Link>
                 </div>

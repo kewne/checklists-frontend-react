@@ -1,4 +1,5 @@
-import { Link, NavLink } from "react-router";
+import { Link as RouterLink, NavLink } from "react-router";
+import { Link } from "~/components/Link";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import { useResource } from "../../lib/useResource";
@@ -22,12 +23,9 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
               Invalid URL. Please go back and try again.
             </p>
           </div>
-          <NavLink
-            to="/"
-            className="inline-block bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700"
-          >
+          <Link to="/">
             Back to Home
-          </NavLink>
+          </Link>
         </div>
       </div>
     </div>
@@ -67,10 +65,7 @@ export default function ShareInvitations({ params }: Route.ComponentProps) {
         Share Invitations
       </h1>
       {createLink && (
-        <Link
-          to={`/checklists/share-invitations/create/${encodeApiUrl(createLink.href)}`}
-          className="inline-block mb-4 bg-indigo-600 px-4 py-2 rounded-md font-medium text-white hover:bg-indigo-700"
-        >
+        <Link to={`/checklists/share-invitations/create/${encodeApiUrl(createLink.href)}`}>
           Create...
         </Link>
       )}
@@ -83,12 +78,12 @@ export default function ShareInvitations({ params }: Route.ComponentProps) {
         >
           {items.map((item) => (
             <li key={item.href}>
-              <Link
+              <RouterLink
                 to={`/checklists/share-invitations/show/${encodeApiUrl(item.href)}`}
                 className="block px-4 py-3 text-sm text-gray-800 font-medium hover:bg-gray-50"
               >
                 {item.title ?? item.name ?? item.href}
-              </Link>
+              </RouterLink>
             </li>
           ))}
         </ul>

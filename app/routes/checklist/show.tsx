@@ -1,4 +1,5 @@
-import { Link, NavLink, useNavigate } from "react-router";
+import { NavLink, useNavigate } from "react-router";
+import { Link } from "~/components/Link";
 
 import { useAuth } from "../../lib/auth";
 import { useResource } from "../../lib/useResource";
@@ -107,10 +108,7 @@ export default function ChecklistDetail({ params }: Route.ComponentProps) {
   return (
     <div>
       {shareInvitationsLink && (
-        <Link
-          to={`/checklists/share-invitations/list/${encodeApiUrl(shareInvitationsLink.href)}`}
-          className="inline-block mb-4 text-indigo-600 hover:text-indigo-800 font-medium"
-        >
+        <Link to={`/checklists/share-invitations/list/${encodeApiUrl(shareInvitationsLink.href)}`} className="inline-block mb-4 font-medium">
           Manage Invitations
         </Link>
       )}

@@ -1,6 +1,7 @@
 import type { User } from "firebase/auth";
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
+import { Link } from "~/components/Link";
 import { encodeApiUrl } from "../lib/encoding";
 import type { Resource } from "../lib/hal";
 import { useResource } from "../lib/useResource";
@@ -42,10 +43,7 @@ function CreatedFromChecklist({
   return (
     <div className="text-sm text-gray-600 mb-4">
       Created from{" "}
-      <Link
-        to={`/checklists/show/${encodeApiUrl(checklistHref)}`}
-        className="text-indigo-600 hover:underline"
-      >
+      <Link to={`/checklists/show/${encodeApiUrl(checklistHref)}`}>
         {state.resource.properties.title}
       </Link>
     </div>
@@ -231,7 +229,7 @@ export function ChecklistRunDetail({
               <div className="flex-1 border-t border-gray-200" />
               <Link
                 to={`/runs/add-item/${encodeApiUrl(addItemLink.href)}`}
-                className="text-indigo-600 hover:underline text-sm whitespace-nowrap"
+                className="text-sm whitespace-nowrap"
               >
                 + Add item
               </Link>
@@ -280,7 +278,7 @@ export function ChecklistRunDetail({
             <div className="flex justify-end gap-2">
               <Button
                 type="secondary"
-                variant="text"
+                variant="outline"
                 action={async () => setIsDeleteConfirmOpen(false)}
               >
                 Cancel
