@@ -7,7 +7,7 @@ export interface LinkProps {
 }
 
 export function Link({ to, children, className }: LinkProps) {
-  const baseClasses = "text-indigo-600 hover:underline";
+  const baseClasses = "text-indigo-600 underline decoration-dotted underline-offset-4 hover:decoration-solid active:text-indigo-400";
   return (
     <RouterLink to={to} className={className ? `${baseClasses} ${className}` : baseClasses}>
       {children}

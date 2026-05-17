@@ -67,7 +67,7 @@ export default function ChecklistInstances({ params }: Route.ComponentProps) {
       <h1 className="text-2xl font-bold text-gray-900 mb-4">Checklist Runs</h1>
       {createHref && (
         <Link to={`/runs/create/${encodeApiUrl(createHref)}`}>
-          Create run...
+          Create run
         </Link>
       )}
       <ChecklistInstanceList items={items} user={user!} onRefresh={get} />
