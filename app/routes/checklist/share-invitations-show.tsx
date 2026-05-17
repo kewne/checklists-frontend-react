@@ -5,6 +5,8 @@ import type { Route } from "./+types/share-invitations-show";
 
 type ShareInvitation = {
   title: string;
+  checklistTitle: string;
+  createdAt: string;
   expiresAt: string;
 };
 
@@ -38,25 +40,29 @@ export default function ShareInvitationShow({ params }: Route.ComponentProps) {
     );
   }
 
-  const { title, expiresAt } = state.resource.properties;
-  const acceptLink = state.resource.getFirstLinkMatching("accept");
-  const acceptPageUrl = acceptLink
+  const { title, checklistTitle, createdAt, expiresAt } = state.resource.properties;
+  const previewLink = state.resource.getFirstLinkMatching("preview");
+  const shareUrl = previewLink
     ? `${window.location.origin}/checklists/share-invitations/accept/${params.apiUrlEncoded}`
     : undefined;
 
   return (
     <>
       <h1 className="text-2xl font-bold text-gray-900 mb-4">{title}</h1>
+      <p className="text-sm text-gray-600">Checklist: {checklistTitle}</p>
+      <p className="text-sm text-gray-600">
+        Created at {new Date(createdAt).toLocaleString()}
+      </p>
       <p className="text-sm text-gray-600">
         Expires at {new Date(expiresAt).toLocaleString()}
       </p>
-      {acceptLink && (
+      {previewLink && (
         <div className="mt-4">
           <p className="text-sm text-gray-600 mb-1">
             Share this link to invite someone:
           </p>
           <pre className="bg-gray-100 border border-gray-200 rounded-md px-4 py-3 text-gray-600 text-sm break-all whitespace-pre-wrap">
-              {acceptPageUrl}
+              {shareUrl}
           </pre>
         </div>
       )}
