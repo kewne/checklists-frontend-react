@@ -1,9 +1,9 @@
 import type { User } from "firebase/auth";
-import { Link } from "react-router";
 import { encodeApiUrl } from "../lib/encoding";
 import type { HalLink } from "../lib/hal";
 import { Button } from "./Button";
 import { apiResourceActions } from "~/lib/api";
+import { Link } from "./Link";
 
 interface ChecklistInstanceListProps {
   items: HalLink[];
@@ -30,21 +30,14 @@ function ChecklistInstanceItem({
   };
 
   return (
-    <li className="flex items-center text-sm text-gray-800">
-      <Link
-        to={`/runs/show/${encodeApiUrl(item.href)}`}
-        className="flex-1 px-4 py-3 hover:bg-gray-50 transition-colors"
-      >
-        <div className="font-medium text-indigo-600">
-          {item.title ?? item.name}
-        </div>
+    <div className="flex px-4 py-3 items-center justify-between">
+      <Link to={`/runs/show/${encodeApiUrl(item.href)}`}>
+        {item.title ?? item.name}
       </Link>
-      <span className="mr-4">
-        <Button type="danger" variant="outline" action={handleDelete}>
-          Delete
-        </Button>
-      </span>
-    </li>
+      <Button type="danger" variant="outline" action={handleDelete}>
+        Delete
+      </Button>
+    </div>
   );
 }
 
@@ -53,25 +46,27 @@ export function ChecklistInstanceList({
   user,
   onRefresh,
 }: ChecklistInstanceListProps) {
+  if (items.length === 0) {
+    return (
+      <div className="px-4 py-3 text-gray-500 text-sm">
+        No checklist instances found.
+      </div>
+    );
+  }
   return (
     <ul
       aria-label="checklist instances"
       className="mt-4 divide-y divide-gray-100 border border-gray-200 rounded-md"
     >
-      {items.length === 0 ? (
-        <li className="px-4 py-3 text-gray-500 text-sm">
-          No checklist instances found.
-        </li>
-      ) : (
-        items.map((item) => (
+      {items.map((item) => (
+        <li key={item.href} className="hover:bg-gray-50">
           <ChecklistInstanceItem
-            key={item.href}
             item={item}
             user={user}
             onDeleted={onRefresh}
           />
-        ))
-      )}
+        </li>
+      ))}
     </ul>
   );
 }

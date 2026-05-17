@@ -107,14 +107,13 @@ export default function ChecklistDetail({ params }: Route.ComponentProps) {
 
   return (
     <div>
-      <div className="flex items-start justify-between gap-x-2">
+      <div className="flex items-start justify-between gap-x-2 mb-4">
         <div>
           {shareInvitationsLink && (
             <Link
-              variant="block"
+              variant="inline-block"
               size="large"
               to={`/checklists/share-invitations/list/${encodeApiUrl(shareInvitationsLink.href)}`}
-              className="inline-block mb-4 font-medium"
             >
               Invitations
             </Link>

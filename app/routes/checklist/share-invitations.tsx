@@ -65,8 +65,8 @@ export default function ShareInvitations({ params }: Route.ComponentProps) {
         Share Invitations
       </h1>
       {createLink && (
-        <Link to={`/checklists/share-invitations/create/${encodeApiUrl(createLink.href)}`}>
-          Create...
+        <Link variant="inline-block" size="large" to={`/checklists/share-invitations/create/${encodeApiUrl(createLink.href)}`}>
+          Create
         </Link>
       )}
       {items.length === 0 ? (
@@ -78,12 +78,13 @@ export default function ShareInvitations({ params }: Route.ComponentProps) {
         >
           {items.map((item) => (
             <li key={item.href}>
-              <RouterLink
+              <Link
+                variant="row"
+                size="large"
                 to={`/checklists/share-invitations/show/${encodeApiUrl(item.href)}`}
-                className="block px-4 py-3 text-sm text-gray-800 font-medium hover:bg-gray-50"
               >
                 {item.title ?? item.name ?? item.href}
-              </RouterLink>
+              </Link>
             </li>
           ))}
         </ul>

@@ -10,35 +10,40 @@ interface ChecklistListProps {
 export function ChecklistList({ href, user }: ChecklistListProps) {
   const { state, get } = useResource(href, user!);
 
-
-  if (state.status === 'loading') {
+  if (state.status === "loading") {
     return (
       <div className="mt-4">
-        <div className="animate-pulse text-gray-500 text-sm">Loading checklists...</div>
+        <div className="animate-pulse text-gray-500 text-sm">
+          Loading checklists...
+        </div>
       </div>
     );
   }
 
-  if (state.status === 'error') {
+  if (state.status === "error") {
     return (
-      <div className="mt-4 text-red-600 text-sm">Failed to load checklists: {state.error.message}</div>
+      <div className="mt-4 text-red-600 text-sm">
+        Failed to load checklists: {state.error.message}
+      </div>
     );
   }
 
-  const items = state.resource.getLinkArray('items');
+  const items = state.resource.getLinkArray("items");
 
   return (
-    <ul aria-label="checklists" className="mt-4 divide-y divide-gray-100 border border-gray-200 rounded-md">
+    <ul
+      aria-label="checklists"
+      className="mt-4 divide-y divide-gray-100 border border-gray-200 rounded-md"
+    >
       {items.length === 0 ? (
-        <li className="px-4 py-3 text-gray-500 text-sm">No checklists found.</li>
+        <li className="px-4 py-3 text-gray-500 text-sm">
+          No checklists found.
+        </li>
       ) : (
         items.map((item) => (
-          <ChecklistItem
-            key={item.href}
-            item={item}
-            user={user}
-            onDelete={get}
-          />
+          <li key={item.href}>
+            <ChecklistItem item={item} user={user} onDelete={get} />
+          </li>
         ))
       )}
     </ul>

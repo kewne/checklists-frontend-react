@@ -39,8 +39,8 @@ export default function List({ params }: Route.ComponentProps) {
 
   return (
     <div>
-      <Link to={`/checklists/create/${params.apiUrlEncoded}`}>
-        Create Checklist...
+      <Link variant="inline-block" size="large" to={`/checklists/create/${params.apiUrlEncoded}`}>
+        Create Checklist
       </Link>
       <ChecklistList href={decodedUrl} user={user!} />
     </div>
