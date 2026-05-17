@@ -14,9 +14,9 @@ export interface LinkProps {
 function getVariantClasses(variant: LinkVariant) {
     switch (variant) {
         case "inline":
-            return "underline decoration-dotted underline-offset-4 hover:decoration-solid";
+            return "underline decoration decoration-gray-200 underline-offset-4 hover:decoration-indigo-400";
         case "inline-block":
-            return "underline decoration-dotted hover:decoration-solid inline-block rounded border border-gray-200 hover:bg-gray-100";
+            return "underline decoration decoration-gray-200 inline-block rounded border border-gray-200 hover:outline hover:decoration-indigo-400";
         case "row":
             return "block hover:bg-gray-100";
     }

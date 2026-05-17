@@ -17,8 +17,8 @@ function MenuLink({ link, to, children }: MenuLinkProps) {
       to={to}
       className={({ isActive }) =>
         `block px-4 py-2 rounded border border-gray-200 text-sm text-indigo-600 underline underline-offset-4 ${isActive
-          ? "bg-gray-200 decoration-solid"
-          : "decoration-dotted hover:bg-gray-100 hover:decoration-solid"
+          ? "bg-gray-100 decoration-solid hover:outline"
+          : "decoration decoration-gray-100 hover:decoration-indigo-400 hover:outline"
         }`
       }
     >

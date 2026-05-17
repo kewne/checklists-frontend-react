@@ -64,7 +64,7 @@ export default function CreateRun({ params }: Route.ComponentProps) {
                 initialValues={initialValues}
                 submitLabel="Create"
                 onSubmit={handleSubmit}
-                onCancel={() => navigate(`/runs/list/${params.apiUrlEncoded}`)}
+                onCancel={() => navigate(-1)}
             />
         </>
     );
