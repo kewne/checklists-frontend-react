@@ -3,6 +3,7 @@ import { v4 } from 'uuid';
 import chevronDownSvg from '/chevron-down.svg?url';
 import chevronUpSvg from '/chevron-up.svg?url';
 import type { Checklist, ChecklistItem } from '~/lib/api';
+import { Button } from '~/components/Button';
 
 interface ChecklistFormProps {
   initialValues?: Checklist;
@@ -22,6 +23,18 @@ interface ChecklistItemComponentProps {
 
 function ChecklistItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown, ref }: ChecklistItemComponentProps) {
   const [showDescription, setShowDescription] = useState(item.description.length > 0);
+  const descriptionRef = useRef<HTMLTextAreaElement>(null);
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (showDescription) {
+      descriptionRef.current?.focus();
+    }
+  }, [showDescription]);
 
   const handleRemoveDescription = () => {
     onUpdate(item.id, 'description', '');
@@ -40,32 +53,30 @@ function ChecklistItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown
           </label>
           <div className="flex items-center gap-1">
             {onMoveUp && (
-              <button
-                type="button"
-                onClick={onMoveUp}
-                className="p-1 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
+              <Button
+                type="primary"
+                variant="outline"
+                size="small"
                 aria-label={`Move "${item.title || 'item'}" up`}
+                action={async () => onMoveUp()}
               >
                 <img src={chevronUpSvg} alt="" aria-hidden="true" className="w-4 h-4" />
-              </button>
+              </Button>
             )}
             {onMoveDown && (
-              <button
-                type="button"
-                onClick={onMoveDown}
-                className="p-1 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
+              <Button
+                type="primary"
+                variant="outline"
+                size="small"
                 aria-label={`Move "${item.title || 'item'}" down`}
+                action={async () => onMoveDown()}
               >
                 <img src={chevronDownSvg} alt="" aria-hidden="true" className="w-4 h-4" />
-              </button>
+              </Button>
             )}
-            <button
-              type="button"
-              onClick={() => onRemove()}
-              className="text-xs text-red-600 hover:text-red-700 font-medium whitespace-nowrap"
-            >
+            <Button type="danger" variant="outline" size="small" action={async () => onRemove()}>
               Remove
-            </button>
+            </Button>
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -79,21 +90,21 @@ function ChecklistItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown
             className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm"
             required
           />
-          <button
-            type="button"
-            onClick={showDescription ? handleRemoveDescription : () => setShowDescription(true)}
-            className="text-xs text-indigo-600 hover:text-indigo-700 font-medium whitespace-nowrap"
+          <Button
+            type="primary"
+            variant="outline"
+            size="small"
+            action={showDescription ? async () => handleRemoveDescription() : async () => setShowDescription(true)}
           >
-            <label htmlFor={`item-description-${item.id}`}>
-              {showDescription ? 'Description -' : 'Description +'}
-            </label>
-          </button>
+            {showDescription ? 'Description -' : 'Description +'}
+          </Button>
         </div>
       </div>
       {showDescription && (
         <div>
           <div className="flex items-start gap-2 flex-wrap">
             <textarea
+              ref={descriptionRef}
               id={`item-description-${item.id}`}
               value={item.description}
               onChange={(e) => onUpdate(item.id, 'description', e.target.value)}

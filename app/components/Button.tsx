@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 export type ButtonType = 'primary' | 'secondary' | 'success' | 'danger';
 export type ButtonVariant = 'normal' | 'outline' | 'text';
-export type ButtonSize = 'medium' | 'large';
+export type ButtonSize = 'small' | 'medium' | 'large';
 
 export interface ButtonProps {
     type?: ButtonType;
@@ -10,15 +10,18 @@ export interface ButtonProps {
     size?: ButtonSize;
     action: () => Promise<void>;
     disabled?: boolean;
+    'aria-label'?: string;
     children: React.ReactNode;
 }
 
 export function getSizeClasses(size: ButtonSize) {
     switch (size) {
+        case 'small':
+            return 'px-1.5 py-0.5 text-xs';
         case 'medium':
-            return 'px-2 py-1';
+            return 'px-2 py-1 text-sm';
         case 'large':
-            return 'px-4 py-2';
+            return 'px-4 py-2 text-sm';
     }
 }
 
@@ -71,12 +74,13 @@ export function Button({
     size = 'medium',
     action,
     disabled = false,
+    'aria-label': ariaLabel,
     children,
 }: ButtonProps) {
     const [isWorking, setWorking] = useState(false);
 
     const sizeClasses = getSizeClasses(size);
-    const baseClasses = `${sizeClasses} text-sm font-medium rounded disabled:opacity-50 disabled:cursor-not-allowed`;
+    const baseClasses = `${sizeClasses} font-medium rounded disabled:opacity-50 disabled:cursor-not-allowed`;
     const colorClasses = getColorClasses(type, variant);
 
     const handleAction = async () => {
@@ -93,6 +97,7 @@ export function Button({
             type="button"
             onClick={handleAction}
             disabled={disabled || isWorking}
+            aria-label={ariaLabel}
             className={`${baseClasses} ${colorClasses}`}
         >
             {children}
