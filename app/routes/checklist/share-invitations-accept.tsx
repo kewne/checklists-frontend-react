@@ -7,7 +7,7 @@ import { Button } from "~/components/Button";
 import type { Route } from "./+types/share-invitations-accept";
 
 type ShareInvitation = {
-  title: string;
+  checklistTitle: string;
   expiresAt: string;
 };
 
@@ -42,7 +42,7 @@ export default function ShareInvitationAccept({ params }: Route.ComponentProps) 
     );
   }
 
-  const { title } = state.resource.properties;
+  const { checklistTitle: title } = state.resource.properties;
   const acceptLink = state.resource.getFirstLinkMatching("accept");
 
   const handleAccept = async () => {

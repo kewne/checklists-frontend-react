@@ -1,5 +1,5 @@
 import { useAuth } from "../../lib/auth";
-import { decodeApiUrl } from "../../lib/encoding";
+import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import { useResource } from "../../lib/useResource";
 import type { Route } from "./+types/share-invitations-show";
 
@@ -43,7 +43,7 @@ export default function ShareInvitationShow({ params }: Route.ComponentProps) {
   const { title, checklistTitle, createdAt, expiresAt } = state.resource.properties;
   const previewLink = state.resource.getFirstLinkMatching("preview");
   const shareUrl = previewLink
-    ? `${window.location.origin}/checklists/share-invitations/accept/${params.apiUrlEncoded}`
+    ? `${window.location.origin}/checklists/share-invitations/accept/${encodeApiUrl(previewLink.href)}`
     : undefined;
 
   return (
