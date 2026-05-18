@@ -67,7 +67,9 @@ export default function Shares({ params }: Route.ComponentProps) {
         >
           {items.map((item) => (
             <li key={item.href}>
-                {item.title}
+              <Link variant="row" to={`/checklist/shares/${item.href}`}>
+                {item.title ?? "Untitled"}
+              </Link>
             </li>
           ))}
         </ul>
