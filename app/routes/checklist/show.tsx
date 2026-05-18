@@ -105,10 +105,15 @@ export default function ChecklistDetail({ params }: Route.ComponentProps) {
     (link) => link.name === "share-invitations",
   );
 
+  const sharesLink = state.resource.getFirstLinkMatching(
+    "related",
+    (link) => link.name === "shares",
+  );
+
   return (
     <div>
       <div className="flex items-start justify-between gap-x-2 mb-4">
-        <div>
+        <div className="space-x-2">
           {shareInvitationsLink && (
             <Link
               variant="inline-block"
@@ -116,6 +121,15 @@ export default function ChecklistDetail({ params }: Route.ComponentProps) {
               to={`/checklists/share-invitations/list/${encodeApiUrl(shareInvitationsLink.href)}`}
             >
               Invitations
+            </Link>
+          )}
+          {sharesLink && (
+            <Link
+              variant="inline-block"
+              size="large"
+              to={`/checklists/shares/list/${encodeApiUrl(sharesLink.href)}`}
+            >
+              Shares
             </Link>
           )}
         </div>
