@@ -1,31 +1,25 @@
-import type { User } from "firebase/auth";
+import { type ApiLink } from "~/lib/api";
 import { encodeApiUrl } from "../lib/encoding";
-import type { HalLink } from "../lib/hal";
 import { Button } from "./Button";
-import { apiResourceActions } from "~/lib/api";
 import { Link } from "./Link";
 
 interface ChecklistInstanceListProps {
-  items: HalLink[];
-  user: User;
+  items: ApiLink[];
   onRefresh: () => void;
 }
 
 interface ChecklistInstanceItemProps {
-  item: HalLink;
-  user: User;
+  item: ApiLink;
   onDeleted: () => void;
 }
 
 function ChecklistInstanceItem({
   item,
-  user,
   onDeleted,
 }: ChecklistInstanceItemProps) {
-  const { delete: deleteInstance } = apiResourceActions(item.href, user);
 
   const handleDelete = async () => {
-    await deleteInstance();
+    await item.actions.delete();
     onDeleted();
   };
 
@@ -43,7 +37,6 @@ function ChecklistInstanceItem({
 
 export function ChecklistInstanceList({
   items,
-  user,
   onRefresh,
 }: ChecklistInstanceListProps) {
   if (items.length === 0) {
@@ -62,7 +55,6 @@ export function ChecklistInstanceList({
         <li key={item.href} className="hover:bg-gray-50">
           <ChecklistInstanceItem
             item={item}
-            user={user}
             onDeleted={onRefresh}
           />
         </li>

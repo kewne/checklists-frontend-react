@@ -102,7 +102,10 @@ export default function Shares({ loaderData }: Route.ComponentProps) {
         >
           {items.map((item) => (
             <li key={item.href}>
-              <Link variant="row" to={`/checklist/shares/${encodeApiUrl(item.href)}`}>
+              <Link
+                variant="row"
+                to={`/checklist/shares/${encodeApiUrl(item.href)}`}
+              >
                 {item.title ?? "Untitled"}
               </Link>
             </li>
