@@ -1,14 +1,12 @@
-import type { User } from "firebase/auth";
 import { useRevalidator } from "react-router";
 import { ChecklistItem } from "./ChecklistItem";
 import type { ApiResource } from "~/lib/api";
 
 interface ChecklistListProps {
   resource: ApiResource;
-  user: User;
 }
 
-export function ChecklistList({ resource, user }: ChecklistListProps) {
+export function ChecklistList({ resource }: ChecklistListProps) {
   const { revalidate } = useRevalidator();
   const items = resource.getLinkArray("items");
 
