@@ -1,5 +1,5 @@
 import type { User } from "firebase/auth";
-import { Resource, type HalDocument } from "./hal";
+import { Resource, type HalDocument, type HalLink, type JsonProperties } from "./hal";
 
 const ALLOWED_DOMAIN = "api.checklists.keeoon.dev";
 
@@ -16,9 +16,11 @@ function validateHref(href: string): URL {
   return url;
 }
 
-export class ApiResource<
-  T extends Record<string, unknown> = {},
-> extends Resource<T> {
+export interface ApiLink extends HalLink {
+  actions: ReturnType<typeof apiResourceActions>
+}
+
+export class ApiResource<T extends JsonProperties = {}> extends Resource<T> {
   constructor(
     document: HalDocument,
     private readonly user: User,
@@ -26,7 +28,7 @@ export class ApiResource<
     super(document);
   }
 
-  getLinked(
+  getLinked<GET extends JsonProperties, POST extends JsonProperties>(
     rel: string,
     filter?: Parameters<Resource["getFirstLinkMatching"]>[1],
   ) {
@@ -34,13 +36,22 @@ export class ApiResource<
     if (!link) {
       return undefined;
     }
-    return apiResourceActions(link.href, this.user).get();
+    return apiResourceActions<GET, POST>(link.href, this.user).get();
+  }
+
+  getLinkArray(rel: string): ApiLink[] {
+    return super.getLinkArray(rel).map(
+      (link) => ({
+        ...link,
+        actions: apiResourceActions(link.href, this.user)
+      })
+    )
   }
 }
 
 export function apiResourceActions<
-  GET extends Record<string, unknown> = {},
-  POST = unknown,
+  GET extends JsonProperties = {},
+  POST extends JsonProperties = {},
 >(href: string, user: User) {
   const hrefUrl = validateHref(href);
 

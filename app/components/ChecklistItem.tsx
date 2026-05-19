@@ -1,21 +1,16 @@
-import type { User } from "firebase/auth";
 import { encodeApiUrl } from "../lib/encoding";
-import type { HalLink } from "../lib/hal";
 import { Button } from "./Button";
-import { apiResourceActions } from "~/lib/api";
+import { type ApiLink } from "~/lib/api";
 import { Link } from "./Link";
 
 interface ChecklistItemProps {
-  item: HalLink;
-  user: User;
+  item: ApiLink;
   onDelete: () => void;
 }
 
-export function ChecklistItem({ item, user, onDelete }: ChecklistItemProps) {
-  const { delete: deleteResource } = apiResourceActions(item.href, user);
-
+export function ChecklistItem({ item, onDelete }: ChecklistItemProps) {
   const handleDelete = async () => {
-    await deleteResource();
+    await item.actions.delete();
     onDelete();
   };
 

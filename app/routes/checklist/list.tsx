@@ -1,6 +1,7 @@
 import { Link } from "~/components/Link";
 import { ChecklistList } from "~/components/ChecklistList";
-import { useAuth } from "../../lib/auth";
+import { apiResourceActions } from "~/lib/api";
+import { getUser } from "~/lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
 import type { Route } from "./+types/list";
 
@@ -31,18 +32,22 @@ export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
   );
 }
 
-export default function List({ params }: Route.ComponentProps) {
-  const { user } = useAuth();
-
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+  const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
+  const checklistsResource = await apiResourceActions(decodedUrl, user).get();
+  return { checklistsResource, user };
+}
 
+export default function List({ loaderData, params }: Route.ComponentProps) {
+  const { checklistsResource, user } = loaderData;
 
   return (
     <div>
       <Link variant="inline-block" size="large" to={`/checklists/create/${params.apiUrlEncoded}`}>
         Create Checklist
       </Link>
-      <ChecklistList href={decodedUrl} user={user!} />
+      <ChecklistList resource={checklistsResource} user={user} />
     </div>
   );
 }

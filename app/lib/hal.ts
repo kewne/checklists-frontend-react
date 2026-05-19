@@ -11,7 +11,9 @@ export interface HalDocument {
   [key: string]: unknown;
 }
 
-export class Resource<T extends Record<string, unknown> = {}> {
+export type JsonProperties = Record<string, unknown>
+
+export class Resource<T extends JsonProperties = {}> {
   private readonly doc: HalDocument;
 
   constructor(doc: HalDocument) {

@@ -1,34 +1,16 @@
 import type { User } from "firebase/auth";
-import { useResource } from "~/lib/useResource";
+import { useRevalidator } from "react-router";
 import { ChecklistItem } from "./ChecklistItem";
+import type { ApiResource } from "~/lib/api";
 
 interface ChecklistListProps {
-  href: string;
+  resource: ApiResource;
   user: User;
 }
 
-export function ChecklistList({ href, user }: ChecklistListProps) {
-  const { state, get } = useResource(href, user!);
-
-  if (state.status === "loading") {
-    return (
-      <div className="mt-4">
-        <div className="animate-pulse text-gray-500 text-sm">
-          Loading checklists...
-        </div>
-      </div>
-    );
-  }
-
-  if (state.status === "error") {
-    return (
-      <div className="mt-4 text-red-600 text-sm">
-        Failed to load checklists: {state.error.message}
-      </div>
-    );
-  }
-
-  const items = state.resource.getLinkArray("items");
+export function ChecklistList({ resource, user }: ChecklistListProps) {
+  const { revalidate } = useRevalidator();
+  const items = resource.getLinkArray("items");
 
   return (
     <ul
@@ -42,7 +24,7 @@ export function ChecklistList({ href, user }: ChecklistListProps) {
       ) : (
         items.map((item) => (
           <li key={item.href}>
-            <ChecklistItem item={item} user={user} onDelete={get} />
+            <ChecklistItem item={item} onDelete={revalidate} />
           </li>
         ))
       )}
