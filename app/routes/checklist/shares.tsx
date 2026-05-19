@@ -1,18 +1,21 @@
-import type { User } from "firebase/auth";
+import { Suspense } from "react";
+import { Await } from "react-router";
 import { Link } from "~/components/Link";
-import { useAuth } from "../../lib/auth";
+import { Loading } from "~/components/Loading";
+import { apiResourceActions } from "../../lib/api";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
-import { useResource } from "../../lib/useResource";
+import { auth } from "../../lib/firebase";
+import type { Resource } from "../../lib/hal";
 import type { Route } from "./+types/shares";
 
-export function meta({ }: Route.MetaArgs) {
+export function meta({}: Route.MetaArgs) {
   return [
     { title: "Shares" },
     { name: "description", content: "Manage shares" },
   ];
 }
 
-export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
@@ -30,29 +33,29 @@ export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
   );
 }
 
-function InvitationsList({ url, user }: { url: string; user: User }) {
-  const { state } = useResource(url, user);
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+  await auth.authStateReady();
+  const user = auth.currentUser;
+  if (!user) throw new Error("Not authenticated");
 
-  if (state.status === "loading") {
-    return (
-      <div className="flex items-center">
-        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600 mr-3"></div>
-        <span className="text-gray-600">Loading invitations...</span>
-      </div>
-    );
-  }
+  const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
+  const sharesResource = await apiResourceActions(decodedUrl, user).get();
 
-  if (state.status === "error") {
-    return (
-      <div className="bg-red-50 border border-red-200 rounded-md p-4">
-        <p className="text-red-700 font-semibold">Failed to load invitations</p>
-        <p className="text-red-600 text-sm mt-1">{state.error.message}</p>
-      </div>
-    );
-  }
+  const invitationsLink = sharesResource.getFirstLinkMatching(
+    "related",
+    (l) => l.name === "invitations",
+  );
 
-  const createLink = state.resource.getFirstLinkMatching("create");
-  const items = state.resource.getLinkArray("items");
+  const invitationsPromise = invitationsLink
+    ? apiResourceActions(invitationsLink.href, user).get()
+    : undefined;
+
+  return { sharesResource, invitationsPromise };
+}
+
+function InvitationsList({ resource }: { resource: Resource }) {
+  const createLink = resource.getFirstLinkMatching("create");
+  const items = resource.getLinkArray("items");
 
   return (
     <>
@@ -89,35 +92,9 @@ function InvitationsList({ url, user }: { url: string; user: User }) {
   );
 }
 
-export default function Shares({ params }: Route.ComponentProps) {
-  const { user } = useAuth();
-
-  const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
-  const { state } = useResource(decodedUrl, user!);
-
-  if (state.status === "loading") {
-    return (
-      <div className="flex items-center">
-        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600 mr-3"></div>
-        <span className="text-gray-600">Loading shares...</span>
-      </div>
-    );
-  }
-
-  if (state.status === "error") {
-    return (
-      <div className="bg-red-50 border border-red-200 rounded-md p-4">
-        <p className="text-red-700 font-semibold">Failed to load shares</p>
-        <p className="text-red-600 text-sm mt-1">{state.error.message}</p>
-      </div>
-    );
-  }
-
-  const items = state.resource.getLinkArray("items");
-  const invitationsLink = state.resource.getFirstLinkMatching(
-    "related",
-    (l) => l.name === "invitations"
-  );
+export default function Shares({ loaderData }: Route.ComponentProps) {
+  const { sharesResource, invitationsPromise } = loaderData;
+  const items = sharesResource.getLinkArray("items");
 
   return (
     <>
@@ -138,8 +115,14 @@ export default function Shares({ params }: Route.ComponentProps) {
           ))}
         </ul>
       )}
-      {invitationsLink && (
-        <InvitationsList url={invitationsLink.href} user={user!} />
+      {invitationsPromise && (
+        <Suspense fallback={<Loading text="Loading invitations..." />}>
+          <Await resolve={invitationsPromise}>
+            {(invitationsResource) => (
+              <InvitationsList resource={invitationsResource} />
+            )}
+          </Await>
+        </Suspense>
       )}
     </>
   );

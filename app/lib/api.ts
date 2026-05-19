@@ -1,4 +1,5 @@
 import type { User } from "firebase/auth";
+import { Resource } from "./hal";
 
 const ALLOWED_DOMAIN = "api.checklists.keeoon.dev";
 
@@ -19,6 +20,21 @@ export function apiResourceActions<POST = unknown>(href: string, user: User) {
   const hrefUrl = validateHref(href);
 
   return {
+    get: async (): Promise<Resource> => {
+      const idToken = await user.getIdToken();
+      const response = await fetch(hrefUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      const json = await response.json();
+      return new Resource(json);
+    },
     post: async (data: POST): Promise<string | null> => {
       const idToken = await user.getIdToken();
       const response = await fetch(hrefUrl, {
