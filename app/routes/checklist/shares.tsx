@@ -4,9 +4,9 @@ import { Link } from "~/components/Link";
 import { Loading } from "~/components/Loading";
 import { apiResourceActions } from "../../lib/api";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
-import { auth } from "../../lib/firebase";
 import type { Resource } from "../../lib/hal";
 import type { Route } from "./+types/shares";
+import { getUser } from "~/lib/auth";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -34,23 +34,17 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
 }
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  await auth.authStateReady();
-  const user = auth.currentUser;
-  if (!user) throw new Error("Not authenticated");
-
+  const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
   const sharesResource = await apiResourceActions(decodedUrl, user).get();
 
-  const invitationsLink = sharesResource.getFirstLinkMatching(
-    "related",
-    (l) => l.name === "invitations",
-  );
-
-  const invitationsPromise = invitationsLink
-    ? apiResourceActions(invitationsLink.href, user).get()
-    : undefined;
-
-  return { sharesResource, invitationsPromise };
+  return {
+    sharesResource,
+    invitationsPromise: sharesResource.getLinked(
+      "related",
+      (l) => l.name === "invitations",
+    ),
+  };
 }
 
 function InvitationsList({ resource }: { resource: Resource }) {
@@ -108,7 +102,7 @@ export default function Shares({ loaderData }: Route.ComponentProps) {
         >
           {items.map((item) => (
             <li key={item.href}>
-              <Link variant="row" to={`/checklist/shares/${item.href}`}>
+              <Link variant="row" to={`/checklist/shares/${encodeApiUrl(item.href)}`}>
                 {item.title ?? "Untitled"}
               </Link>
             </li>

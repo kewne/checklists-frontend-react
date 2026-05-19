@@ -1,6 +1,6 @@
-import { initializeUI } from '@firebase-oss/ui-core';
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { initializeUI } from "@firebase-oss/ui-core";
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
 // TODO: Replace with your Firebase config
 const firebaseConfig = {
@@ -9,7 +9,7 @@ const firebaseConfig = {
   projectId: "checklists-486418",
   storageBucket: "checklists-486418.firebasestorage.app",
   messagingSenderId: "240319760723",
-  appId: "1:240319760723:web:e5a55dd4d542a2e4bef9a6"
+  appId: "1:240319760723:web:e5a55dd4d542a2e4bef9a6",
 };
 
 // Initialize Firebase
@@ -21,5 +21,6 @@ export const ui = initializeUI({
   app,
   behaviors: [],
 });
+
 
 export default app;

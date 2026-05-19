@@ -24,6 +24,6 @@ export function updateFrom(
   if (!link) {
     return;
   }
-  const { post } = apiResourceActions<void>(link.href, user);
+  const { post } = apiResourceActions(link.href, user);
   return post;
 }

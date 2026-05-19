@@ -1,5 +1,5 @@
 import type { User } from "firebase/auth";
-import { Resource } from "./hal";
+import { Resource, type HalDocument } from "./hal";
 
 const ALLOWED_DOMAIN = "api.checklists.keeoon.dev";
 
@@ -16,11 +16,36 @@ function validateHref(href: string): URL {
   return url;
 }
 
-export function apiResourceActions<POST = unknown>(href: string, user: User) {
+export class ApiResource<
+  T extends Record<string, unknown> = {},
+> extends Resource<T> {
+  constructor(
+    document: HalDocument,
+    private readonly user: User,
+  ) {
+    super(document);
+  }
+
+  getLinked(
+    rel: string,
+    filter?: Parameters<Resource["getFirstLinkMatching"]>[1],
+  ) {
+    const link = this.getFirstLinkMatching(rel, filter);
+    if (!link) {
+      return undefined;
+    }
+    return apiResourceActions(link.href, this.user).get();
+  }
+}
+
+export function apiResourceActions<
+  GET extends Record<string, unknown> = {},
+  POST = unknown,
+>(href: string, user: User) {
   const hrefUrl = validateHref(href);
 
   return {
-    get: async (): Promise<Resource> => {
+    get: async (): Promise<ApiResource<GET>> => {
       const idToken = await user.getIdToken();
       const response = await fetch(hrefUrl, {
         method: "GET",
@@ -33,9 +58,9 @@ export function apiResourceActions<POST = unknown>(href: string, user: User) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       const json = await response.json();
-      return new Resource(json);
+      return new ApiResource(json, user);
     },
-    post: async (data: POST): Promise<string | null> => {
+    post: async (data?: POST): Promise<string | null> => {
       const idToken = await user.getIdToken();
       const response = await fetch(hrefUrl, {
         method: "POST",
@@ -43,7 +68,7 @@ export function apiResourceActions<POST = unknown>(href: string, user: User) {
           Authorization: `Bearer ${idToken}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: data ? JSON.stringify(data) : undefined,
       });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);

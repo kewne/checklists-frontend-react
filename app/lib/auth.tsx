@@ -1,7 +1,13 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { type User, onAuthStateChanged, signOut as firebaseSignOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { FirebaseUIProvider } from '@firebase-oss/ui-react';
-import { auth, ui } from './firebase';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import {
+  type User,
+  onAuthStateChanged,
+  signOut as firebaseSignOut,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { FirebaseUIProvider } from "@firebase-oss/ui-react";
+import { auth, ui } from "./firebase";
 
 interface AuthContextType {
   user: User | null;
@@ -40,7 +46,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
+}
+
+export async function getUser() {
+  await auth.authStateReady();
+  if (!auth.currentUser) {
+    throw new Error("No current user set");
+  }
+  return auth.currentUser;
 }
