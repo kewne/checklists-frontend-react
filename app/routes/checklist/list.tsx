@@ -47,7 +47,7 @@ export default function List({ loaderData, params }: Route.ComponentProps) {
       <Link variant="inline-block" size="large" to={`/checklists/create/${params.apiUrlEncoded}`}>
         Create Checklist
       </Link>
-      <ChecklistList resource={checklistsResource} user={user} />
+      <ChecklistList resource={checklistsResource} />
     </div>
   );
 }

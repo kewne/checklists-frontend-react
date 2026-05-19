@@ -1,24 +1,22 @@
-import { NavLink, useNavigate } from "react-router";
+import { NavLink, useNavigate, useRevalidator } from "react-router";
 import { Link } from "~/components/Link";
 
-import type { User } from "firebase/auth";
 import { apiResourceActions, type Checklist } from "~/lib/api";
+import { getUser } from "~/lib/auth";
 import { createFrom } from "~/lib/hateoas";
 import { Button } from "../../components/Button";
 import { ChecklistForm } from "../../components/ChecklistForm";
-import { useAuth } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
-import { useResource } from "../../lib/useResource";
 import type { Route } from "./+types/show";
 
-export function meta({ }: Route.MetaArgs) {
+export function meta({}: Route.MetaArgs) {
   return [
     { title: "Checklist Detail" },
     { name: "description", content: "View checklist details" },
   ];
 }
 
-export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
@@ -41,74 +39,36 @@ export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
   );
 }
 
-interface RunButtonProps {
-  href: string;
-  user: User;
-}
-
-function RunButton({ href, user }: RunButtonProps) {
-  const navigate = useNavigate();
-  const { post: createRun } = apiResourceActions(href, user);
-
-  const handleRun = async () => {
-    const location = await createRun({});
-    if (!location) {
-      return navigate("/runs");
-    }
-    navigate(`/runs/show/${encodeApiUrl(location)}`);
-  };
-
-  return (
-    <div className="mb-4 flex justify-end">
-      <Button type="primary" size="large" action={handleRun}>
-        Run
-      </Button>
-    </div>
-  );
-}
-
-export default function ChecklistDetail({ params }: Route.ComponentProps) {
-  const navigate = useNavigate();
-
-  const { user } = useAuth();
-
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+  const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
+  const checklistResource = await apiResourceActions<Checklist>(
+    decodedUrl,
+    user,
+  ).get();
+  return { checklistResource, user, decodedUrl };
+}
 
-  const { state, put } = useResource<Checklist>(decodedUrl, user!);
+export default function ChecklistDetail({ loaderData }: Route.ComponentProps) {
+  const navigate = useNavigate();
+  const { revalidate } = useRevalidator();
 
-  if (state.status === "loading") {
-    return (
-      <div className="flex items-center">
-        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600 mr-3"></div>
-        <span className="text-gray-600">Loading checklist...</span>
-      </div>
-    );
-  }
+  const { checklistResource, user, decodedUrl } = loaderData;
 
-  if (state.status === "error") {
-    return (
-      <div className="bg-red-50 border border-red-200 rounded-md p-4">
-        <p className="text-red-700 font-semibold">Failed to load checklist</p>
-        <p className="text-red-600 text-sm mt-1">{state.error.message}</p>
-      </div>
-    );
-  }
-
-  const createInstanceAction = createFrom(
-    state.resource,
-    user!,
+  const createInstanceLink = checklistResource.getFirstLinkMatching(
+    "create-from",
     (link) => link.name === "instance",
   );
 
-  const shareInvitationsLink = state.resource.getFirstLinkMatching(
-    "related",
-    (link) => link.name === "share-invitations",
-  );
-
-  const sharesLink = state.resource.getFirstLinkMatching(
+  const sharesLink = checklistResource.getFirstLinkMatching(
     "related",
     (link) => link.name === "shares",
   );
+
+  const handleSubmit = async (data: Checklist) => {
+    await apiResourceActions<{ title: string }>(decodedUrl, user).put(data);
+    revalidate();
+  };
 
   return (
     <div>
@@ -125,13 +85,13 @@ export default function ChecklistDetail({ params }: Route.ComponentProps) {
           )}
         </div>
         <div>
-          {createInstanceAction ? (
+          {createInstanceLink ? (
             <Button
               type="primary"
               size="large"
               action={async () => {
-                const location = await createInstanceAction({
-                  title: state.resource.properties.title,
+                const location = await createInstanceLink.actions.post({
+                  title: checklistResource.properties.title,
                 });
                 if (!location) {
                   return navigate("/runs");
@@ -145,9 +105,9 @@ export default function ChecklistDetail({ params }: Route.ComponentProps) {
         </div>
       </div>
       <ChecklistForm
-        initialValues={state.resource.properties}
+        initialValues={checklistResource.properties}
         submitLabel="Save"
-        onSubmit={put}
+        onSubmit={handleSubmit}
       />
     </div>
   );

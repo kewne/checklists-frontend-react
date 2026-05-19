@@ -1,5 +1,10 @@
 import type { User } from "firebase/auth";
-import { Resource, type HalDocument, type HalLink, type JsonProperties } from "./hal";
+import {
+  Resource,
+  type HalDocument,
+  type HalLink,
+  type JsonProperties,
+} from "./hal";
 
 const ALLOWED_DOMAIN = "api.checklists.keeoon.dev";
 
@@ -17,15 +22,20 @@ function validateHref(href: string): URL {
 }
 
 export interface ApiLink extends HalLink {
-  actions: ReturnType<typeof apiResourceActions>
+  actions: ReturnType<typeof apiResourceActions>;
 }
 
 export class ApiResource<T extends JsonProperties = {}> extends Resource<T> {
   constructor(
     document: HalDocument,
+    private readonly href: string,
     private readonly user: User,
   ) {
     super(document);
+  }
+
+  get actions() {
+    return apiResourceActions(this.href, this.user)
   }
 
   getLinked<GET extends JsonProperties, POST extends JsonProperties>(
@@ -39,13 +49,25 @@ export class ApiResource<T extends JsonProperties = {}> extends Resource<T> {
     return apiResourceActions<GET, POST>(link.href, this.user).get();
   }
 
+  getFirstLinkMatching(
+    rel: string,
+    filter?: (link: HalLink) => boolean,
+  ): ApiLink | undefined {
+    const link = super.getFirstLinkMatching(rel, filter);
+    if (!link) {
+      return undefined;
+    }
+    return {
+      ...link,
+      actions: apiResourceActions(link.href, this.user),
+    };
+  }
+
   getLinkArray(rel: string): ApiLink[] {
-    return super.getLinkArray(rel).map(
-      (link) => ({
-        ...link,
-        actions: apiResourceActions(link.href, this.user)
-      })
-    )
+    return super.getLinkArray(rel).map((link) => ({
+      ...link,
+      actions: apiResourceActions(link.href, this.user),
+    }));
   }
 }
 
@@ -69,7 +91,7 @@ export function apiResourceActions<
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       const json = await response.json();
-      return new ApiResource(json, user);
+      return new ApiResource(json, href, user);
     },
     post: async (data?: POST): Promise<string | null> => {
       const idToken = await user.getIdToken();
@@ -85,6 +107,20 @@ export function apiResourceActions<
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       return response.headers.get("Location");
+    },
+    put: async (data: unknown): Promise<void> => {
+      const idToken = await user.getIdToken();
+      const response = await fetch(hrefUrl, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
     },
     delete: async (): Promise<void> => {
       const idToken = await user.getIdToken();
