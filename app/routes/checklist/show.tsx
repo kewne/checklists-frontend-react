@@ -1,24 +1,24 @@
 import { NavLink, useNavigate } from "react-router";
 import { Link } from "~/components/Link";
 
-import { useAuth } from "../../lib/auth";
-import { useResource } from "../../lib/useResource";
-import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
-import { ChecklistForm } from "../../components/ChecklistForm";
-import { Button } from "../../components/Button";
-import type { Route } from "./+types/show";
 import type { User } from "firebase/auth";
 import { apiResourceActions, type Checklist } from "~/lib/api";
 import { createFrom } from "~/lib/hateoas";
+import { Button } from "../../components/Button";
+import { ChecklistForm } from "../../components/ChecklistForm";
+import { useAuth } from "../../lib/auth";
+import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
+import { useResource } from "../../lib/useResource";
+import type { Route } from "./+types/show";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Checklist Detail" },
     { name: "description", content: "View checklist details" },
   ];
 }
 
-export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
@@ -114,15 +114,6 @@ export default function ChecklistDetail({ params }: Route.ComponentProps) {
     <div>
       <div className="flex items-start justify-between gap-x-2 mb-4">
         <div className="space-x-2">
-          {shareInvitationsLink && (
-            <Link
-              variant="inline-block"
-              size="large"
-              to={`/checklists/share-invitations/list/${encodeApiUrl(shareInvitationsLink.href)}`}
-            >
-              Invitations
-            </Link>
-          )}
           {sharesLink && (
             <Link
               variant="inline-block"
