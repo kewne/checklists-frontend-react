@@ -1,6 +1,7 @@
-import { useAuth } from "../../lib/auth";
+import { Link } from "~/components/Link";
+import { apiResourceActions } from "../../lib/api";
+import { getUser } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
-import { useResource } from "../../lib/useResource";
 import type { Route } from "./+types/share-invitations-show";
 
 type ShareInvitation = {
@@ -17,31 +18,33 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function ShareInvitationShow({ params }: Route.ComponentProps) {
-  const { user } = useAuth();
+export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-4xl mx-auto py-8 px-4">
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="text-red-600 mb-4">
+            <p className="font-semibold">Error</p>
+            <p className="text-sm">Invalid URL. Please go back and try again.</p>
+          </div>
+          <Link to="/">Back to Home</Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+  const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
-  const { state } = useResource<ShareInvitation>(decodedUrl, user!);
+  const invitationResource = await apiResourceActions<ShareInvitation>(decodedUrl, user).get();
+  return { invitationResource };
+}
 
-  if (state.status === "loading") {
-    return (
-      <div className="flex items-center">
-        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600 mr-3"></div>
-        <span className="text-gray-600">Loading...</span>
-      </div>
-    );
-  }
-
-  if (state.status === "error") {
-    return (
-      <div className="bg-red-50 border border-red-200 rounded-md p-4">
-        <p className="text-red-700 font-semibold">Failed to load invitation</p>
-        <p className="text-red-600 text-sm mt-1">{state.error.message}</p>
-      </div>
-    );
-  }
-
-  const { title, checklistTitle, createdAt, expiresAt } = state.resource.properties;
-  const previewLink = state.resource.getFirstLinkMatching("preview");
+export default function ShareInvitationShow({ loaderData }: Route.ComponentProps) {
+  const { invitationResource } = loaderData;
+  const { title, checklistTitle, createdAt, expiresAt } = invitationResource.properties;
+  const previewLink = invitationResource.getFirstLinkMatching("preview");
   const shareUrl = previewLink
     ? `${window.location.origin}/checklists/share-invitations/accept/${encodeApiUrl(previewLink.href)}`
     : undefined;
