@@ -1,7 +1,8 @@
 import { NavLink, Outlet } from "react-router";
-import { useAuth } from "../lib/auth";
-import { useResource } from "../lib/useResource";
+import { apiResourceActions } from "../lib/api";
+import { useAuth, getUser } from "../lib/auth";
 import { Button } from "./Button";
+import type { Route } from "./+types/MenuLayout";
 
 interface MenuLinkProps {
   link: unknown | null;
@@ -27,18 +28,17 @@ function MenuLink({ link, to, children }: MenuLinkProps) {
   );
 }
 
-export default function MenuLayout() {
-  const { user, signOut } = useAuth();
-  const { state } = useResource("https://api.checklists.keeoon.dev/", user!);
+export async function clientLoader() {
+  const user = await getUser();
+  const rootResource = await apiResourceActions("https://api.checklists.keeoon.dev/", user).get();
+  const checklistsLink = rootResource.getFirstLinkMatching("related", (link) => link.name === "checklists");
+  const instancesLink = rootResource.getFirstLinkMatching("related", (link) => link.name === "checklist-instances");
+  return { checklistsLink, instancesLink };
+}
 
-  const checklistsLink =
-    state.status === "success"
-      ? state.resource.getFirstLinkMatching("related", (link) => link.name === "checklists")
-      : null;
-  const instancesLink =
-    state.status === "success"
-      ? state.resource.getFirstLinkMatching("related", (link) => link.name === "checklist-instances")
-      : null;
+export default function MenuLayout({ loaderData }: Route.ComponentProps) {
+  const { checklistsLink, instancesLink } = loaderData;
+  const { signOut } = useAuth();
 
   const handleSignOut = async () => {
     await signOut();
