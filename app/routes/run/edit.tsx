@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router";
 import { Link } from "~/components/Link";
 import { RunEditForm } from "../../components/RunEditForm";
-import { useAuth } from "../../lib/auth";
+import { apiResourceActions } from "../../lib/api";
+import { getUser } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
-import { useResource } from "../../lib/useResource";
 import type { Route } from "./+types/edit";
 import type { ChecklistRun, WriteableChecklistRun } from "~/lib/api";
 
@@ -32,16 +32,19 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   );
 }
 
-export default function EditRun({ params }: Route.ComponentProps) {
-  const { user } = useAuth();
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+  const user = await getUser();
+  const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
+  const runResource = await apiResourceActions<ChecklistRun>(decodedUrl, user).get();
+  return { runResource, user, decodedUrl };
+}
+
+export default function EditRun({ loaderData, params }: Route.ComponentProps) {
+  const { runResource, user, decodedUrl } = loaderData;
   const navigate = useNavigate();
 
-  const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
-
-  const { state, put } = useResource<ChecklistRun, WriteableChecklistRun>(decodedUrl, user!);
-
   const handleSubmit = async (data: WriteableChecklistRun) => {
-    await put(data);
+    await apiResourceActions<ChecklistRun, WriteableChecklistRun>(decodedUrl, user).put(data);
     navigate(`/runs/show/${params.apiUrlEncoded}`);
   };
 
@@ -49,27 +52,9 @@ export default function EditRun({ params }: Route.ComponentProps) {
     navigate(`/runs/show/${params.apiUrlEncoded}`);
   };
 
-  if (state.status === "loading") {
-    return (
-      <div className="flex items-center">
-        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600 mr-3"></div>
-        <span className="text-gray-600">Loading run...</span>
-      </div>
-    );
-  }
-
-  if (state.status === "error") {
-    return (
-      <div className="bg-red-50 border border-red-200 rounded-md p-4">
-        <p className="text-red-700 font-semibold">Failed to load run</p>
-        <p className="text-red-600 text-sm mt-1">{state.error.message}</p>
-      </div>
-    );
-  }
-
   return (
     <RunEditForm
-      initialValues={state.resource.properties}
+      initialValues={runResource.properties}
       submitLabel="Save"
       onSubmit={handleSubmit}
       onCancel={handleCancel}
