@@ -10,7 +10,7 @@ interface ChecklistItemProps {
 
 export function ChecklistItem({ item, onDelete }: ChecklistItemProps) {
   const handleDelete = async () => {
-    await item.actions.delete();
+    await item.actions().delete();
     onDelete();
   };
 

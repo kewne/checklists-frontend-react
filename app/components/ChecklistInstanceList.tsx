@@ -19,7 +19,7 @@ function ChecklistInstanceItem({
 }: ChecklistInstanceItemProps) {
 
   const handleDelete = async () => {
-    await item.actions.delete();
+    await item.actions().delete();
     onDeleted();
   };
 

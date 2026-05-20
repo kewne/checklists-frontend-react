@@ -22,7 +22,7 @@ function validateHref(href: string): URL {
 }
 
 export interface ApiLink extends HalLink {
-  actions: ReturnType<typeof apiResourceActions>;
+  actions<T extends JsonProperties>(): ReturnType<typeof apiResourceActions<T>>;
 }
 
 export class ApiResource<T extends JsonProperties = {}> extends Resource<T> {
@@ -59,14 +59,14 @@ export class ApiResource<T extends JsonProperties = {}> extends Resource<T> {
     }
     return {
       ...link,
-      actions: apiResourceActions(link.href, this.user),
+      actions: () => apiResourceActions(link.href, this.user),
     };
   }
 
   getLinkArray(rel: string): ApiLink[] {
     return super.getLinkArray(rel).map((link) => ({
       ...link,
-      actions: apiResourceActions(link.href, this.user),
+      actions: () => apiResourceActions(link.href, this.user),
     }));
   }
 }

@@ -1,6 +1,5 @@
-import type { User } from "firebase/auth";
+import { type ApiLink } from "~/lib/api";
 import { Button } from "./Button";
-import { apiResourceActions } from "~/lib/api";
 
 interface RunItemCompleted {
   completed_at: string;
@@ -11,30 +10,25 @@ interface RunItemProps {
   title: string;
   description?: string;
   completed?: RunItemCompleted;
-  completeHref?: string;
-  markIncompleteHref?: string;
-  user: User;
+  completeHref?: ApiLink;
+  markIncompleteHref?: ApiLink;
   onItemUpdated: () => Promise<void>;
 }
 
 interface RunItemActionsProps {
-  completeHref?: string;
-  markIncompleteHref?: string;
-  user: User;
+  completeHref?: ApiLink;
+  markIncompleteHref?: ApiLink;
   onItemUpdated: () => Promise<void>;
 }
 
 interface CompleteButtonProps {
-  href: string;
-  user: User;
+  completeLink: ApiLink;
   onItemUpdated: () => Promise<void>;
 }
 
-function CompleteButton({ href, user, onItemUpdated }: CompleteButtonProps) {
-  const { post } = apiResourceActions(href, user);
-
+function CompleteButton({ completeLink, onItemUpdated }: CompleteButtonProps) {
   const handleCompleted = async () => {
-    await post({});
+    await completeLink.actions().post({});
     await onItemUpdated();
   };
 
@@ -46,20 +40,16 @@ function CompleteButton({ href, user, onItemUpdated }: CompleteButtonProps) {
 }
 
 interface MarkIncompleteButtonProps {
-  href: string;
-  user: User;
+  href: ApiLink;
   onItemUpdated: () => Promise<void>;
 }
 
 function MarkIncompleteButton({
   href,
-  user,
   onItemUpdated,
 }: MarkIncompleteButtonProps) {
-  const { post } = apiResourceActions(href, user);
-
   const handleMarkIncomplete = async () => {
-    await post({});
+    await href.actions().post({});
     await onItemUpdated();
   };
 
@@ -73,22 +63,19 @@ function MarkIncompleteButton({
 function RunItemActions({
   completeHref,
   markIncompleteHref,
-  user,
   onItemUpdated,
 }: RunItemActionsProps) {
   return (
     <div className="flex flex-row justify-end">
       {completeHref && (
         <CompleteButton
-          href={completeHref}
-          user={user}
+          completeLink={completeHref}
           onItemUpdated={onItemUpdated}
         />
       )}
       {markIncompleteHref && (
         <MarkIncompleteButton
           href={markIncompleteHref}
-          user={user}
           onItemUpdated={onItemUpdated}
         />
       )}
@@ -102,7 +89,6 @@ export function RunItem({
   completed,
   completeHref,
   markIncompleteHref,
-  user,
   onItemUpdated,
 }: RunItemProps) {
   const completedAt = completed
@@ -140,7 +126,6 @@ export function RunItem({
           <RunItemActions
             completeHref={completeHref}
             markIncompleteHref={markIncompleteHref}
-            user={user}
             onItemUpdated={onItemUpdated}
           />
         </div>

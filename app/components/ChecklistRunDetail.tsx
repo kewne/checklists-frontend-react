@@ -2,49 +2,42 @@ import type { User } from "firebase/auth";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "~/components/Link";
-import { encodeApiUrl } from "../lib/encoding";
-import type { Resource } from "../lib/hal";
-import { useResource } from "../lib/useResource";
-import { Button } from "./Button";
-import { MenuButton, type MenuItem } from "./MenuButton";
-import { RunItem } from "./RunItem";
 import {
-  apiResourceActions,
+  ApiResource,
+  type ApiLink,
   type Checklist,
   type ChecklistRun,
 } from "~/lib/api";
-import { createFrom, updateFrom } from "~/lib/hateoas";
+import { encodeApiUrl } from "../lib/encoding";
+import { Button } from "./Button";
+import { MenuButton, type MenuItem } from "./MenuButton";
+import { RunItem } from "./RunItem";
 
 interface ChecklistRunDetailProps {
-  resource: Resource<ChecklistRun>;
-  user: User;
+  resource: ApiResource<ChecklistRun>;
   onItemUpdated: () => Promise<void>;
   onDelete?: () => Promise<void>;
   onEdit?: () => Promise<void>;
 }
 
-function CreatedFromChecklist({
-  checklistHref,
-  user,
-}: {
-  checklistHref: string;
-  user: User;
-}) {
-  const { state } = useResource<Checklist>(checklistHref, user);
+function CreatedFromChecklist({ checklistLink }: { checklistLink: ApiLink }) {
+  const [checklist, setChecklist] = useState<Checklist>();
+  useEffect(() => {
+    checklistLink
+      .actions<Checklist>()
+      .get()
+      .then((checklist) => setChecklist(checklist.properties));
+  }, [checklistLink]);
 
-  if (state.status === "loading") {
-    return <div className="text-sm text-gray-600 mb-4">Created from...</div>;
-  }
-
-  if (state.status === "error") {
-    return null;
+  if (!checklist) {
+    return;
   }
 
   return (
     <div className="text-sm text-gray-600 mb-4">
-      Created from{" "}
-      <Link to={`/checklists/show/${encodeApiUrl(checklistHref)}`}>
-        {state.resource.properties.title}
+      Created from
+      <Link to={`/checklists/show/${encodeApiUrl(checklistLink.href)}`}>
+        {checklist.title}
       </Link>
     </div>
   );
@@ -52,7 +45,6 @@ function CreatedFromChecklist({
 
 export function ChecklistRunDetail({
   resource,
-  user,
   onItemUpdated,
   onDelete,
   onEdit,
@@ -90,7 +82,7 @@ export function ChecklistRunDetail({
         });
       }
     }
-  }, [resource, user]);
+  }, [resource]);
 
   const handleDeleteClick = async () => {
     if (confirmationText) {
@@ -113,16 +105,15 @@ export function ChecklistRunDetail({
     });
   }
 
-  const createChecklistAction = createFrom(
-    resource,
-    user,
+  const createChecklistFrom = resource.getFirstLinkMatching(
+    "create-from",
     (link) => link.name === "checklist",
   );
-  if (createChecklistAction) {
+  if (createChecklistFrom) {
     additionalActions.push({
       title: "Create Checklist",
       action: async () => {
-        const location = await createChecklistAction({
+        const location = await createChecklistFrom.actions().post({
           title: `Copy of ${resource.properties.title}`,
         });
         if (location) {
@@ -133,16 +124,15 @@ export function ChecklistRunDetail({
     });
   }
 
-  const updateChecklistFrom = updateFrom(
-    resource,
-    user,
+  const updateChecklistFrom = resource.getFirstLinkMatching(
+    "update-from",
     (link) => link.name === "checklist",
   );
   if (updateChecklistFrom) {
     additionalActions.push({
       title: "Update Checklist",
       action: async () => {
-        const location = await updateChecklistFrom();
+        const location = await updateChecklistFrom.actions().post();
         if (location) {
           return navigate(`/checklists/show/${encodeApiUrl(location)}`);
         }
@@ -164,10 +154,7 @@ export function ChecklistRunDetail({
             {resource.properties.title}
           </h1>
           {checklistLink && (
-            <CreatedFromChecklist
-              checklistHref={checklistLink.href}
-              user={user}
-            />
+            <CreatedFromChecklist checklistLink={checklistLink} />
           )}
         </div>
         <div>
@@ -213,9 +200,8 @@ export function ChecklistRunDetail({
                       title={item.title ?? item.name}
                       description={item.description}
                       completed={item.completed}
-                      completeHref={completeLink?.href}
-                      markIncompleteHref={markIncompleteLink?.href}
-                      user={user}
+                      completeHref={completeLink}
+                      markIncompleteHref={markIncompleteLink}
                       onItemUpdated={onItemUpdated}
                     />
                   </li>
@@ -255,9 +241,8 @@ export function ChecklistRunDetail({
                       title={item.title ?? item.name}
                       description={item.description}
                       completed={item.completed}
-                      completeHref={completeLink?.href}
-                      markIncompleteHref={markIncompleteLink?.href}
-                      user={user}
+                      completeHref={completeLink}
+                      markIncompleteHref={markIncompleteLink}
                       onItemUpdated={onItemUpdated}
                     />
                   </li>

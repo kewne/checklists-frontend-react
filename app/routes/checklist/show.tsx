@@ -90,7 +90,7 @@ export default function ChecklistDetail({ loaderData }: Route.ComponentProps) {
               type="primary"
               size="large"
               action={async () => {
-                const location = await createInstanceLink.actions.post({
+                const location = await createInstanceLink.actions().post({
                   title: checklistResource.properties.title,
                 });
                 if (!location) {
