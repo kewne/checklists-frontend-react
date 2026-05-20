@@ -1,8 +1,8 @@
 import { NavLink, Outlet } from "react-router";
 import { apiResourceActions } from "../lib/api";
-import { useAuth, getUser } from "../lib/auth";
-import { Button } from "./Button";
+import { getUser, useAuth } from "../lib/auth";
 import type { Route } from "./+types/MenuLayout";
+import { Button } from "./Button";
 
 interface MenuLinkProps {
   link: unknown | null;
@@ -17,9 +17,10 @@ function MenuLink({ link, to, children }: MenuLinkProps) {
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `block px-4 py-2 rounded border border-gray-200 text-sm text-indigo-600 underline underline-offset-4 ${isActive
-          ? "bg-gray-100 decoration-solid hover:outline"
-          : "decoration decoration-gray-100 hover:decoration-indigo-400 hover:outline"
+        `block px-4 py-2 rounded border border-gray-200 text-sm text-indigo-600 underline underline-offset-4 ${
+          isActive
+            ? "bg-gray-100 decoration-solid hover:outline"
+            : "decoration decoration-gray-100 hover:decoration-indigo-400 hover:outline"
         }`
       }
     >
@@ -30,9 +31,18 @@ function MenuLink({ link, to, children }: MenuLinkProps) {
 
 export async function clientLoader() {
   const user = await getUser();
-  const rootResource = await apiResourceActions("https://api.checklists.keeoon.dev/", user).get();
-  const checklistsLink = rootResource.getFirstLinkMatching("related", (link) => link.name === "checklists");
-  const instancesLink = rootResource.getFirstLinkMatching("related", (link) => link.name === "checklist-instances");
+  const rootResource = await apiResourceActions(
+    "https://api.checklists.keeoon.dev/",
+    user,
+  ).get();
+  const checklistsLink = rootResource.getFirstLinkMatching(
+    "related",
+    (link) => link.name === "checklists",
+  );
+  const instancesLink = rootResource.getFirstLinkMatching(
+    "related",
+    (link) => link.name === "checklist-instances",
+  );
   return { checklistsLink, instancesLink };
 }
 
@@ -49,8 +59,12 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
       <nav className="bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 py-3 flex gap-3 justify-between items-center">
           <div className="flex gap-3">
-            <MenuLink link={instancesLink} to="/runs">Runs</MenuLink>
-            <MenuLink link={checklistsLink} to="/checklists">Checklists</MenuLink>
+            <MenuLink link={instancesLink} to="/runs">
+              Runs
+            </MenuLink>
+            <MenuLink link={checklistsLink} to="/checklists">
+              Checklists
+            </MenuLink>
           </div>
           <Button
             type="danger"
