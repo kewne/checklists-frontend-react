@@ -1,20 +1,15 @@
-import { Navigate, Outlet } from "react-router";
-import { useAuth } from "../lib/auth";
+import { Outlet, redirect } from "react-router";
+import { getUser } from "../lib/auth";
+
+export async function clientLoader() {
+  try {
+    await getUser();
+  } catch {
+    return redirect("/login");
+  }
+  return {};
+}
 
 export default function ProtectedLayout() {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
-
   return <Outlet />;
 }

@@ -1,4 +1,10 @@
-import { type RouteConfig, index, layout, prefix, route } from "@react-router/dev/routes";
+import {
+  type RouteConfig,
+  index,
+  layout,
+  prefix,
+  route,
+} from "@react-router/dev/routes";
 
 export default [
   route("/login", "routes/login.tsx"),
@@ -12,9 +18,18 @@ export default [
         route("list/:apiUrlEncoded", "routes/checklist/list.tsx"),
         route("show/:apiUrlEncoded", "routes/checklist/show.tsx"),
         ...prefix("share-invitations", [
-          route("create/:apiUrlEncoded", "routes/checklist/share-invitations-create.tsx"),
-          route("show/:apiUrlEncoded", "routes/checklist/share-invitations-show.tsx"),
-          route("accept/:apiUrlEncoded", "routes/checklist/share-invitations-accept.tsx"),
+          route(
+            "create/:apiUrlEncoded",
+            "routes/checklist/share-invitations-create.tsx",
+          ),
+          route(
+            "show/:apiUrlEncoded",
+            "routes/checklist/share-invitations-show.tsx",
+          ),
+          route(
+            "accept/:apiUrlEncoded",
+            "routes/checklist/share-invitations-accept.tsx",
+          ),
         ]),
         ...prefix("shares", [
           route("list/:apiUrlEncoded", "routes/checklist/shares.tsx"),

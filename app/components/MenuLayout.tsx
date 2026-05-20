@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router";
+import { NavLink, Outlet, useRevalidator } from "react-router";
 import { apiResourceActions } from "../lib/api";
 import { getUser, useAuth } from "../lib/auth";
 import type { Route } from "./+types/MenuLayout";
@@ -49,9 +49,11 @@ export async function clientLoader() {
 export default function MenuLayout({ loaderData }: Route.ComponentProps) {
   const { checklistsLink, instancesLink } = loaderData;
   const { signOut } = useAuth();
+  const { revalidate } = useRevalidator();
 
   const handleSignOut = async () => {
     await signOut();
+    revalidate();
   };
 
   return (
