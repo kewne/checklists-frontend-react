@@ -1,9 +1,9 @@
-import { useNavigate } from "react-router";
+import { useNavigate, useRevalidator } from "react-router";
 import { Link } from "~/components/Link";
 import { ChecklistRunDetail } from "../../components/ChecklistRunDetail";
-import { useAuth } from "../../lib/auth";
+import { apiResourceActions } from "../../lib/api";
+import { getUser } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
-import { useResource } from "../../lib/useResource";
 import type { Route } from "./+types/show";
 import type { ChecklistRun } from "~/lib/api";
 
@@ -32,40 +32,28 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   );
 }
 
-export default function ChecklistRun({ params }: Route.ComponentProps) {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+  const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
+  const runResource = await apiResourceActions<ChecklistRun>(decodedUrl, user).get();
+  return { runResource, user, decodedUrl };
+}
 
-  const { state, get, delete: del } = useResource<ChecklistRun>(decodedUrl, user!);
+export default function ChecklistRun({ loaderData, params }: Route.ComponentProps) {
+  const { runResource, user, decodedUrl } = loaderData;
+  const navigate = useNavigate();
+  const { revalidate } = useRevalidator();
 
   const doDelete = async () => {
-    await del();
+    await apiResourceActions(decodedUrl, user).delete();
     navigate("/");
   };
-  if (state.status === "loading") {
-    return (
-      <div className="flex items-center">
-        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600 mr-3"></div>
-        <span className="text-gray-600">Loading run...</span>
-      </div>
-    );
-  }
-  if (state.status === "error") {
-    return (
-      <div className="bg-red-50 border border-red-200 rounded-md p-4">
-        <p className="text-red-700 font-semibold">Failed to load run</p>
-        <p className="text-red-600 text-sm mt-1">{state.error.message}</p>
-      </div>
-    );
-  }
 
   return (
     <ChecklistRunDetail
-      resource={state.resource}
-      user={user!}
-      onItemUpdated={get}
+      resource={runResource}
+      user={user}
+      onItemUpdated={revalidate}
       onDelete={doDelete}
       onEdit={async () => navigate(`/runs/edit/${params.apiUrlEncoded}`)}
     />
