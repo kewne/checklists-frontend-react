@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
-import { useAuth } from "~/lib/auth";
-import { useResource } from "~/lib/useResource";
+import { redirect } from "react-router";
+import { Link } from "~/components/Link";
+import { apiResourceActions } from "~/lib/api";
+import { getUser } from "~/lib/auth";
 import { encodeApiUrl } from "~/lib/encoding";
 import type { Route } from "./+types";
 
@@ -12,35 +12,33 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function RunsRedirect({ params }: Route.ComponentProps) {
-  const { user } = useAuth();
-  const { state } = useResource('https://api.checklists.keeoon.dev/', user!);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (state.status === 'success') {
-      const instancesLink = state.resource.getFirstLinkMatching('related', (link) => link.name === 'checklist-instances');
-      if (instancesLink) {
-        navigate(`/runs/list/${encodeApiUrl(instancesLink.href)}`, { replace: true });
-      }
-    }
-  }, [state, navigate]);
-
-  if (state.status === 'error') {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-4xl mx-auto py-8 px-4">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-red-600 mb-4">
-              <p className="font-semibold">Error</p>
-              <p className="text-sm">Failed to load runs. Please try again later.</p>
-            </div>
+export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-4xl mx-auto py-8 px-4">
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="text-red-600 mb-4">
+            <p className="font-semibold">Error</p>
+            <p className="text-sm">Failed to load runs. Please try again later.</p>
           </div>
+          <Link to="/">Back to Home</Link>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
+export async function clientLoader() {
+  const user = await getUser();
+  const rootResource = await apiResourceActions("https://api.checklists.keeoon.dev/", user).get();
+  const instancesLink = rootResource.getFirstLinkMatching("related", (link) => link.name === "checklist-instances");
+  if (instancesLink) {
+    return redirect(`/runs/list/${encodeApiUrl(instancesLink.href)}`);
+  }
+  return {};
+}
+
+export default function RunsRedirect() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
