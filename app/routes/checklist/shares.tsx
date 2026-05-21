@@ -1,21 +1,22 @@
 import { Suspense } from "react";
-import { Await } from "react-router";
+import { Await, useFetcher } from "react-router";
+import { Button } from "~/components/Button";
 import { Link } from "~/components/Link";
 import { Loading } from "~/components/Loading";
+import { getUser } from "~/lib/auth";
 import { apiResourceActions } from "../../lib/api";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import type { Resource } from "../../lib/hal";
 import type { Route } from "./+types/shares";
-import { getUser } from "~/lib/auth";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Shares" },
     { name: "description", content: "Manage shares" },
   ];
 }
 
-export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
@@ -33,6 +34,31 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
   );
 }
 
+export async function clientAction({ request }: Route.ClientActionArgs) {
+  const method = request.method.toLowerCase();
+
+  if (method !== "delete") {
+    throw new Response("Method not allowed", { status: 405 });
+  }
+
+  const user = await getUser();
+  const formData = await request.formData();
+  const href = formData.get("href");
+
+  if (typeof href !== "string") {
+    throw new Response("Invalid href", { status: 400 });
+  }
+
+  try {
+    const resource = apiResourceActions(href, user);
+    await resource.delete();
+  } catch (error) {
+    throw new Response("Failed to delete", { status: 500 });
+  }
+
+  return null;
+}
+
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
@@ -48,8 +74,15 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 }
 
 function InvitationsList({ resource }: { resource: Resource }) {
+  const fetcher = useFetcher();
   const createLink = resource.getFirstLinkMatching("create");
   const items = resource.getLinkArray("items");
+
+  const handleDeleteInvitation = (href: string) => async () => {
+    const formData = new FormData();
+    formData.append("href", href);
+    fetcher.submit(formData, { method: "delete" });
+  };
 
   return (
     <>
@@ -71,13 +104,21 @@ function InvitationsList({ resource }: { resource: Resource }) {
           className="mt-4 divide-y divide-gray-100 border border-gray-200 rounded-md"
         >
           {items.map((item) => (
-            <li key={item.href}>
+            <li key={item.href} className="flex justify-between items-center px-4 py-3 hover:bg-gray-50">
               <Link
                 variant="row"
                 to={`/checklists/share-invitations/show/${encodeApiUrl(item.href)}`}
               >
                 {item.title ?? "Untitled"}
               </Link>
+              <Button
+                type="danger"
+                variant="outline"
+                size="small"
+                action={handleDeleteInvitation(item.href)}
+              >
+                Delete
+              </Button>
             </li>
           ))}
         </ul>
