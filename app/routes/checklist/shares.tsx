@@ -130,6 +130,13 @@ function InvitationsList({ resource }: { resource: Resource }) {
 export default function Shares({ loaderData }: Route.ComponentProps) {
   const { sharesResource, invitationsPromise } = loaderData;
   const items = sharesResource.getLinkArray("items");
+  const fetcher = useFetcher();
+
+  const handleDeleteShare = (href: string) => async () => {
+    const formData = new FormData();
+    formData.append("href", href);
+    fetcher.submit(formData, { method: "delete" });
+  };
 
   return (
     <>
@@ -142,13 +149,21 @@ export default function Shares({ loaderData }: Route.ComponentProps) {
           className="mt-4 divide-y divide-gray-100 border border-gray-200 rounded-md"
         >
           {items.map((item) => (
-            <li key={item.href}>
+            <li key={item.href} className="flex justify-between items-center px-4 py-3 hover:bg-gray-50">
               <Link
                 variant="row"
                 to={`/checklist/shares/${encodeApiUrl(item.href)}`}
               >
                 {item.title ?? "Untitled"}
               </Link>
+              <Button
+                type="danger"
+                variant="outline"
+                size="small"
+                action={handleDeleteShare(item.href)}
+              >
+                Delete
+              </Button>
             </li>
           ))}
         </ul>
