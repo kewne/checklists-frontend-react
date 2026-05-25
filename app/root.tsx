@@ -1,3 +1,9 @@
+import "./app.css";
+
+import "react-toastify/dist/ReactToastify.css";
+
+import "@firebase-oss/ui-styles/dist.min.css";
+
 import {
   isRouteErrorResponse,
   Links,
@@ -7,9 +13,8 @@ import {
   ScrollRestoration,
 } from "react-router";
 
+import { ToastContainer } from "react-toastify";
 import type { Route } from "./+types/root";
-import "./app.css";
-import "@firebase-oss/ui-styles/dist.min.css";
 import { AuthProvider } from "./lib/auth";
 
 export const links: Route.LinksFunction = () => [
@@ -36,6 +41,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
         <ScrollRestoration />
         <Scripts />
       </body>
