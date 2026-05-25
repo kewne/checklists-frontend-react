@@ -5,30 +5,21 @@ import { Link } from "./Link";
 
 interface ChecklistInstanceListProps {
   items: ApiLink[];
-  onRefresh: () => void;
+  onDelete: (href: string) => () => Promise<void>;
 }
 
 interface ChecklistInstanceItemProps {
   item: ApiLink;
-  onDeleted: () => void;
+  onDelete: (href: string) => () => Promise<void>;
 }
 
-function ChecklistInstanceItem({
-  item,
-  onDeleted,
-}: ChecklistInstanceItemProps) {
-
-  const handleDelete = async () => {
-    await item.actions().delete();
-    onDeleted();
-  };
-
+function ChecklistInstanceItem({ item, onDelete }: ChecklistInstanceItemProps) {
   return (
     <div className="flex px-4 py-3 items-center justify-between">
       <Link to={`/runs/show/${encodeApiUrl(item.href)}`}>
         {item.title ?? item.name}
       </Link>
-      <Button type="danger" variant="outline" action={handleDelete}>
+      <Button type="danger" variant="outline" action={onDelete(item.href)}>
         Delete
       </Button>
     </div>
@@ -37,7 +28,7 @@ function ChecklistInstanceItem({
 
 export function ChecklistInstanceList({
   items,
-  onRefresh,
+  onDelete,
 }: ChecklistInstanceListProps) {
   if (items.length === 0) {
     return (
@@ -53,10 +44,7 @@ export function ChecklistInstanceList({
     >
       {items.map((item) => (
         <li key={item.href} className="hover:bg-gray-50">
-          <ChecklistInstanceItem
-            item={item}
-            onDeleted={onRefresh}
-          />
+          <ChecklistInstanceItem item={item} onDelete={onDelete} />
         </li>
       ))}
     </ul>

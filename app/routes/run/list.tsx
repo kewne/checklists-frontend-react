@@ -1,9 +1,10 @@
-import { useRevalidator } from "react-router";
+import { useFetcher } from "react-router";
 import { Link } from "~/components/Link";
 import { ChecklistInstanceList } from "../../components/ChecklistInstanceList";
 import { apiResourceActions } from "../../lib/api";
 import { getUser } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
+import { showErrorToast, showSuccessToast } from "../../lib/toastHelpers";
 import type { Route } from "./+types/list";
 
 export function meta({}: Route.MetaArgs) {
@@ -31,6 +32,32 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
   );
 }
 
+export async function clientAction({ request }: Route.ClientActionArgs) {
+  const method = request.method.toLowerCase();
+
+  if (method !== "delete") {
+    throw new Response("Method not allowed", { status: 405 });
+  }
+
+  const user = await getUser();
+  const formData = await request.formData();
+  const href = formData.get("href");
+
+  if (typeof href !== "string") {
+    throw new Response("Invalid href", { status: 400 });
+  }
+
+  try {
+    const resource = apiResourceActions(href, user);
+    await resource.delete();
+    showSuccessToast("Run deleted successfully");
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to delete run";
+    showErrorToast(message);
+  }
+}
+
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
@@ -42,10 +69,16 @@ export default function ChecklistInstances({
   loaderData,
 }: Route.ComponentProps) {
   const { runsResource } = loaderData;
-  const { revalidate } = useRevalidator();
+  const fetcher = useFetcher();
 
   const items = runsResource.getLinkArray("items");
   const createLink = runsResource.getFirstLinkMatching("create");
+
+  const handleDelete = (href: string) => async () => {
+    const formData = new FormData();
+    formData.append("href", href);
+    fetcher.submit(formData, { method: "delete" });
+  };
 
   return (
     <>
@@ -59,7 +92,7 @@ export default function ChecklistInstances({
           Create run
         </Link>
       )}
-      <ChecklistInstanceList items={items} onRefresh={revalidate} />
+      <ChecklistInstanceList items={items} onDelete={handleDelete} />
     </>
   );
 }
