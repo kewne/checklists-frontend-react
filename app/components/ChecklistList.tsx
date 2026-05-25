@@ -1,13 +1,12 @@
-import { useRevalidator } from "react-router";
 import { ChecklistItem } from "./ChecklistItem";
 import type { ApiResource } from "~/lib/api";
 
 interface ChecklistListProps {
   resource: ApiResource;
+  onDelete: (href: string) => () => Promise<void>;
 }
 
-export function ChecklistList({ resource }: ChecklistListProps) {
-  const { revalidate } = useRevalidator();
+export function ChecklistList({ resource, onDelete }: ChecklistListProps) {
   const items = resource.getLinkArray("items");
 
   return (
@@ -22,7 +21,7 @@ export function ChecklistList({ resource }: ChecklistListProps) {
       ) : (
         items.map((item) => (
           <li key={item.href}>
-            <ChecklistItem item={item} onDelete={revalidate} />
+            <ChecklistItem item={item} onDelete={onDelete} />
           </li>
         ))
       )}

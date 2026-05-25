@@ -1,8 +1,10 @@
+import { useFetcher } from "react-router";
 import { Link } from "~/components/Link";
 import { ChecklistList } from "~/components/ChecklistList";
 import { apiResourceActions } from "~/lib/api";
 import { getUser } from "~/lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
+import { showErrorToast, showSuccessToast } from "../../lib/toastHelpers";
 import type { Route } from "./+types/list";
 
 export function meta({ }: Route.MetaArgs) {
@@ -32,6 +34,31 @@ export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
   );
 }
 
+export async function clientAction({ request }: Route.ClientActionArgs) {
+  const method = request.method.toLowerCase();
+
+  if (method !== "delete") {
+    throw new Response("Method not allowed", { status: 405 });
+  }
+
+  const user = await getUser();
+  const formData = await request.formData();
+  const href = formData.get("href");
+
+  if (typeof href !== "string") {
+    throw new Response("Invalid href", { status: 400 });
+  }
+
+  try {
+    const resource = apiResourceActions(href, user);
+    await resource.delete();
+    showSuccessToast("Checklist deleted successfully");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to delete checklist";
+    showErrorToast(message);
+  }
+}
+
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
@@ -40,14 +67,21 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 }
 
 export default function List({ loaderData, params }: Route.ComponentProps) {
-  const { checklistsResource, user } = loaderData;
+  const { checklistsResource } = loaderData;
+  const fetcher = useFetcher();
+
+  const handleDelete = (href: string) => async () => {
+    const formData = new FormData();
+    formData.append("href", href);
+    fetcher.submit(formData, { method: "delete" });
+  };
 
   return (
     <div>
       <Link variant="inline-block" size="large" to={`/checklists/create/${params.apiUrlEncoded}`}>
         Create Checklist
       </Link>
-      <ChecklistList resource={checklistsResource} />
+      <ChecklistList resource={checklistsResource} onDelete={handleDelete} />
     </div>
   );
 }
