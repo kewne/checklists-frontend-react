@@ -5,6 +5,7 @@ import { useAuth } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import type { Route } from "./+types/create";
 import { apiResourceActions, type ChecklistRun, type WriteableChecklistRun } from "~/lib/api";
+import { showErrorToast, showSuccessToast } from "~/lib/toastHelpers";
 
 export function meta({ }: Route.MetaArgs) {
     return [
@@ -42,12 +43,19 @@ export default function CreateRun({ params }: Route.ComponentProps) {
     const { post } = apiResourceActions(decodedUrl, user!);
 
     const handleSubmit = async (data: WriteableChecklistRun) => {
-        const url = await post(data);
-        if (!url) {
-            return navigate('/runs')
+        try {
+            const url = await post(data);
+            if (!url) {
+                showErrorToast("Failed to create run");
+                return;
+            }
+            showSuccessToast("Run created successfully");
+            const encodedUrl = encodeApiUrl(url);
+            navigate(`/runs/show/${encodedUrl}`);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : "Failed to create run";
+            showErrorToast(message);
         }
-        const encodedUrl = encodeApiUrl(url);
-        navigate(`/runs/show/${encodedUrl}`);
     };
 
     const initialValues: ChecklistRun = {

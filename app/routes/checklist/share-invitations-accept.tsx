@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router";
+import { Button } from "~/components/Button";
+import { Link } from "~/components/Link";
 import { apiResourceActions } from "~/lib/api";
 import { getUser } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
-import { Button } from "~/components/Button";
-import { Link } from "~/components/Link";
+import { showErrorToast, showSuccessToast } from "../../lib/toastHelpers";
 import type { Route } from "./+types/share-invitations-accept";
 
 type ShareInvitation = {
@@ -11,14 +12,14 @@ type ShareInvitation = {
   expiresAt: string;
 };
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Accept Share Invitation" },
     { name: "description", content: "Accept a share invitation" },
   ];
 }
 
-export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
@@ -49,9 +50,15 @@ export default function ShareInvitationAccept({ loaderData }: Route.ComponentPro
   const acceptLink = invitationResource.getFirstLinkMatching("accept");
 
   const handleAccept = async () => {
-    const { post } = apiResourceActions(acceptLink!.href, user);
-    await post(undefined);
-    navigate("/checklists");
+    try {
+      const { post } = apiResourceActions(acceptLink!.href, user);
+      await post(undefined);
+      showSuccessToast("Invitation accepted successfully");
+      navigate("/checklists");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to accept invitation";
+      showErrorToast(message);
+    }
   };
 
   return (

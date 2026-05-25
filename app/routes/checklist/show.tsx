@@ -3,20 +3,20 @@ import { Link } from "~/components/Link";
 
 import { apiResourceActions, type Checklist } from "~/lib/api";
 import { getUser } from "~/lib/auth";
-import { createFrom } from "~/lib/hateoas";
+import { showErrorToast } from "~/lib/toastHelpers";
 import { Button } from "../../components/Button";
 import { ChecklistForm } from "../../components/ChecklistForm";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import type { Route } from "./+types/show";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Checklist Detail" },
     { name: "description", content: "View checklist details" },
   ];
 }
 
-export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
@@ -66,8 +66,13 @@ export default function ChecklistDetail({ loaderData }: Route.ComponentProps) {
   );
 
   const handleSubmit = async (data: Checklist) => {
-    await apiResourceActions<{ title: string }>(decodedUrl, user).put(data);
-    revalidate();
+    try {
+      await apiResourceActions<{ title: string }>(decodedUrl, user).put(data);
+      revalidate();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to update checklist";
+      showErrorToast(message);
+    }
   };
 
   return (

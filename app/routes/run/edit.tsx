@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router";
 import { Link } from "~/components/Link";
+import type { ChecklistRun, WriteableChecklistRun } from "~/lib/api";
 import { RunEditForm } from "../../components/RunEditForm";
 import { apiResourceActions } from "../../lib/api";
 import { getUser } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
+import { showErrorToast } from "../../lib/toastHelpers";
 import type { Route } from "./+types/edit";
-import type { ChecklistRun, WriteableChecklistRun } from "~/lib/api";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -44,8 +45,13 @@ export default function EditRun({ loaderData, params }: Route.ComponentProps) {
   const navigate = useNavigate();
 
   const handleSubmit = async (data: WriteableChecklistRun) => {
-    await apiResourceActions<ChecklistRun, WriteableChecklistRun>(decodedUrl, user).put(data);
-    navigate(`/runs/show/${params.apiUrlEncoded}`);
+    try {
+      await apiResourceActions<ChecklistRun, WriteableChecklistRun>(decodedUrl, user).put(data);
+      navigate(`/runs/show/${params.apiUrlEncoded}`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to update run";
+      showErrorToast(message);
+    }
   };
 
   const handleCancel = () => {
