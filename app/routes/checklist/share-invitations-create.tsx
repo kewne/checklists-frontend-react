@@ -3,6 +3,7 @@ import { Link } from "~/components/Link";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
 import { apiResourceActions } from "~/lib/api";
+import { showErrorToast, showSuccessToast } from "../../lib/toastHelpers";
 import type { Route } from "./+types/share-invitations-create";
 import { useState } from "react";
 
@@ -45,8 +46,14 @@ export default function CreateShareInvitation({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await post({ title });
-    navigate(-1);
+    try {
+      await post({ title });
+      showSuccessToast("Invitation created successfully");
+      navigate(-1);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to create invitation";
+      showErrorToast(message);
+    }
   };
 
   return (

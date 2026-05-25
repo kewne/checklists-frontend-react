@@ -7,6 +7,7 @@ import { getUser } from "~/lib/auth";
 import { apiResourceActions } from "../../lib/api";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import type { Resource } from "../../lib/hal";
+import { showErrorToast, showSuccessToast } from "../../lib/toastHelpers";
 import type { Route } from "./+types/shares";
 
 export function meta({ }: Route.MetaArgs) {
@@ -52,11 +53,11 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   try {
     const resource = apiResourceActions(href, user);
     await resource.delete();
+    showSuccessToast("Deleted successfully");
   } catch (error) {
-    throw new Response("Failed to delete", { status: 500 });
+    const message = error instanceof Error ? error.message : "Failed to delete";
+    showErrorToast(message);
   }
-
-  return null;
 }
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {

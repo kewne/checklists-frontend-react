@@ -1,4 +1,3 @@
-import type { User } from "firebase/auth";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "~/components/Link";
@@ -9,6 +8,7 @@ import {
   type ChecklistRun,
 } from "~/lib/api";
 import { encodeApiUrl } from "../lib/encoding";
+import { showSuccessToast } from "../lib/toastHelpers";
 import { Button } from "./Button";
 import { MenuButton, type MenuItem } from "./MenuButton";
 import { RunItem } from "./RunItem";
@@ -94,6 +94,7 @@ export function ChecklistRunDetail({
 
   const performDelete = async () => {
     await onDelete?.();
+    showSuccessToast("Run deleted successfully");
     setIsDeleteConfirmOpen(false);
   };
 
