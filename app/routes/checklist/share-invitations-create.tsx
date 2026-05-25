@@ -1,11 +1,10 @@
-import { useNavigate } from "react-router";
+import { Form, redirect } from "react-router";
 import { Link } from "~/components/Link";
-import { useAuth } from "../../lib/auth";
-import { decodeApiUrl } from "../../lib/encoding";
+import { getUser } from "../../lib/auth";
+import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import { apiResourceActions } from "~/lib/api";
-import { showErrorToast, showSuccessToast } from "../../lib/toastHelpers";
+import { showErrorToast } from "../../lib/toastHelpers";
 import type { Route } from "./+types/share-invitations-create";
-import { useState } from "react";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -25,43 +24,48 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
               Invalid URL. Please go back and try again.
             </p>
           </div>
-          <Link to="/">
-            Back to Home
-          </Link>
+          <Link to="/">Back to Home</Link>
         </div>
       </div>
     </div>
   );
 }
 
-export default function CreateShareInvitation({
+export async function clientAction({
+  request,
   params,
-}: Route.ComponentProps) {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const [title, setTitle] = useState("");
+}: Route.ClientActionArgs) {
+  if (request.method !== "POST") {
+    throw new Response("Method not allowed", { status: 405 });
+  }
+
+  const user = await getUser();
+  const formData = await request.formData();
+  const title = formData.get("title");
 
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
   const { post } = apiResourceActions<{ title: string }>(decodedUrl, user!);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await post({ title });
-      showSuccessToast("Invitation created successfully");
-      navigate(-1);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to create invitation";
-      showErrorToast(message);
+  try {
+    const newResourceUrl = await post({ title });
+    if (newResourceUrl) {
+      const encodedUrl = encodeApiUrl(newResourceUrl);
+      return redirect(`/checklists/share-invitations/show/${encodedUrl}`);
     }
-  };
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to create invitation";
+    showErrorToast(message);
+  }
+}
 
+export default function CreateShareInvitation(): React.JSX.Element {
   return (
     <>
       <h1 className="text-2xl font-bold text-gray-900 mb-6">
         Create Share Invitation
       </h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <Form method="POST" className="space-y-4">
         <div>
           <label
             htmlFor="title"
@@ -71,9 +75,8 @@ export default function CreateShareInvitation({
           </label>
           <input
             id="title"
+            name="title"
             type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
             required
             className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
@@ -85,15 +88,8 @@ export default function CreateShareInvitation({
           >
             Create
           </button>
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md font-medium hover:bg-gray-50"
-          >
-            Cancel
-          </button>
         </div>
-      </form>
+      </Form>
     </>
   );
 }

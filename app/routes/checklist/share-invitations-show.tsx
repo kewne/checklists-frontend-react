@@ -25,7 +25,9 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="text-red-600 mb-4">
             <p className="font-semibold">Error</p>
-            <p className="text-sm">Invalid URL. Please go back and try again.</p>
+            <p className="text-sm">
+              Invalid URL. Please go back and try again.
+            </p>
           </div>
           <Link to="/">Back to Home</Link>
         </div>
@@ -37,13 +39,19 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
-  const invitationResource = await apiResourceActions<ShareInvitation>(decodedUrl, user).get();
+  const invitationResource = await apiResourceActions<ShareInvitation>(
+    decodedUrl,
+    user,
+  ).get();
   return { invitationResource };
 }
 
-export default function ShareInvitationShow({ loaderData }: Route.ComponentProps) {
+export default function ShareInvitationShow({
+  loaderData,
+}: Route.ComponentProps) {
   const { invitationResource } = loaderData;
-  const { title, checklistTitle, createdAt, expiresAt } = invitationResource.properties;
+  const { title, checklistTitle, createdAt, expiresAt } =
+    invitationResource.properties;
   const previewLink = invitationResource.getFirstLinkMatching("preview");
   const shareUrl = previewLink
     ? `${window.location.origin}/checklists/share-invitations/accept/${encodeApiUrl(previewLink.href)}`
@@ -65,7 +73,7 @@ export default function ShareInvitationShow({ loaderData }: Route.ComponentProps
             Share this link to invite someone:
           </p>
           <pre className="bg-gray-100 border border-gray-200 rounded-md px-4 py-3 text-gray-600 text-sm break-all whitespace-pre-wrap">
-              {shareUrl}
+            {shareUrl}
           </pre>
         </div>
       )}
