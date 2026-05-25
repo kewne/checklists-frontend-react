@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router";
 import { Link } from "~/components/Link";
+import { apiResourceActions } from "~/lib/api";
+import { showErrorToast, showSuccessToast } from "~/lib/toastHelpers";
 import { ChecklistForm } from "../../components/ChecklistForm";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
 import type { Route } from "./+types/create";
-import { apiResourceActions } from "~/lib/api";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -45,8 +46,14 @@ export default function CreateChecklist({ params }: Route.ComponentProps) {
     title: string;
     items: Array<{ title: string; description: string }>;
   }) => {
-    await post(data);
-    navigate(`/checklists/list/${params.apiUrlEncoded}`);
+    try {
+      await post(data);
+      showSuccessToast("Checklist created successfully");
+      navigate(`/checklists/list/${params.apiUrlEncoded}`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to create checklist";
+      showErrorToast(message);
+    }
   };
 
   return (
