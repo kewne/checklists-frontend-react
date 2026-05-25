@@ -8,7 +8,7 @@ export interface ButtonProps {
     type?: ButtonType;
     variant?: ButtonVariant;
     size?: ButtonSize;
-    action: () => Promise<void>;
+    action: (() => Promise<void>) | 'submit';
     disabled?: boolean;
     'aria-label'?: string;
     children: React.ReactNode;
@@ -71,10 +71,12 @@ export function Button({
     const baseClasses = `${sizeClasses} font-medium rounded disabled:opacity-50 disabled:cursor-not-allowed`;
     const colorClasses = getColorClasses(type, variant);
 
-    const handleAction = async () => {
+    const isSubmit = action === 'submit';
+
+    const handleAction = isSubmit ? undefined : async () => {
         setWorking(true);
         try {
-            await action();
+            await (action as () => Promise<void>)();
         } finally {
             setWorking(false);
         }
@@ -82,7 +84,7 @@ export function Button({
 
     return (
         <button
-            type="button"
+            type={isSubmit ? 'submit' : 'button'}
             onClick={handleAction}
             disabled={disabled || isWorking}
             aria-label={ariaLabel}

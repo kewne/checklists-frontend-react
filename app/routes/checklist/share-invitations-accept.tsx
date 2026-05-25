@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { Form, redirect } from "react-router";
 import { Button } from "~/components/Button";
 import { Link } from "~/components/Link";
 import { apiResourceActions } from "~/lib/api";
@@ -35,41 +35,62 @@ export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
   );
 }
 
+export async function clientAction({ request }: Route.ClientActionArgs) {
+  if (request.method !== "POST") {
+    throw new Response("Method not allowed", { status: 405 });
+  }
+
+  const user = await getUser();
+  const formData = await request.formData();
+  const acceptLinkHref = formData.get("acceptLinkHref");
+
+  if (typeof acceptLinkHref !== "string") {
+    throw new Response("Invalid accept link", { status: 400 });
+  }
+
+  try {
+    const { post } = apiResourceActions(acceptLinkHref, user);
+    await post(undefined);
+    showSuccessToast("Invitation accepted successfully");
+    return redirect("/checklists");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to accept invitation";
+    showErrorToast(message);
+  }
+}
+
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
   const invitationResource = await apiResourceActions<ShareInvitation>(decodedUrl, user).get();
-  return { invitationResource, user };
+  return { invitationResource };
 }
 
 export default function ShareInvitationAccept({ loaderData }: Route.ComponentProps) {
-  const { invitationResource, user } = loaderData;
-  const navigate = useNavigate();
+  const { invitationResource } = loaderData;
 
   const { checklistTitle: title } = invitationResource.properties;
   const acceptLink = invitationResource.getFirstLinkMatching("accept");
 
-  const handleAccept = async () => {
-    try {
-      const { post } = apiResourceActions(acceptLink!.href, user);
-      await post(undefined);
-      showSuccessToast("Invitation accepted successfully");
-      navigate("/checklists");
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to accept invitation";
-      showErrorToast(message);
-    }
-  };
+  if (!acceptLink) {
+    return (
+      <div className="text-red-600">
+        <p className="font-semibold">Error</p>
+        <p className="text-sm">This invitation is no longer valid.</p>
+      </div>
+    );
+  }
 
   return (
     <>
       <p className="text-gray-600 mb-4">Someone shared the following checklist with you:</p>
       <h1 className="text-2xl font-bold text-gray-900 mb-6">{title}</h1>
-      {acceptLink && (
-        <Button type="success" size="large" action={handleAccept}>
+      <Form method="POST">
+        <input type="hidden" name="acceptLinkHref" value={acceptLink.href} />
+        <Button type="success" size="large" action="submit">
           Accept
         </Button>
-      )}
+      </Form>
     </>
   );
 }
