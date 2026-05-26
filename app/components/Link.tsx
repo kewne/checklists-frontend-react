@@ -1,7 +1,7 @@
 import { Link as RouterLink } from "react-router";
 import { getSizeClasses, type ButtonSize } from "~/components/Button";
 
-export type LinkVariant = "inline" | "inline-block" | "row";
+export type LinkVariant = "inline" | "inline-block";
 
 export interface LinkProps {
   to: string;
@@ -12,14 +12,12 @@ export interface LinkProps {
 }
 
 function getVariantClasses(variant: LinkVariant) {
-    switch (variant) {
-        case "inline":
-            return "underline decoration decoration-gray-200 underline-offset-4 hover:decoration-indigo-400";
-        case "inline-block":
-            return "underline decoration decoration-gray-200 inline-block rounded border border-gray-200 hover:outline hover:decoration-indigo-400";
-        case "row":
-            return "block hover:bg-gray-100";
-    }
+  switch (variant) {
+    case "inline":
+      return "underline decoration decoration-gray-200 underline-offset-4 hover:decoration-indigo-400";
+    case "inline-block":
+      return "underline decoration decoration-gray-200 inline-block rounded border border-gray-200 hover:outline hover:decoration-indigo-400";
+  }
 }
 
 export function Link({

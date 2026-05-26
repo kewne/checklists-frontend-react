@@ -107,7 +107,7 @@ function InvitationsList({ resource }: { resource: Resource }) {
           {items.map((item) => (
             <li key={item.href} className="flex justify-between items-center px-4 py-3 hover:bg-gray-50">
               <Link
-                variant="row"
+                variant="inline"
                 to={`/checklists/share-invitations/show/${encodeApiUrl(item.href)}`}
               >
                 {item.title ?? "Untitled"}
@@ -152,7 +152,7 @@ export default function Shares({ loaderData }: Route.ComponentProps) {
           {items.map((item) => (
             <li key={item.href} className="flex justify-between items-center px-4 py-3 hover:bg-gray-50">
               <Link
-                variant="row"
+                variant="inline"
                 to={`/checklist/shares/${encodeApiUrl(item.href)}`}
               >
                 {item.title ?? "Untitled"}
