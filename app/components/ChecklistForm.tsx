@@ -51,7 +51,7 @@ function ChecklistItemComponent({
   };
 
   return (
-    <div className="p-3 border border-gray-200 rounded-md bg-white">
+    <div className="p-3 border border-gray-200 bg-white">
       <div className="mb-2">
         <div className="flex justify-between items-center mb-1">
           <label
@@ -111,7 +111,7 @@ function ChecklistItemComponent({
             value={item.title}
             onChange={(e) => onUpdate(item.id, "title", e.target.value)}
             placeholder="Item title"
-            className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm"
+            className="flex-1 px-3 py-1.5 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm"
             required
           />
           <Button
@@ -138,7 +138,7 @@ function ChecklistItemComponent({
               onChange={(e) => onUpdate(item.id, "description", e.target.value)}
               placeholder="Item description"
               rows={5}
-              className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm resize-none"
+              className="flex-1 px-3 py-1.5 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm resize-none"
             />
           </div>
         </div>
@@ -208,7 +208,7 @@ export function ChecklistForm({
     <>
       <form
         onSubmit={handleSubmit}
-        className="mb-4 p-4 border border-gray-200 rounded-md bg-gray-50"
+        className="mb-4 p-4 border border-gray-200 bg-gray-50"
       >
         <div className="mb-3">
           <label
@@ -223,7 +223,7 @@ export function ChecklistForm({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter checklist title"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700"
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700"
             required
           />
         </div>
