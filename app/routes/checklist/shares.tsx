@@ -113,8 +113,7 @@ function InvitationsList({ resource }: { resource: Resource }) {
                 {item.title ?? "Untitled"}
               </Link>
               <Button
-                type="danger"
-                variant="outline"
+                variant="danger"
                 size="small"
                 action={handleDeleteInvitation(item.href)}
               >
@@ -158,8 +157,7 @@ export default function Shares({ loaderData }: Route.ComponentProps) {
                 {item.title ?? "Untitled"}
               </Link>
               <Button
-                type="danger"
-                variant="outline"
+                variant="danger"
                 size="small"
                 action={handleDeleteShare(item.href)}
               >

@@ -161,7 +161,6 @@ export function ChecklistRunDetail({
         <div>
           <MenuButton
             type="secondary"
-            variant="outline"
             size="large"
             items={additionalActions}
             ariaLabel="More actions"
@@ -263,13 +262,11 @@ export function ChecklistRunDetail({
             <p className="text-gray-600 text-sm mb-6">{confirmationText}</p>
             <div className="flex justify-end gap-2">
               <Button
-                type="secondary"
-                variant="outline"
                 action={async () => setIsDeleteConfirmOpen(false)}
               >
                 Cancel
               </Button>
-              <Button type="danger" variant="normal" action={performDelete}>
+              <Button type="primary" variant="danger" action={performDelete}>
                 Delete
               </Button>
             </div>

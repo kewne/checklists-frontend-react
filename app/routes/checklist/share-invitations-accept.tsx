@@ -87,7 +87,7 @@ export default function ShareInvitationAccept({ loaderData }: Route.ComponentPro
       <h1 className="text-2xl font-bold text-gray-900 mb-6">{title}</h1>
       <Form method="POST">
         <input type="hidden" name="acceptLinkHref" value={acceptLink.href} />
-        <Button type="success" size="large" action="submit">
+        <Button type="primary" size="large" action="submit">
           Accept
         </Button>
       </Form>

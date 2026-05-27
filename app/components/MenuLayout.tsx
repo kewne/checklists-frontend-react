@@ -17,10 +17,9 @@ function MenuLink({ link, to, children }: MenuLinkProps) {
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `block px-4 py-2 rounded border border-gray-200 text-sm text-indigo-600 underline underline-offset-4 ${
-          isActive
-            ? "bg-gray-100 decoration-solid hover:outline"
-            : "decoration decoration-gray-100 hover:decoration-indigo-400 hover:outline"
+        `block px-4 py-2 rounded border border-gray-200 text-sm text-indigo-600 underline underline-offset-4 ${isActive
+          ? "bg-gray-100 decoration-solid hover:outline"
+          : "decoration decoration-gray-100 hover:decoration-indigo-400 hover:outline"
         }`
       }
     >
@@ -69,8 +68,7 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
             </MenuLink>
           </div>
           <Button
-            type="danger"
-            variant="outline"
+            variant="danger"
             size="large"
             action={handleSignOut}
           >

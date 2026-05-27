@@ -1,20 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "~/components/Link";
+import { apiResourceActions } from "~/lib/api";
 import { Button } from "../../components/Button";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
 import type { Route } from "./+types/add-item";
-import { apiResourceActions } from "~/lib/api";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Add Item" },
     { name: "description", content: "Add an item to a checklist run" },
   ];
 }
 
-export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
@@ -95,15 +95,15 @@ export default function AddItem({ params }: Route.ComponentProps) {
           />
         </div>
         <div className="flex justify-end gap-2 pt-2">
-          <Button type="secondary" variant="outline" action={handleCancel}>
+          <Button action={handleCancel}>
             Cancel
           </Button>
-          <button
-            type="submit"
-            className="px-2 py-1 text-sm font-medium rounded bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          <Button
+            action="submit"
+            type="primary"
           >
             Add Item
-          </button>
+          </Button>
         </div>
       </form>
     </>

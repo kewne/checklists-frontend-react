@@ -64,7 +64,7 @@ export default function CreateChecklist({ params }: Route.ComponentProps) {
       <ChecklistForm
         submitLabel="Create"
         onSubmit={handleSubmit}
-        onCancel={() => navigate(`/checklists/list/${params.apiUrlEncoded}`)}
+        onCancel={async () => navigate(`/checklists/list/${params.apiUrlEncoded}`)}
       />
     </>
   );

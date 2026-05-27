@@ -54,7 +54,7 @@ function MarkIncompleteButton({
   };
 
   return (
-    <Button type="danger" action={handleMarkIncomplete}>
+    <Button variant="danger" action={handleMarkIncomplete}>
       Mark Incomplete
     </Button>
   );
@@ -93,9 +93,9 @@ export function RunItem({
 }: RunItemProps) {
   const completedAt = completed
     ? new Intl.DateTimeFormat(undefined, {
-        dateStyle: "medium",
-        timeStyle: "short",
-      }).format(new Date(completed.completed_at))
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(new Date(completed.completed_at))
     : null;
 
   const style = completed ? "opacity-60" : "";

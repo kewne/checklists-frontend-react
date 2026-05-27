@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { v4 } from "uuid";
+import { Button } from "~/components/Button";
+import type { Checklist, ChecklistItem } from "~/lib/api";
 import chevronDownSvg from "/chevron-down.svg?url";
 import chevronUpSvg from "/chevron-up.svg?url";
-import type { Checklist, ChecklistItem } from "~/lib/api";
-import { Button } from "~/components/Button";
 
 interface ChecklistFormProps {
   initialValues?: Checklist;
@@ -63,8 +63,6 @@ function ChecklistItemComponent({
           <div className="flex items-center gap-1">
             {onMoveUp && (
               <Button
-                type="primary"
-                variant="outline"
                 size="small"
                 aria-label={`Move "${item.title || "item"}" up`}
                 action={async () => onMoveUp()}
@@ -79,8 +77,6 @@ function ChecklistItemComponent({
             )}
             {onMoveDown && (
               <Button
-                type="primary"
-                variant="outline"
                 size="small"
                 aria-label={`Move "${item.title || "item"}" down`}
                 action={async () => onMoveDown()}
@@ -94,8 +90,7 @@ function ChecklistItemComponent({
               </Button>
             )}
             <Button
-              type="danger"
-              variant="outline"
+              variant="danger"
               size="small"
               action={async () => onRemove()}
             >
@@ -115,8 +110,6 @@ function ChecklistItemComponent({
             required
           />
           <Button
-            type="primary"
-            variant="outline"
             size="small"
             action={
               showDescription
@@ -232,7 +225,6 @@ export function ChecklistForm({
           <ol className="space-y-3 my-1">
             <Button
               size={["full", "small"]}
-              variant="outline"
               action={() => addItem(0)}
             >
               + Add Item
@@ -256,8 +248,6 @@ export function ChecklistForm({
                   }
                 />
                 <Button
-                  type="primary"
-                  variant="outline"
                   size={['full', 'small']}
                   action={() => addItem(index + 1)}
                 >

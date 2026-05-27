@@ -19,7 +19,7 @@ function ChecklistInstanceItem({ item, onDelete }: ChecklistInstanceItemProps) {
       <Link to={`/runs/show/${encodeApiUrl(item.href)}`}>
         {item.title ?? item.name}
       </Link>
-      <Button type="danger" variant="outline" action={onDelete(item.href)}>
+      <Button variant="danger" action={onDelete(item.href)}>
         Delete
       </Button>
     </div>
