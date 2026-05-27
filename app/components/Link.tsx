@@ -27,7 +27,7 @@ export function Link({
   variant = "inline",
   size,
 }: LinkProps) {
-  const baseClasses = "text-gray-700 active:text-emerald-600 underline-offset-4";
+  const baseClasses = "text-emerald-700 active:text-emerald-600 underline-offset-4";
   const sizeClasses = getSizeClasses(size ?? "medium");
   const classes = [getVariantClasses(variant), sizeClasses, baseClasses, className]
     .filter(Boolean)
