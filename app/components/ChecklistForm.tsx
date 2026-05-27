@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { v4 } from "uuid";
 import { Button } from "~/components/Button";
+import { TextInput } from "~/components/TextInput";
 import type { Checklist, ChecklistItem } from "~/lib/api";
 import chevronDownSvg from "/chevron-down.svg?url";
 import chevronUpSvg from "/chevron-up.svg?url";
@@ -99,16 +100,17 @@ function ChecklistItemComponent({
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <input
-            ref={ref}
-            id={`item-title-${item.id}`}
-            type="text"
-            value={item.title}
-            onChange={(e) => onUpdate(item.id, "title", e.target.value)}
-            placeholder="Item title"
-            className="flex-1 px-3 py-1.5 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm"
-            required
-          />
+          <div className="flex-1">
+            <TextInput
+              ref={ref}
+              id={`item-title-${item.id}`}
+              type="text"
+              value={item.title}
+              onChange={(e) => onUpdate(item.id, "title", e.target.value)}
+              placeholder="Item title"
+              required
+            />
+          </div>
           <Button
             size="small"
             action={
@@ -210,13 +212,12 @@ export function ChecklistForm({
           >
             Title
           </label>
-          <input
+          <TextInput
             id="title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter checklist title"
-            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700"
             required
           />
         </div>

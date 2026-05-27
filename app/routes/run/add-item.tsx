@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "~/components/Link";
+import { TextInput } from "~/components/TextInput";
 import { apiResourceActions } from "~/lib/api";
 import { Button } from "../../components/Button";
 import { useAuth } from "../../lib/auth";
@@ -68,14 +69,13 @@ export default function AddItem({ params }: Route.ComponentProps) {
           >
             Title
           </label>
-          <input
+          <TextInput
             id="title"
             type="text"
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             autoFocus
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700  focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
         <div>

@@ -1,3 +1,5 @@
+import { TextInput } from '~/components/TextInput';
+
 interface ChecklistItemRowProps {
     item: {
         title: string;
@@ -28,13 +30,12 @@ export function ChecklistItemRow({
                     >
                         Title
                     </label>
-                    <input
+                    <TextInput
                         id={`item-title-${index}`}
                         type="text"
                         value={item.title}
                         onChange={(e) => onUpdateItem(index, 'title', e.target.value)}
                         placeholder="Item title"
-                        className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm"
                         required
                     />
                 </div>

@@ -1,5 +1,6 @@
 import { Form, redirect } from "react-router";
 import { Link } from "~/components/Link";
+import { TextInput } from "~/components/TextInput";
 import { getUser } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import { apiResourceActions } from "~/lib/api";
@@ -73,12 +74,11 @@ export default function CreateShareInvitation(): React.JSX.Element {
           >
             Title
           </label>
-          <input
+          <TextInput
             id="title"
             name="title"
             type="text"
             required
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
         <div className="flex gap-3">

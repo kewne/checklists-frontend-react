@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { v4 } from 'uuid';
 import chevronDownSvg from '/chevron-down.svg?url';
+import { TextInput } from '~/components/TextInput';
 import chevronUpSvg from '/chevron-up.svg?url';
 import type { ChecklistRun, WriteableChecklistRun } from '~/lib/api';
 
@@ -69,16 +70,17 @@ function RunItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown, ref 
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <input
-            ref={ref}
-            id={`item-title-${item.name}`}
-            type="text"
-            value={item.title}
-            onChange={(e) => onUpdate(item.name, 'title', e.target.value)}
-            placeholder="Item title"
-            className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm"
-            required
-          />
+          <div className="flex-1">
+            <TextInput
+              ref={ref}
+              id={`item-title-${item.name}`}
+              type="text"
+              value={item.title}
+              onChange={(e) => onUpdate(item.name, 'title', e.target.value)}
+              placeholder="Item title"
+              required
+            />
+          </div>
           <button
             type="button"
             onClick={showDescription ? handleRemoveDescription : () => setShowDescription(true)}
@@ -161,13 +163,12 @@ export function RunEditForm({ initialValues, submitLabel, onSubmit, onCancel }: 
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
             Title
           </label>
-          <input
+          <TextInput
             id="title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter run title"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700"
             required
           />
         </div>
