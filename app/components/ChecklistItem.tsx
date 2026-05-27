@@ -10,7 +10,7 @@ interface ChecklistItemProps {
 
 export function ChecklistItem({ item, onDelete }: ChecklistItemProps) {
   return (
-    <div className="flex justify-between items-center px-4 py-3 hover:bg-gray-50">
+    <div className="flex justify-between items-center px-4 py-3">
       <Link to={`/checklists/show/${encodeApiUrl(item.href)}`}>
         {item.title ?? item.name}
       </Link>
