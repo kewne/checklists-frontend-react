@@ -17,9 +17,9 @@ function MenuLink({ link, to, children }: MenuLinkProps) {
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `block px-4 py-2 rounded border border-gray-200 text-sm text-indigo-600 underline underline-offset-4 ${isActive
-          ? "bg-gray-100 decoration-solid hover:outline"
-          : "decoration decoration-gray-100 hover:decoration-indigo-400 hover:outline"
+        `block px-4 py-2 border text-sm text-emerald-700 underline underline-offset-4  hover:border-emerald-500 hover:outline hover:outline-emerald-500 ${isActive
+          ? "border-emerald-700 decoration-solid outline-emerald-700"
+          : "border-gray-200 decoration decoration-gray-100 hover:decoration-emerald-500"
         }`
       }
     >

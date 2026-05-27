@@ -14,9 +14,9 @@ export interface LinkProps {
 function getVariantClasses(variant: LinkVariant) {
   switch (variant) {
     case "inline":
-      return "underline decoration decoration-gray-200 underline-offset-4 hover:decoration-indigo-400";
+      return "text-gray-700 underline decoration decoration-gray-200 underline-offset-4 hover:decoration-emerald-500";
     case "inline-block":
-      return "underline decoration decoration-gray-200 inline-block rounded border border-gray-200 hover:outline hover:decoration-indigo-400";
+      return "underline decoration decoration-gray-200 inline-block border border-gray-200 hover:border-emerald-500 outline outline-transparent hover:outline-emerald-500 hover:decoration-emerald-500";
   }
 }
 
@@ -27,7 +27,7 @@ export function Link({
   variant = "inline",
   size,
 }: LinkProps) {
-  const baseClasses = "text-indigo-600 active:text-indigo-400 underline-offset-4 transition ease-in-out";
+  const baseClasses = "text-gray-700 active:text-emerald-600 underline-offset-4";
   const sizeClasses = getSizeClasses(size ?? "medium");
   const classes = [getVariantClasses(variant), sizeClasses, baseClasses, className]
     .filter(Boolean)
