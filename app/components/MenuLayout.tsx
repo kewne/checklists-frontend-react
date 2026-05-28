@@ -13,14 +13,38 @@ interface MenuLinkProps {
 function MenuLink({ link, to, children }: MenuLinkProps) {
   if (!link) return null;
 
+  const baseClasses = [
+    "block",
+    "px-4",
+    "py-2",
+    "border",
+    "text-sm",
+    "text-emerald-700",
+    "underline",
+    "underline-offset-4",
+    "hover:border-emerald-500",
+    "hover:outline",
+    "hover:outline-emerald-500",
+    "focus-visible:border",
+    "focus-visible:border-emerald-500",
+    "focus-visible:outline",
+    "focus-visible:outline-emerald-500",
+  ];
   return (
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `block px-4 py-2 border text-sm text-emerald-700 underline underline-offset-4  hover:border-emerald-500 hover:outline hover:outline-emerald-500 ${isActive
-          ? "border-emerald-700 decoration-solid outline-emerald-700"
-          : "border-gray-200 decoration decoration-gray-100 hover:decoration-emerald-500"
-        }`
+        [
+          ...baseClasses,
+          ...(isActive
+            ? ["border-emerald-700", "decoration-solid", "outline-emerald-700"]
+            : [
+                "border-gray-200",
+                "decoration",
+                "decoration-gray-100",
+                "hover:decoration-emerald-500",
+              ]),
+        ].join(" ")
       }
     >
       {children}
@@ -67,11 +91,7 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
               Checklists
             </MenuLink>
           </div>
-          <Button
-            variant="danger"
-            size="large"
-            action={handleSignOut}
-          >
+          <Button variant="danger" size="large" action={handleSignOut}>
             Sign Out
           </Button>
         </div>

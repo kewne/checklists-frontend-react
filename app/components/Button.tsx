@@ -14,7 +14,7 @@ export interface ButtonProps {
   children: React.ReactNode;
 }
 
-export function getSizeClasses(size: Requirose<ButtonProps>["size"]) {
+export function getSizeClasses(size: Required<ButtonProps>["size"]) {
   const [width, height] = typeof size === "string" ? [size, size] : size;
   let widthClasses: string;
   switch (width) {
