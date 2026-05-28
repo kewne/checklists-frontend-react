@@ -12,7 +12,7 @@ export function ChecklistList({ resource, onDelete }: ChecklistListProps) {
   return (
     <ul
       aria-label="checklists"
-      className="mt-4 divide-y divide-gray-100 border border-gray-200"
+      className="mt-4 divide-y divide-gray-100 border border-gray-200 bg-white"
     >
       {items.length === 0 ? (
         <li className="px-4 py-3 text-gray-500 text-sm">

@@ -30,7 +30,7 @@ export function MenuButton({
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const sizeClasses = getSizeClasses(size);
-    const baseClasses = `${sizeClasses} text-sm font-medium rounded disabled:opacity-50 disabled:cursor-not-allowed`;
+    const baseClasses = `${sizeClasses} text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed`;
     const colorClasses = getColorClasses(type, variant);
 
     // Handle click-outside for dropdown

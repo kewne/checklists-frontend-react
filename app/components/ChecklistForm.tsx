@@ -52,14 +52,14 @@ function ChecklistItemComponent({
   };
 
   return (
-    <div className="p-3 border border-gray-200 bg-white">
+    <div className="p-4 my-4 ring ring-gray-500 focus-within:ring-emerald-500 bg-gray-50 focus-within:bg-white">
       <div className="mb-2">
         <div className="flex justify-between items-center mb-1">
           <label
             htmlFor={`item-title-${item.id}`}
             className="text-xs font-medium text-gray-600"
           >
-            Title
+            Step Title
           </label>
           <div className="flex items-center gap-1">
             {onMoveUp && (
@@ -107,7 +107,7 @@ function ChecklistItemComponent({
               type="text"
               value={item.title}
               onChange={(e) => onUpdate(item.id, "title", e.target.value)}
-              placeholder="Item title"
+              placeholder="Wash hands"
               required
             />
           </div>
@@ -133,7 +133,7 @@ function ChecklistItemComponent({
               onChange={(e) => onUpdate(item.id, "description", e.target.value)}
               placeholder="Item description"
               rows={5}
-              className="flex-1 px-3 py-1.5 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm resize-none"
+              className="flex-1 px-3 py-1.5 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-700 text-sm resize-none"
             />
           </div>
         </div>
@@ -203,9 +203,9 @@ export function ChecklistForm({
     <>
       <form
         onSubmit={handleSubmit}
-        className="mb-4 p-4 border border-gray-200 bg-gray-50"
+        className="mb-4"
       >
-        <div className="mb-3">
+        <div className="p-4 ring ring-gray-500 bg-white">
           <label
             htmlFor="title"
             className="block text-sm font-medium text-gray-700 mb-1"
@@ -222,14 +222,16 @@ export function ChecklistForm({
           />
         </div>
 
-        <div className="mb-4">
-          <ol className="space-y-3 my-1">
+        <div className="mt-20 mb-4">
+          <ol className="space-y-3">
+            <div className="mr-1 ml-auto">
             <Button
               size={["full", "small"]}
               action={() => addItem(0)}
             >
               + Add Item
             </Button>
+            </div>
             {items.map((item, index) => (
               <li key={item.id}>
                 <ChecklistItemComponent

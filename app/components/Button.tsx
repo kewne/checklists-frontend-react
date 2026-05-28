@@ -8,7 +8,7 @@ export interface ButtonProps {
   type?: ButtonType;
   variant?: ButtonVariant;
   size?: ButtonSize | [width: ButtonSize, height: ButtonSize];
-  action: (() => Promise<void>) | "submit";
+  action: (() => void | Promise<void>) | "submit";
   disabled?: boolean;
   "aria-label"?: string;
   children: React.ReactNode;

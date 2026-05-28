@@ -9,14 +9,14 @@ import { ChecklistForm } from "../../components/ChecklistForm";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import type { Route } from "./+types/show";
 
-export function meta({ }: Route.MetaArgs) {
+export function meta({}: Route.MetaArgs) {
   return [
     { title: "Checklist Detail" },
     { name: "description", content: "View checklist details" },
   ];
 }
 
-export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
@@ -70,7 +70,8 @@ export default function ChecklistDetail({ loaderData }: Route.ComponentProps) {
       await apiResourceActions<{ title: string }>(decodedUrl, user).put(data);
       revalidate();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to update checklist";
+      const message =
+        error instanceof Error ? error.message : "Failed to update checklist";
       showErrorToast(message);
     }
   };
@@ -78,17 +79,6 @@ export default function ChecklistDetail({ loaderData }: Route.ComponentProps) {
   return (
     <div>
       <div className="flex items-start justify-between gap-x-2 mb-4">
-        <div className="space-x-2">
-          {sharesLink && (
-            <Link
-              variant="inline-block"
-              size="large"
-              to={`/checklists/shares/list/${encodeApiUrl(sharesLink.href)}`}
-            >
-              Shares
-            </Link>
-          )}
-        </div>
         <div>
           {createInstanceLink ? (
             <Button
@@ -107,6 +97,17 @@ export default function ChecklistDetail({ loaderData }: Route.ComponentProps) {
               Run
             </Button>
           ) : null}
+        </div>
+        <div className="space-x-2">
+          {sharesLink && (
+            <Link
+              variant="inline-block"
+              size="large"
+              to={`/checklists/shares/list/${encodeApiUrl(sharesLink.href)}`}
+            >
+              Shares
+            </Link>
+          )}
         </div>
       </div>
       <ChecklistForm

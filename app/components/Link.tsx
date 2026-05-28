@@ -32,6 +32,7 @@ function getVariantClasses(variant: LinkVariant) {
       ].join(" ");
     case "inline-block":
       return [
+        "bg-white",
         "underline",
         "decoration",
         "decoration-gray-200",

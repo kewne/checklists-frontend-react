@@ -40,7 +40,7 @@ export function ChecklistInstanceList({
   return (
     <ul
       aria-label="checklist instances"
-      className="mt-4 divide-y divide-gray-100 border border-gray-200 rounded-md"
+      className="mt-4 divide-y divide-gray-100 border border-gray-200 bg-white"
     >
       {items.map((item) => (
         <li key={item.href} className="hover:bg-gray-50">

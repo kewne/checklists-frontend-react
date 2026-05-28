@@ -1,31 +1,45 @@
-import { useEffect, useRef, useState } from 'react';
-import { v4 } from 'uuid';
-import chevronDownSvg from '/chevron-down.svg?url';
-import { TextInput } from '~/components/TextInput';
-import chevronUpSvg from '/chevron-up.svg?url';
-import type { ChecklistRun, WriteableChecklistRun } from '~/lib/api';
+import { useEffect, useRef, useState } from "react";
+import { v4 } from "uuid";
+import chevronDownSvg from "/chevron-down.svg?url";
+import { TextInput } from "~/components/TextInput";
+import chevronUpSvg from "/chevron-up.svg?url";
+import type { ChecklistRun, WriteableChecklistRun } from "~/lib/api";
+import { Button } from "./Button";
 
 interface RunEditFormProps {
   initialValues: ChecklistRun;
   submitLabel: string;
   onSubmit?: (data: WriteableChecklistRun) => Promise<void>;
-  onCancel?: () => void;
+  onCancel?: () => Promise<void>;
 }
 
 interface RunItemComponentProps {
-  item: WriteableChecklistRun['items'][number];
-  onUpdate: (name: string, field: 'title' | 'description', value: string) => void;
-  onRemove: () => void;
-  onMoveUp?: () => void;
-  onMoveDown?: () => void;
+  item: WriteableChecklistRun["items"][number];
+  onUpdate: (
+    name: string,
+    field: "title" | "description",
+    value: string,
+  ) => void;
+  onRemove: () => void | Promise<void>;
+  onMoveUp?: () => void | Promise<void>;
+  onMoveDown?: () => void | Promise<void>;
   ref?: React.Ref<HTMLInputElement>;
 }
 
-function RunItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown, ref }: RunItemComponentProps) {
-  const [showDescription, setShowDescription] = useState(item.description?.length > 0);
+function RunItemComponent({
+  item,
+  onUpdate,
+  onRemove,
+  onMoveUp,
+  onMoveDown,
+  ref,
+}: RunItemComponentProps) {
+  const [showDescription, setShowDescription] = useState(
+    item.description?.length > 0,
+  );
 
-  const handleRemoveDescription = () => {
-    onUpdate(item.name, 'description', '');
+  const handleRemoveDescription = async () => {
+    onUpdate(item.name, "description", "");
     setShowDescription(false);
   };
 
@@ -41,32 +55,36 @@ function RunItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown, ref 
           </label>
           <div className="flex items-center gap-1">
             {onMoveUp && (
-              <button
-                type="button"
-                onClick={onMoveUp}
-                className="p-1 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
-                aria-label={`Move "${item.title || 'item'}" up`}
+              <Button
+                size="small"
+                action={onMoveUp}
+                aria-label={`Move "${item.title || "item"}" up`}
               >
-                <img src={chevronUpSvg} alt="" aria-hidden="true" className="w-4 h-4" />
-              </button>
+                <img
+                  src={chevronUpSvg}
+                  alt=""
+                  aria-hidden="true"
+                  className="w-4 h-4"
+                />
+              </Button>
             )}
             {onMoveDown && (
-              <button
-                type="button"
-                onClick={onMoveDown}
-                className="p-1 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
-                aria-label={`Move "${item.title || 'item'}" down`}
+              <Button
+                size="small"
+                action={onMoveDown}
+                aria-label={`Move "${item.title || "item"}" down`}
               >
-                <img src={chevronDownSvg} alt="" aria-hidden="true" className="w-4 h-4" />
-              </button>
+                <img
+                  src={chevronDownSvg}
+                  alt=""
+                  aria-hidden="true"
+                  className="w-4 h-4"
+                />
+              </Button>
             )}
-            <button
-              type="button"
-              onClick={onRemove}
-              className="text-xs text-red-600 hover:text-red-700 font-medium whitespace-nowrap"
-            >
+            <Button variant="danger" size="small" action={onRemove}>
               Remove
-            </button>
+            </Button>
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -76,20 +94,23 @@ function RunItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown, ref 
               id={`item-title-${item.name}`}
               type="text"
               value={item.title}
-              onChange={(e) => onUpdate(item.name, 'title', e.target.value)}
+              onChange={(e) => onUpdate(item.name, "title", e.target.value)}
               placeholder="Item title"
               required
             />
           </div>
-          <button
-            type="button"
-            onClick={showDescription ? handleRemoveDescription : () => setShowDescription(true)}
-            className="text-xs text-indigo-600 hover:text-indigo-700 font-medium whitespace-nowrap"
+          <Button
+            size="small"
+            action={
+              showDescription
+                ? handleRemoveDescription
+                : async () => setShowDescription(true)
+            }
           >
             <label htmlFor={`item-description-${item.name}`}>
-              {showDescription ? 'Description -' : 'Description +'}
+              {showDescription ? "Description -" : "Description +"}
             </label>
-          </button>
+          </Button>
         </div>
       </div>
       {showDescription && (
@@ -98,7 +119,9 @@ function RunItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown, ref 
             <textarea
               id={`item-description-${item.name}`}
               value={item.description}
-              onChange={(e) => onUpdate(item.name, 'description', e.target.value)}
+              onChange={(e) =>
+                onUpdate(item.name, "description", e.target.value)
+              }
               placeholder="Item description"
               rows={5}
               className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm resize-none"
@@ -110,10 +133,15 @@ function RunItemComponent({ item, onUpdate, onRemove, onMoveUp, onMoveDown, ref 
   );
 }
 
-export function RunEditForm({ initialValues, submitLabel, onSubmit, onCancel }: RunEditFormProps) {
+export function RunEditForm({
+  initialValues,
+  submitLabel,
+  onSubmit,
+  onCancel,
+}: RunEditFormProps) {
   const [title, setTitle] = useState(initialValues.title);
-  const [items, setItems] = useState<WriteableChecklistRun['items']>(
-    initialValues.items.map(({ completed: _completed, ...item }) => item)
+  const [items, setItems] = useState<WriteableChecklistRun["items"]>(
+    initialValues.items.map(({ completed: _completed, ...item }) => item),
   );
   const addedItemRef = useRef<HTMLInputElement>(null);
   const lastAddedId = useRef<string | null>(null);
@@ -126,12 +154,20 @@ export function RunEditForm({ initialValues, submitLabel, onSubmit, onCancel }: 
   const addItem = (index: number) => {
     const newId = v4();
     lastAddedId.current = newId;
-    setItems((prev) => prev.toSpliced(index, 0, { name: newId, title: '', description: '' }));
+    setItems((prev) =>
+      prev.toSpliced(index, 0, { name: newId, title: "", description: "" }),
+    );
   };
 
-  const updateItem = (name: string, field: 'title' | 'description', value: string) => {
+  const updateItem = (
+    name: string,
+    field: "title" | "description",
+    value: string,
+  ) => {
     setItems((prev) =>
-      prev.map((item) => (item.name === name ? { ...item, [field]: value } : item))
+      prev.map((item) =>
+        item.name === name ? { ...item, [field]: value } : item,
+      ),
     );
   };
 
@@ -158,9 +194,15 @@ export function RunEditForm({ initialValues, submitLabel, onSubmit, onCancel }: 
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="mb-4 p-4 border border-gray-200 rounded-md bg-gray-50">
+      <form
+        onSubmit={handleSubmit}
+        className="mb-4 p-4 border border-gray-200 rounded-md bg-gray-50"
+      >
         <div className="mb-3">
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Title
           </label>
           <TextInput
@@ -175,51 +217,51 @@ export function RunEditForm({ initialValues, submitLabel, onSubmit, onCancel }: 
 
         <div className="mb-4">
           <ol className="space-y-3 my-1">
-            <button
-              type="button"
-              onClick={() => addItem(0)}
-              className="px-2 w-full rounded-md text-xs text-indigo-600 border border-indigo-600 hover:bg-indigo-50"
-            >
+            <Button size={["full", "small"]} action={async () => addItem(0)}>
               + Add Item
-            </button>
+            </Button>
             {items.map((item, index) => (
               <li key={item.name}>
                 <RunItemComponent
                   item={item}
                   onUpdate={updateItem}
                   onRemove={() => removeItem(item.name)}
-                  onMoveUp={index > 0 ? () => moveItem(index, index - 1) : undefined}
-                  onMoveDown={index < items.length - 1 ? () => moveItem(index, index + 1) : undefined}
-                  ref={item.name === lastAddedId.current ? addedItemRef : undefined}
+                  onMoveUp={
+                    index > 0 ? () => moveItem(index, index - 1) : undefined
+                  }
+                  onMoveDown={
+                    index < items.length - 1
+                      ? () => moveItem(index, index + 1)
+                      : undefined
+                  }
+                  ref={
+                    item.name === lastAddedId.current ? addedItemRef : undefined
+                  }
                 />
-                <button
-                  type="button"
-                  onClick={() => addItem(index + 1)}
-                  className="px-2 w-full rounded-md text-xs text-indigo-600 border border-indigo-600 hover:bg-indigo-50"
+                <Button
+                  size={["full", "small"]}
+                  action={async () => addItem(index + 1)}
                 >
                   + Add Item
-                </button>
+                </Button>
               </li>
             ))}
           </ol>
         </div>
 
         <div className="flex gap-3">
-          {onCancel && (
-            <button
-              type="button"
-              onClick={onCancel}
-              className="flex-1 px-4 py-2 rounded-md font-medium text-gray-700 border border-gray-300 hover:bg-gray-100"
-            >
-              Cancel
-            </button>
-          )}
-          <button
-            type="submit"
-            className="flex-[2] bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700"
-          >
-            {submitLabel}
-          </button>
+          <div className="flex-1">
+            {onCancel && (
+              <Button action={onCancel} size={["full", "large"]}>
+                Cancel
+              </Button>
+            )}
+          </div>
+          <div className="flex-2">
+            <Button action="submit" type="primary" size={["full", "large"]}>
+              {submitLabel}
+            </Button>
+          </div>
         </div>
       </form>
     </>
