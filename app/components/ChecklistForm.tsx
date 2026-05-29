@@ -52,7 +52,7 @@ function ChecklistItemComponent({
   };
 
   return (
-    <div className="p-4 my-4 ring ring-gray-500 focus-within:ring-emerald-500 bg-gray-50 focus-within:bg-white">
+    <div className="p-4 my-4 ring ring-gray-500 bg-white opacity-65 focus-within:ring-emerald-500 focus-within:opacity-100">
       <div className="mb-2">
         <div className="flex justify-between items-center mb-1">
           <label
@@ -219,6 +219,7 @@ export function ChecklistForm({
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter checklist title"
             required
+            autoFocus
           />
         </div>
 
