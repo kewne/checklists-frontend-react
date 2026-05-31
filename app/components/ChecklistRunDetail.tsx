@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { Heading } from "./Heading";
 import { useNavigate } from "react-router";
 import {
   ApiResource,
@@ -7,12 +6,13 @@ import {
   type Checklist,
   type ChecklistRun,
 } from "~/lib/api";
+import { useModal } from "~/lib/useModal";
 import { encodeApiUrl } from "../lib/encoding";
 import { showSuccessToast } from "../lib/toastHelpers";
 import { Button } from "./Button";
+import { Heading } from "./Heading";
 import { Link } from "./Link";
 import { MenuButton, type MenuItem } from "./MenuButton";
-import { Panel } from "./Panel";
 import { RunItem } from "./RunItem";
 
 interface ChecklistRunDetailProps {
@@ -54,7 +54,7 @@ export function ChecklistRunDetail({
   const items = resource.properties.items;
   const completedItems = items.filter((item) => item.completed != null);
   const todoItems = items.filter((item) => item.completed == null);
-  const allItemsCompleted = todoItems.length === 0 && completedItems.length > 0;
+  const allItemsCompleted = items.length > 0 && todoItems.length === 0;
   const checklistLink = resource.getFirstLinkMatching(
     "related",
     (link) => link.name === "checklist",
@@ -67,11 +67,8 @@ export function ChecklistRunDetail({
   const listRef = useRef<HTMLUListElement>(null);
   const navigate = useNavigate();
 
-  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const deleteModal = useModal();
 
-  const confirmationText = allItemsCompleted
-    ? undefined
-    : "This run has incomplete items. Delete anyway?";
 
   useEffect(() => {
     const listNode = listRef.current;
@@ -87,8 +84,8 @@ export function ChecklistRunDetail({
   }, [resource]);
 
   const handleDeleteClick = async () => {
-    if (confirmationText) {
-      setIsDeleteConfirmOpen(true);
+    if (!allItemsCompleted) {
+      deleteModal.open();
     } else {
       return performDelete();
     }
@@ -97,7 +94,7 @@ export function ChecklistRunDetail({
   const performDelete = async () => {
     await onDelete?.();
     showSuccessToast("Run deleted successfully");
-    setIsDeleteConfirmOpen(false);
+    deleteModal.close();
   };
 
   const additionalActions: MenuItem[] = [];
@@ -145,7 +142,7 @@ export function ChecklistRunDetail({
   }
 
   additionalActions.push({
-    title: confirmationText ? "Delete..." : "Delete",
+    title: !allItemsCompleted ? "Delete..." : "Delete",
     action: handleDeleteClick,
   });
 
@@ -153,9 +150,7 @@ export function ChecklistRunDetail({
     <div>
       <div className="flex flex-wrap justify-between items-start mb-6">
         <div>
-          <Heading level="1">
-            {resource.properties.title}
-          </Heading>
+          <Heading level="1">{resource.properties.title}</Heading>
           {checklistLink && (
             <CreatedFromChecklist checklistLink={checklistLink} />
           )}
@@ -171,7 +166,6 @@ export function ChecklistRunDetail({
           </MenuButton>
         </div>
       </div>
-
       {allItemsCompleted && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200">
           <p className="text-green-800 font-semibold text-lg">
@@ -182,7 +176,6 @@ export function ChecklistRunDetail({
           </p>
         </div>
       )}
-
       {completedItems.length === 0 && todoItems.length === 0 ? (
         <p className="text-gray-500 text-sm">No items in this run.</p>
       ) : (
@@ -254,27 +247,18 @@ export function ChecklistRunDetail({
           )}
         </>
       )}
-
-      {isDeleteConfirmOpen && confirmationText && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10">
-          <Panel className="w-full max-w-sm mx-4">
-            <Heading level="2">
-              Delete run?
-            </Heading>
-            <p className="text-gray-600 text-sm mb-6">{confirmationText}</p>
-            <div className="flex justify-end gap-2">
-              <Button
-                action={async () => setIsDeleteConfirmOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button type="primary" variant="danger" action={performDelete}>
-                Delete
-              </Button>
-            </div>
-          </Panel>
+      <deleteModal.Modal>
+        <Heading level="2">Delete run?</Heading>
+        <p className="text-gray-600 text-sm mb-6">
+          This run has incomplete items. Delete anyway?
+        </p>
+        <div className="flex justify-end gap-2">
+          <Button action={deleteModal.close}>Cancel</Button>
+          <Button type="primary" variant="danger" action={performDelete}>
+            Delete
+          </Button>
         </div>
-      )}
+      </deleteModal.Modal>
     </div>
   );
 }
