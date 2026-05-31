@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { v4 } from "uuid";
 import { Button } from "~/components/Button";
+import { TextArea } from "~/components/TextArea";
 import { TextInput } from "~/components/TextInput";
 import type { Checklist, ChecklistItem } from "~/lib/api";
 import chevronDownSvg from "/chevron-down.svg?url";
@@ -126,14 +127,14 @@ function ChecklistItemComponent({
       {showDescription && (
         <div>
           <div className="flex items-start gap-2 flex-wrap">
-            <textarea
+            <TextArea
               ref={descriptionRef}
               id={`item-description-${item.id}`}
               value={item.description}
               onChange={(e) => onUpdate(item.id, "description", e.target.value)}
               placeholder="Item description"
               rows={5}
-              className="flex-1 px-3 py-1.5 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-700 text-sm resize-none"
+              className="flex-1 py-1.5"
             />
           </div>
         </div>

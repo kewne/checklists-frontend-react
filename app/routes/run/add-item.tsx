@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "~/components/Link";
+import { TextArea } from "~/components/TextArea";
 import { TextInput } from "~/components/TextInput";
 import { apiResourceActions } from "~/lib/api";
 import { Button } from "../../components/Button";
@@ -86,12 +87,11 @@ export default function AddItem({ params }: Route.ComponentProps) {
             Description
             <span className="text-gray-400 font-normal"> (optional)</span>
           </label>
-          <textarea
+          <TextArea
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
         <div className="flex justify-end gap-2 pt-2">

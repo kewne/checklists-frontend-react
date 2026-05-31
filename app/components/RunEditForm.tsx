@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { v4 } from "uuid";
 import chevronDownSvg from "/chevron-down.svg?url";
+import { TextArea } from "~/components/TextArea";
 import { TextInput } from "~/components/TextInput";
 import chevronUpSvg from "/chevron-up.svg?url";
 import type { ChecklistRun, WriteableChecklistRun } from "~/lib/api";
@@ -44,7 +45,7 @@ function RunItemComponent({
   };
 
   return (
-    <div className="p-3 border border-gray-200 rounded-md bg-white">
+    <div className="p-3 border border-gray-200 bg-white">
       <div className="mb-2">
         <div className="flex justify-between items-center mb-1">
           <label
@@ -116,7 +117,7 @@ function RunItemComponent({
       {showDescription && (
         <div>
           <div className="flex items-start gap-2 flex-wrap">
-            <textarea
+            <TextArea
               id={`item-description-${item.name}`}
               value={item.description}
               onChange={(e) =>
@@ -124,7 +125,7 @@ function RunItemComponent({
               }
               placeholder="Item description"
               rows={5}
-              className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-700 text-sm resize-none"
+              className="flex-1 py-1.5"
             />
           </div>
         </div>
@@ -196,7 +197,7 @@ export function RunEditForm({
     <>
       <form
         onSubmit={handleSubmit}
-        className="mb-4 p-4 border border-gray-200 rounded-md bg-gray-50"
+        className="mb-4 p-4"
       >
         <div className="mb-3">
           <label

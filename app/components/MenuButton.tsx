@@ -67,13 +67,13 @@ export function MenuButton({
             </button>
 
             {isDropdownOpen && (
-                <div className="absolute right-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-md shadow-lg min-w-max">
+                <div className="absolute right-0 top-full mt-1 z-50 bg-white border border-gray-200 shadow-lg min-w-max">
                     {items.map((item, index) => (
                         <button
                             key={index}
                             type="button"
                             onClick={() => handleMenuItemClick(item.action)}
-                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 first:rounded-t-md last:rounded-b-md"
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
                             {item.title}
                         </button>

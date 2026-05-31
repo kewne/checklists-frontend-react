@@ -101,7 +101,7 @@ export function RunItem({
   const style = completed ? "opacity-60" : "";
   return (
     <div
-      className={`p-4 border border-gray-200 rounded-md snap-start bg-gray-50 ${style}`}
+      className={`p-4 border border-gray-200 snap-start bg-gray-50 ${style}`}
     >
       <div className="mb-3">
         <p className="font-medium text-gray-900 text-sm">{title}</p>
