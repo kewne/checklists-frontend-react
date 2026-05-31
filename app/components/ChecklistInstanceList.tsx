@@ -2,6 +2,7 @@ import { type ApiLink } from "~/lib/api";
 import { encodeApiUrl } from "../lib/encoding";
 import { Button } from "./Button";
 import { Link } from "./Link";
+import { Panel } from "./Panel";
 
 interface ChecklistInstanceListProps {
   items: ApiLink[];

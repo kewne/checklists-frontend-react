@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { v4 } from "uuid";
 import { Button } from "~/components/Button";
+import { Panel } from "~/components/Panel";
 import { TextArea } from "~/components/TextArea";
 import { TextInput } from "~/components/TextInput";
 import type { Checklist, ChecklistItem } from "~/lib/api";
@@ -53,7 +54,7 @@ function ChecklistItemComponent({
   };
 
   return (
-    <div className="p-4 my-4 ring ring-gray-500 bg-white opacity-65 focus-within:ring-emerald-500 focus-within:opacity-100">
+    <Panel className="my-4">
       <div className="mb-2">
         <div className="flex justify-between items-center mb-1">
           <label
@@ -139,7 +140,7 @@ function ChecklistItemComponent({
           </div>
         </div>
       )}
-    </div>
+    </Panel>
   );
 }
 
@@ -206,7 +207,7 @@ export function ChecklistForm({
         onSubmit={handleSubmit}
         className="mb-4"
       >
-        <div className="p-4 ring ring-gray-500 bg-white">
+        <Panel>
           <label
             htmlFor="title"
             className="block text-sm font-medium text-gray-700 mb-1"
@@ -222,7 +223,7 @@ export function ChecklistForm({
             required
             autoFocus
           />
-        </div>
+        </Panel>
 
         <div className="mt-20 mb-4">
           <ol className="space-y-3">

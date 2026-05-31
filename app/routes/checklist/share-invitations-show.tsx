@@ -1,4 +1,5 @@
 import { Link } from "~/components/Link";
+import { Panel } from "~/components/Panel";
 import { apiResourceActions } from "../../lib/api";
 import { getUser } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
@@ -22,7 +23,7 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
-        <div className="bg-white rounded-lg shadow p-6">
+        <Panel>
           <div className="text-red-600 mb-4">
             <p className="font-semibold">Error</p>
             <p className="text-sm">
@@ -30,7 +31,7 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
             </p>
           </div>
           <Link to="/">Back to Home</Link>
-        </div>
+        </Panel>
       </div>
     </div>
   );

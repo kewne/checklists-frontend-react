@@ -1,6 +1,7 @@
 import { redirect } from "react-router";
 import type { Route } from "./+types/home";
 import { Link } from "~/components/Link";
+import { Panel } from "~/components/Panel";
 import { apiResourceActions } from "~/lib/api";
 import { getUser } from "../lib/auth";
 import { encodeApiUrl } from "~/lib/encoding";
@@ -15,13 +16,13 @@ export function meta({}: Route.MetaArgs) {
 export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
-      <div className="bg-white shadow p-6">
+      <Panel>
         <div className="text-red-600 mb-4">
           <p className="font-semibold">API connection failed</p>
           <p className="text-sm">Could not connect to the API. Please try again later.</p>
         </div>
         <Link to="/">Retry</Link>
-      </div>
+      </Panel>
     </div>
   );
 }

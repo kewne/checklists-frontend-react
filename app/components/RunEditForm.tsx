@@ -6,6 +6,7 @@ import { TextInput } from "~/components/TextInput";
 import chevronUpSvg from "/chevron-up.svg?url";
 import type { ChecklistRun, WriteableChecklistRun } from "~/lib/api";
 import { Button } from "./Button";
+import { Panel } from "./Panel";
 
 interface RunEditFormProps {
   initialValues: ChecklistRun;
@@ -45,7 +46,7 @@ function RunItemComponent({
   };
 
   return (
-    <div className="p-3 border border-gray-200 bg-white">
+    <Panel className="p-4">
       <div className="mb-2">
         <div className="flex justify-between items-center mb-1">
           <label
@@ -130,7 +131,7 @@ function RunItemComponent({
           </div>
         </div>
       )}
-    </div>
+    </Panel>
   );
 }
 
@@ -199,7 +200,7 @@ export function RunEditForm({
         onSubmit={handleSubmit}
         className="mb-4 p-4"
       >
-        <div className="mb-3">
+        <Panel className="mb-3">
           <label
             htmlFor="title"
             className="block text-sm font-medium text-gray-700 mb-1"
@@ -215,7 +216,7 @@ export function RunEditForm({
             required
             autoFocus
           />
-        </div>
+        </Panel>
 
         <div className="mb-4">
           <ol className="space-y-3 my-1">
