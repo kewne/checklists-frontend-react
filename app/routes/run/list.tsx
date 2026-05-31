@@ -1,7 +1,8 @@
 import { useFetcher } from "react-router";
+import { Button } from "~/components/Button";
 import { Link } from "~/components/Link";
+import { List } from "~/components/List";
 import { Panel } from "~/components/Panel";
-import { ChecklistInstanceList } from "../../components/ChecklistInstanceList";
 import { apiResourceActions } from "../../lib/api";
 import { getUser } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
@@ -93,7 +94,25 @@ export default function ChecklistInstances({
           Create run
         </Link>
       )}
-      <ChecklistInstanceList items={items} onDelete={handleDelete} />
+      {items.length === 0 ? (
+        <div className="px-4 py-3 text-gray-500 text-sm">
+          No checklist instances found.
+        </div>
+      ) : (
+        <List
+          ariaLabel="checklist instances"
+          items={items.map((item) => (
+            <>
+              <Link to={`/runs/show/${encodeApiUrl(item.href)}`}>
+                {item.title ?? item.name}
+              </Link>
+              <Button variant="danger" action={handleDelete(item.href)}>
+                Delete
+              </Button>
+            </>
+          ))}
+        />
+      )}
     </>
   );
 }
