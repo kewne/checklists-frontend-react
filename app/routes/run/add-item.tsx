@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { TextArea } from "~/components/TextArea";
@@ -62,7 +63,7 @@ export default function AddItem({ params }: Route.ComponentProps) {
 
   return (
     <>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Add Item</h1>
+      <Heading level="1">Add Item</Heading>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label

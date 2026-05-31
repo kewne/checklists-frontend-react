@@ -7,7 +7,7 @@ interface PanelProps {
 
 export function Panel({ children, className = "" }: PanelProps) {
   const baseClasses =
-    "p-4 ring ring-gray-500 bg-white focus-within:ring-emerald-500";
+    "p-4 ring ring-emerald-700 bg-white focus-within:ring-emerald-500";
   const combinedClasses = className ? `${baseClasses} ${className}` : baseClasses;
 
   return <div className={combinedClasses}>{children}</div>;

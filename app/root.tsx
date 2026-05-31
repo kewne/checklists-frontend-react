@@ -1,6 +1,7 @@
 import "./app.css";
 
 import "react-toastify/dist/ReactToastify.css";
+import { Heading } from "~/components/Heading";
 
 import "@firebase-oss/ui-styles/dist.min.css";
 
@@ -86,7 +87,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
   return (
     <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
+      <Heading level="1">{message}</Heading>
       <p>{details}</p>
       {stack && (
         <pre className="w-full p-4 overflow-x-auto">

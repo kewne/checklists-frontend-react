@@ -1,5 +1,6 @@
 import { Form, redirect } from "react-router";
 import { Button } from "~/components/Button";
+import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { apiResourceActions } from "~/lib/api";
@@ -85,7 +86,7 @@ export default function ShareInvitationAccept({ loaderData }: Route.ComponentPro
   return (
     <>
       <p className="text-gray-600 mb-4">Someone shared the following checklist with you:</p>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">{title}</h1>
+      <Heading level="1">{title}</Heading>
       <Form method="POST">
         <input type="hidden" name="acceptLinkHref" value={acceptLink.href} />
         <Button type="primary" size="large" action="submit">

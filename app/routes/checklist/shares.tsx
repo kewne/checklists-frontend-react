@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Await, useFetcher } from "react-router";
 import { Button } from "~/components/Button";
+import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { List } from "~/components/List";
 import { Loading } from "~/components/Loading";
@@ -89,7 +90,7 @@ function InvitationsList({ resource }: { resource: Resource }) {
 
   return (
     <>
-      <h2 className="text-xl font-bold text-gray-900 mb-4 mt-8">Invitations</h2>
+      <Heading level="2" className="mt-8">Invitations</Heading>
       {createLink && (
         <Link
           variant="inline-block"
@@ -140,7 +141,7 @@ export default function Shares({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">Shares</h1>
+      <Heading level="1">Shares</Heading>
       {items.length === 0 ? (
         <p className="text-gray-500 text-sm">No shares found.</p>
       ) : (

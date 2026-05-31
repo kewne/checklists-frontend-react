@@ -42,7 +42,7 @@ export async function clientLoader() {
 export default function ChecklistsRedirect() {
   return (
     <div className="max-w-4xl mx-auto py-8 px-4 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+      <div className="animate-spin h-6 w-6 border-b-2 border-indigo-600"></div>
     </div>
   );
 }

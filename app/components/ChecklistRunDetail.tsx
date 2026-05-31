@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Heading } from "./Heading";
 import { useNavigate } from "react-router";
 import {
   ApiResource,
@@ -152,9 +153,9 @@ export function ChecklistRunDetail({
     <div>
       <div className="flex flex-wrap justify-between items-start mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <Heading level="1">
             {resource.properties.title}
-          </h1>
+          </Heading>
           {checklistLink && (
             <CreatedFromChecklist checklistLink={checklistLink} />
           )}
@@ -257,9 +258,9 @@ export function ChecklistRunDetail({
       {isDeleteConfirmOpen && confirmationText && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10">
           <Panel className="w-full max-w-sm mx-4">
-            <h2 className="text-base font-semibold text-gray-800 mb-2">
+            <Heading level="2">
               Delete run?
-            </h2>
+            </Heading>
             <p className="text-gray-600 text-sm mb-6">{confirmationText}</p>
             <div className="flex justify-end gap-2">
               <Button

@@ -1,3 +1,4 @@
+import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { apiResourceActions } from "../../lib/api";
@@ -60,24 +61,26 @@ export default function ShareInvitationShow({
 
   return (
     <>
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">{title}</h1>
-      <p className="text-sm text-gray-600">Checklist: {checklistTitle}</p>
-      <p className="text-sm text-gray-600">
-        Created at {new Date(createdAt).toLocaleString()}
-      </p>
-      <p className="text-sm text-gray-600">
-        Expires at {new Date(expiresAt).toLocaleString()}
-      </p>
-      {previewLink && (
-        <div className="mt-4">
-          <p className="text-sm text-gray-600 mb-1">
-            Share this link to invite someone:
-          </p>
-          <pre className="bg-gray-100 border border-gray-200 rounded-md px-4 py-3 text-gray-600 text-sm break-all whitespace-pre-wrap">
-            {shareUrl}
-          </pre>
-        </div>
-      )}
+      <Heading level="1">{title}</Heading>
+      <Panel>
+        <p className="text-sm text-gray-600">Checklist: {checklistTitle}</p>
+        <p className="text-sm text-gray-600">
+          Created at {new Date(createdAt).toLocaleString()}
+        </p>
+        <p className="text-sm text-gray-600">
+          Expires at {new Date(expiresAt).toLocaleString()}
+        </p>
+        {previewLink && (
+          <div className="mt-4">
+            <p className="text-sm text-gray-600 mb-1">
+              Share this link to invite someone:
+            </p>
+            <pre className="bg-gray-100 border border-gray-200 px-4 py-3 text-gray-600 text-sm break-all whitespace-pre-wrap">
+              {shareUrl}
+            </pre>
+          </div>
+        )}
+      </Panel>
     </>
   );
 }

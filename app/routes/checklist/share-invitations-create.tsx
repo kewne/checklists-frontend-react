@@ -1,4 +1,5 @@
 import { Form, redirect } from "react-router";
+import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { TextInput } from "~/components/TextInput";
@@ -65,9 +66,9 @@ export async function clientAction({
 export default function CreateShareInvitation(): React.JSX.Element {
   return (
     <>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+      <Heading level="1">
         Create Share Invitation
-      </h1>
+      </Heading>
       <Form method="POST" className="space-y-4">
         <Panel>
           <label

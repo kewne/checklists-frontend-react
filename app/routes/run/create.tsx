@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { RunEditForm } from "../../components/RunEditForm";
@@ -66,9 +67,9 @@ export default function CreateRun({ params }: Route.ComponentProps) {
 
     return (
         <>
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">
+            <Heading level="1">
                 Create New Run
-            </h1>
+            </Heading>
             <RunEditForm
                 initialValues={initialValues}
                 submitLabel="Create"

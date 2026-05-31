@@ -1,5 +1,6 @@
 import { useFetcher } from "react-router";
 import { Button } from "~/components/Button";
+import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { List } from "~/components/List";
 import { Panel } from "~/components/Panel";
@@ -84,7 +85,7 @@ export default function ChecklistInstances({
 
   return (
     <>
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">Checklist Runs</h1>
+      <Heading level="1">Checklist Runs</Heading>
       {createLink && (
         <Link
           variant="inline-block"

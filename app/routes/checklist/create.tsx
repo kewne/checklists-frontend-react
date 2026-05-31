@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { apiResourceActions } from "~/lib/api";
@@ -59,9 +60,9 @@ export default function CreateChecklist({ params }: Route.ComponentProps) {
 
   return (
     <>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+      <Heading level="1">
         Create New Checklist
-      </h1>
+      </Heading>
       <ChecklistForm
         submitLabel="Create"
         onSubmit={handleSubmit}
