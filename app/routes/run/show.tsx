@@ -55,7 +55,6 @@ export default function ChecklistRun({ loaderData, params }: Route.ComponentProp
       resource={runResource}
       onItemUpdated={revalidate}
       onDelete={doDelete}
-      onEdit={async () => navigate(`/runs/edit/${params.apiUrlEncoded}`)}
     />
   );
 }

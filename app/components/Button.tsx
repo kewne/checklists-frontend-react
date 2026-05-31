@@ -2,7 +2,10 @@ import { useState } from "react";
 
 export type ButtonType = "primary" | "secondary";
 export type ButtonVariant = "normal" | "danger";
-export type ButtonSize = "small" | "medium" | "large" | "full";
+export type ButtonSizeOpts = "small" | "medium" | "large" | "full";
+export type ButtonSize =
+  | ButtonSizeOpts
+  | [width: ButtonSizeOpts, height: ButtonSizeOpts];
 
 export interface ButtonProps {
   type?: ButtonType;
@@ -30,6 +33,8 @@ export function getSizeClasses(size: Required<ButtonProps>["size"]) {
     case "full":
       widthClasses = "px-4 w-full";
       break;
+    default:
+      throw new Error(`Unsupported width ${width}`);
   }
   let heightClasses: string;
   switch (height) {
@@ -45,6 +50,8 @@ export function getSizeClasses(size: Required<ButtonProps>["size"]) {
     case "full":
       heightClasses = "py-2 h-full";
       break;
+    default:
+      throw new Error(`Unsupported height ${height}`);
   }
   const textClass =
     height === "small" || width === "small" ? "text-xs" : "text-sm";

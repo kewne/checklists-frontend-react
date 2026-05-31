@@ -14,12 +14,12 @@ import { Heading } from "./Heading";
 import { Link } from "./Link";
 import { MenuButton, type MenuItem } from "./MenuButton";
 import { RunItem } from "./RunItem";
+import { Panel } from "./Panel";
 
 interface ChecklistRunDetailProps {
   resource: ApiResource<ChecklistRun>;
   onItemUpdated: () => Promise<void>;
   onDelete?: () => Promise<void>;
-  onEdit?: () => Promise<void>;
 }
 
 function CreatedFromChecklist({ checklistLink }: { checklistLink: ApiLink }) {
@@ -49,7 +49,6 @@ export function ChecklistRunDetail({
   resource,
   onItemUpdated,
   onDelete,
-  onEdit,
 }: ChecklistRunDetailProps) {
   const items = resource.properties.items;
   const completedItems = items.filter((item) => item.completed != null);
@@ -68,7 +67,6 @@ export function ChecklistRunDetail({
   const navigate = useNavigate();
 
   const deleteModal = useModal();
-
 
   useEffect(() => {
     const listNode = listRef.current;
@@ -98,71 +96,81 @@ export function ChecklistRunDetail({
   };
 
   const additionalActions: MenuItem[] = [];
-  if (onEdit) {
-    additionalActions.push({
-      title: "Edit...",
-      action: onEdit,
-    });
-  }
 
   const createChecklistFrom = resource.getFirstLinkMatching(
     "create-from",
     (link) => link.name === "checklist",
   );
-  if (createChecklistFrom) {
-    additionalActions.push({
-      title: "Create Checklist",
-      action: async () => {
-        const location = await createChecklistFrom.actions().post({
-          title: `Copy of ${resource.properties.title}`,
-        });
-        if (location) {
-          return navigate(`/checklists/show/${encodeApiUrl(location)}`);
-        }
-        navigate("/checklists/list");
-      },
-    });
-  }
 
   const updateChecklistFrom = resource.getFirstLinkMatching(
     "update-from",
     (link) => link.name === "checklist",
   );
-  if (updateChecklistFrom) {
-    additionalActions.push({
-      title: "Update Checklist",
-      action: async () => {
-        const location = await updateChecklistFrom.actions().post();
-        if (location) {
-          return navigate(`/checklists/show/${encodeApiUrl(location)}`);
-        }
-        navigate("/checklists/list");
-      },
-    });
-  }
-
-  additionalActions.push({
-    title: !allItemsCompleted ? "Delete..." : "Delete",
-    action: handleDeleteClick,
-  });
 
   return (
     <div>
-      <div className="flex flex-wrap justify-between items-start mb-6">
+      <div className="flex justify-between items-start mb-6">
         <div>
-          <Heading level="1">{resource.properties.title}</Heading>
+          <Heading level="1">
+            {resource.properties.title}
+            <Link
+              variant="inline-block"
+              className="ml-3"
+              to={`/runs/edit/${encodeApiUrl(resource.getFirstLinkMatching("self")!.href)}`}
+            >
+              Edit...
+            </Link>
+          </Heading>
           {checklistLink && (
             <CreatedFromChecklist checklistLink={checklistLink} />
           )}
         </div>
-        <div>
+        <div className="ml-3">
           <MenuButton
             type="secondary"
-            size="large"
-            items={additionalActions}
+            size={["large", "medium"]}
             ariaLabel="More actions"
           >
-            ⋮
+            <div className="flex flex-col gap-1 content-stretch items-stretch">
+              {createChecklistFrom && (
+                <Button
+                  action={async () => {
+                    const location = await createChecklistFrom.actions().post({
+                      title: `Copy of ${resource.properties.title}`,
+                    });
+                    if (location) {
+                      return navigate(
+                        `/checklists/show/${encodeApiUrl(location)}`,
+                      );
+                    }
+                    navigate("/checklists/list");
+                  }}
+                >
+                  Create Checklist
+                </Button>
+              )}
+              {updateChecklistFrom && (
+                <Button
+                  action={async () => {
+                    const location = await updateChecklistFrom.actions().post();
+                    if (location) {
+                      return navigate(
+                        `/checklists/show/${encodeApiUrl(location)}`,
+                      );
+                    }
+                    navigate("/checklists/list");
+                  }}
+                >
+                  Update Checklist
+                </Button>
+              )}
+              <Button
+                variant="danger"
+                action={handleDeleteClick}
+              >
+                {!allItemsCompleted ? "Delete..." : "Delete"}
+              </Button>
+            </div>
           </MenuButton>
         </div>
       </div>
