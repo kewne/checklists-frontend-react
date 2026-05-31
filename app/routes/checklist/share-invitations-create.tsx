@@ -6,6 +6,7 @@ import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import { apiResourceActions } from "~/lib/api";
 import { showErrorToast } from "../../lib/toastHelpers";
 import type { Route } from "./+types/share-invitations-create";
+import { Button } from "~/components/Button";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -67,7 +68,7 @@ export default function CreateShareInvitation(): React.JSX.Element {
         Create Share Invitation
       </h1>
       <Form method="POST" className="space-y-4">
-        <div>
+        <div class="p-4 ring ring-gray-500 bg-white">
           <label
             htmlFor="title"
             className="block text-sm font-medium text-gray-700 mb-1"
@@ -82,12 +83,13 @@ export default function CreateShareInvitation(): React.JSX.Element {
           />
         </div>
         <div className="flex gap-3">
-          <button
-            type="submit"
-            className="bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700"
+          <Button
+            action="submit"
+            type="primary"
+            size="large"
           >
             Create
-          </button>
+          </Button>
         </div>
       </Form>
     </>

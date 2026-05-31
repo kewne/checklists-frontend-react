@@ -254,8 +254,8 @@ export function ChecklistRunDetail({
       )}
 
       {isDeleteConfirmOpen && confirmationText && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white shadow-lg w-full max-w-sm mx-4 p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10">
+          <div className="bg-white ring w-full max-w-sm mx-4 p-6">
             <h2 className="text-base font-semibold text-gray-800 mb-2">
               Delete run?
             </h2>

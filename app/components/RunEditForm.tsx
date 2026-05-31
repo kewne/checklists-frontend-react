@@ -10,7 +10,7 @@ interface RunEditFormProps {
   initialValues: ChecklistRun;
   submitLabel: string;
   onSubmit?: (data: WriteableChecklistRun) => Promise<void>;
-  onCancel?: () => Promise<void>;
+  onCancel?: () => void | Promise<void>;
 }
 
 interface RunItemComponentProps {
@@ -212,6 +212,7 @@ export function RunEditForm({
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter run title"
             required
+            autoFocus
           />
         </div>
 
