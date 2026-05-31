@@ -3,9 +3,9 @@ import { Button } from "~/components/Button";
 import { Link } from "~/components/Link";
 import { List } from "~/components/List";
 import { Panel } from "~/components/Panel";
-import { encodeApiUrl } from "~/lib/encoding";
 import { apiResourceActions } from "~/lib/api";
 import { getUser } from "~/lib/auth";
+import { encodeApiUrl } from "~/lib/encoding";
 import { decodeApiUrl } from "../../lib/encoding";
 import { showErrorToast, showSuccessToast } from "../../lib/toastHelpers";
 import type { Route } from "./+types/list";
@@ -69,7 +69,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   return { checklistsResource, user };
 }
 
-export default function List({ loaderData, params }: Route.ComponentProps) {
+export default function ChecklistList({ loaderData, params }: Route.ComponentProps) {
   const { checklistsResource } = loaderData;
   const fetcher = useFetcher();
   const items = checklistsResource.getLinkArray("items");
