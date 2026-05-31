@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { Await, useFetcher } from "react-router";
 import { Button } from "~/components/Button";
 import { Link } from "~/components/Link";
+import { List } from "~/components/List";
 import { Loading } from "~/components/Loading";
 import { Panel } from "~/components/Panel";
 import { getUser } from "~/lib/auth";
@@ -101,12 +102,10 @@ function InvitationsList({ resource }: { resource: Resource }) {
       {items.length === 0 ? (
         <p className="text-gray-500 text-sm">No invitations found.</p>
       ) : (
-        <ul
-          aria-label="invitations"
-          className="mt-4 divide-y divide-gray-100 border border-gray-200 rounded-md"
-        >
-          {items.map((item) => (
-            <li key={item.href} className="flex justify-between items-center px-4 py-3 hover:bg-gray-50">
+        <List
+          ariaLabel="invitations"
+          items={items.map((item) => (
+            <>
               <Link
                 variant="inline"
                 to={`/checklists/share-invitations/show/${encodeApiUrl(item.href)}`}
@@ -120,9 +119,9 @@ function InvitationsList({ resource }: { resource: Resource }) {
               >
                 Delete
               </Button>
-            </li>
+            </>
           ))}
-        </ul>
+        />
       )}
     </>
   );
@@ -145,12 +144,10 @@ export default function Shares({ loaderData }: Route.ComponentProps) {
       {items.length === 0 ? (
         <p className="text-gray-500 text-sm">No shares found.</p>
       ) : (
-        <ul
-          aria-label="shares"
-          className="mt-4 divide-y divide-gray-100 border border-gray-200 rounded-md"
-        >
-          {items.map((item) => (
-            <li key={item.href} className="flex justify-between items-center px-4 py-3 hover:bg-gray-50">
+        <List
+          ariaLabel="shares"
+          items={items.map((item) => (
+            <>
               <Link
                 variant="inline"
                 to={`/checklist/shares/${encodeApiUrl(item.href)}`}
@@ -164,9 +161,9 @@ export default function Shares({ loaderData }: Route.ComponentProps) {
               >
                 Delete
               </Button>
-            </li>
+            </>
           ))}
-        </ul>
+        />
       )}
       {invitationsPromise && (
         <Suspense fallback={<Loading text="Loading invitations..." />}>
