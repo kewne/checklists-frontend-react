@@ -1,7 +1,9 @@
 import { useFetcher } from "react-router";
+import { Button } from "~/components/Button";
 import { Link } from "~/components/Link";
+import { List } from "~/components/List";
 import { Panel } from "~/components/Panel";
-import { ChecklistList } from "~/components/ChecklistList";
+import { encodeApiUrl } from "~/lib/encoding";
 import { apiResourceActions } from "~/lib/api";
 import { getUser } from "~/lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
@@ -70,6 +72,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 export default function List({ loaderData, params }: Route.ComponentProps) {
   const { checklistsResource } = loaderData;
   const fetcher = useFetcher();
+  const items = checklistsResource.getLinkArray("items");
 
   const handleDelete = (href: string) => async () => {
     const formData = new FormData();
@@ -82,7 +85,25 @@ export default function List({ loaderData, params }: Route.ComponentProps) {
       <Link variant="inline-block" size="large" to={`/checklists/create/${params.apiUrlEncoded}`}>
         Create Checklist
       </Link>
-      <ChecklistList resource={checklistsResource} onDelete={handleDelete} />
+      {items.length === 0 ? (
+        <div className="px-4 py-3 text-gray-500 text-sm">
+          No checklists found.
+        </div>
+      ) : (
+        <List
+          ariaLabel="checklists"
+          items={items.map((item) => (
+            <>
+              <Link to={`/checklists/show/${encodeApiUrl(item.href)}`}>
+                {item.title ?? item.name}
+              </Link>
+              <Button variant="danger" action={handleDelete(item.href)}>
+                Delete
+              </Button>
+            </>
+          ))}
+        />
+      )}
     </div>
   );
 }
