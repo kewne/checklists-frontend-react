@@ -9,6 +9,7 @@ export interface LinkProps {
   className?: string;
   variant?: LinkVariant;
   size?: ButtonSize;
+  target?: string;
 }
 
 function getVariantClasses(variant: LinkVariant) {
@@ -58,6 +59,7 @@ export function Link({
   className,
   variant = "inline",
   size,
+  target,
 }: LinkProps) {
   const baseClasses =
     "text-emerald-700 active:text-emerald-600 underline-offset-4";
@@ -71,7 +73,7 @@ export function Link({
     .filter(Boolean)
     .join(" ");
   return (
-    <RouterLink to={to} className={classes}>
+    <RouterLink to={to} className={classes} target={target}>
       {children}
     </RouterLink>
   );

@@ -1,4 +1,5 @@
 import { type ApiLink } from "~/lib/api";
+import { renderWithLinks } from "~/lib/renderWithLinks";
 import { Button } from "./Button";
 
 interface RunItemCompleted {
@@ -107,7 +108,7 @@ export function RunItem({
         <p className="font-medium text-gray-900 text-sm">{title}</p>
         {description && (
           <p className="text-gray-500 text-sm mt-1 whitespace-pre-wrap">
-            {description}
+            {renderWithLinks(description)}
           </p>
         )}
       </div>
