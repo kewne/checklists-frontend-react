@@ -26,13 +26,13 @@ export function MailtoForm({ onGenerate, onCancel, initialValues }: MailtoFormPr
   const [body, setBody] = useState(initialValues?.body ?? "");
 
   const handleGenerate = async () => {
-    const params = new URLSearchParams();
-    if (cc) params.set("cc", cc);
-    if (bcc) params.set("bcc", bcc);
-    if (subject) params.set("subject", subject);
-    if (body) params.set("body", body);
-    const query = params.toString();
-    onGenerate(`mailto:${to}${query ? `?${query}` : ""}`);
+    const params = [
+      cc && `cc=${encodeURIComponent(cc)}`,
+      bcc && `bcc=${encodeURIComponent(bcc)}`,
+      subject && `subject=${encodeURIComponent(subject)}`,
+      body && `body=${encodeURIComponent(body)}`,
+    ].filter(Boolean).join("&");
+    onGenerate(`mailto:${to}${params ? `?${params}` : ""}`);
   };
 
   return (

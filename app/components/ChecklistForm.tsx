@@ -7,6 +7,7 @@ import { TextInput } from "~/components/TextInput";
 import type { Checklist, ChecklistItem } from "~/lib/api";
 import chevronDownSvg from "/chevron-down.svg?url";
 import chevronUpSvg from "/chevron-up.svg?url";
+import { MailtoForm, type MailtoValues } from "./MailtoForm";
 
 interface ChecklistFormProps {
   initialValues?: Checklist;
@@ -35,6 +36,8 @@ function ChecklistItemComponent({
   const [showDescription, setShowDescription] = useState(
     item.description.length > 0,
   );
+  const [showMailtoForm, setShowMailtoForm] = useState(false);
+  const [mailtoInitialValues, setMailtoInitialValues] = useState<MailtoValues | undefined>(undefined);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
   const isFirstRender = useRef(true);
 
@@ -51,6 +54,41 @@ function ChecklistItemComponent({
   const handleRemoveDescription = () => {
     onUpdate(item.id, "description", "");
     setShowDescription(false);
+    setShowMailtoForm(false);
+  };
+
+  const handleMailtoGenerate = (url: string) => {
+    const textarea = descriptionRef.current;
+    if (!textarea) return;
+    textarea.setRangeText(url, textarea.selectionStart, textarea.selectionEnd, "select");
+    textarea.dispatchEvent(new Event("input", { bubbles: true }));
+    setShowMailtoForm(false);
+  };
+
+  const parseMailtoSelection = (): MailtoValues | undefined => {
+    const ta = descriptionRef.current;
+    if (!ta) return undefined;
+    const selected = ta.value.substring(ta.selectionStart, ta.selectionEnd).trim();
+    try {
+      const url = new URL(selected);
+      if (url.protocol !== "mailto:") return undefined;
+      return {
+        to: url.pathname,
+        cc: url.searchParams.get("cc") ?? "",
+        bcc: url.searchParams.get("bcc") ?? "",
+        subject: url.searchParams.get("subject") ?? "",
+        body: url.searchParams.get("body") ?? "",
+      };
+    } catch {
+      return undefined;
+    }
+  };
+
+  const handleOpenMailtoForm = async () => {
+    if (!showMailtoForm) {
+      setMailtoInitialValues(parseMailtoSelection());
+    }
+    setShowMailtoForm((v) => !v);
   };
 
   return (
@@ -137,7 +175,17 @@ function ChecklistItemComponent({
               rows={5}
               className="flex-1 py-1.5"
             />
+            <Button size="small" action={handleOpenMailtoForm}>
+              mailto {showMailtoForm ? "-" : "+"}
+            </Button>
           </div>
+          {showMailtoForm && (
+            <MailtoForm
+              initialValues={mailtoInitialValues}
+              onGenerate={handleMailtoGenerate}
+              onCancel={() => setShowMailtoForm(false)}
+            />
+          )}
         </div>
       )}
     </Panel>
