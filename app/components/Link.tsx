@@ -63,7 +63,7 @@ export function Link({
 }: LinkProps) {
   const baseClasses =
     "text-emerald-700 active:text-emerald-600 underline-offset-4";
-  const sizeClasses = getSizeClasses(size ?? "medium");
+  const sizeClasses = variant !== "inline" ? getSizeClasses(size ?? "medium") : null;
   const classes = [
     getVariantClasses(variant),
     sizeClasses,
