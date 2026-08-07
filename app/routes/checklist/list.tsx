@@ -1,12 +1,14 @@
-import { useFetcher } from "react-router";
+import { Suspense } from "react";
+import { Await, useFetcher } from "react-router";
 import { Button } from "~/components/Button";
+import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { List } from "~/components/List";
+import { Loading } from "~/components/Loading";
 import { Panel } from "~/components/Panel";
-import { apiResourceActions } from "~/lib/api";
+import { ApiResource, apiResourceActions } from "~/lib/api";
 import { getUser } from "~/lib/auth";
-import { encodeApiUrl } from "~/lib/encoding";
-import { decodeApiUrl } from "../../lib/encoding";
+import { decodeApiUrl, encodeApiUrl } from "~/lib/encoding";
 import { showErrorToast, showSuccessToast } from "../../lib/toastHelpers";
 import type { Route } from "./+types/list";
 
@@ -66,11 +68,40 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
   const checklistsResource = await apiResourceActions(decodedUrl, user).get();
-  return { checklistsResource, user };
+  const sharedLink = checklistsResource.getFirstLinkMatching("related", (link) => link.name === "shared");
+  return {
+    checklistsResource,
+    sharedChecklistsPromise: sharedLink
+      ? apiResourceActions(sharedLink.href, user).get()
+      : null,
+    user,
+  };
+}
+
+function SharedChecklistsList({ resource }: { resource: ApiResource }) {
+  const items = resource.getLinkArray("items");
+  return (
+    <>
+      {items.length === 0 ? (
+        <div className="px-4 py-3 text-gray-500 text-sm">
+          No shared checklists found.
+        </div>
+      ) : (
+        <List
+          ariaLabel="shared checklists"
+          items={items.map((item) => (
+            <Link to={`/checklists/show/${encodeApiUrl(item.href)}`}>
+              {item.title ?? item.name}
+            </Link>
+          ))}
+        />
+      )}
+    </>
+  );
 }
 
 export default function ChecklistList({ loaderData, params }: Route.ComponentProps) {
-  const { checklistsResource } = loaderData;
+  const { checklistsResource, sharedChecklistsPromise } = loaderData;
   const fetcher = useFetcher();
   const items = checklistsResource.getLinkArray("items");
 
@@ -103,6 +134,16 @@ export default function ChecklistList({ loaderData, params }: Route.ComponentPro
             </>
           ))}
         />
+      )}
+      {sharedChecklistsPromise && (
+        <>
+          <Heading level="2" className="mt-8">Shared with me</Heading>
+          <Suspense fallback={<Loading text="Loading shared checklists..." />}>
+            <Await resolve={sharedChecklistsPromise}>
+              {(resource) => <SharedChecklistsList resource={resource} />}
+            </Await>
+          </Suspense>
+        </>
       )}
     </div>
   );
