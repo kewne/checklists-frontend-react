@@ -38,12 +38,29 @@ export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
 }
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
+  const user = await getUser();
+  const formData = await request.formData();
+
+  if (request.method === "DELETE") {
+    const href = formData.get("href");
+    if (typeof href !== "string") {
+      throw new Response("Invalid href", { status: 400 });
+    }
+    try {
+      await apiResourceActions(href, user).delete();
+      showSuccessToast("Invitation dismissed");
+      return redirect("/checklists");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to dismiss invitation";
+      showErrorToast(message);
+    }
+    return;
+  }
+
   if (request.method !== "POST") {
     throw new Response("Method not allowed", { status: 405 });
   }
 
-  const user = await getUser();
-  const formData = await request.formData();
   const acceptLinkHref = formData.get("acceptLinkHref");
 
   if (typeof acceptLinkHref !== "string") {
@@ -65,34 +82,42 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
   const invitationResource = await apiResourceActions<ShareInvitation>(decodedUrl, user).get();
-  return { invitationResource };
+  return { invitationResource, invitationUrl: decodedUrl };
 }
 
 export default function ShareInvitationAccept({ loaderData }: Route.ComponentProps) {
-  const { invitationResource } = loaderData;
+  const { invitationResource, invitationUrl } = loaderData;
 
-  const { checklistTitle: title } = invitationResource.properties;
+  const { checklistTitle: title, expiresAt } = invitationResource.properties;
   const acceptLink = invitationResource.getFirstLinkMatching("accept");
 
-  if (!acceptLink) {
-    return (
-      <div className="text-red-600">
-        <p className="font-semibold">Error</p>
-        <p className="text-sm">This invitation is no longer valid.</p>
-      </div>
-    );
-  }
+  const isExpired = !acceptLink && new Date(expiresAt) < new Date();
+  const explanation = !acceptLink
+    ? isExpired
+      ? "This invitation has expired."
+      : "You already have access to this checklist."
+    : undefined;
 
   return (
     <>
       <p className="text-gray-600 mb-4">Someone shared the following checklist with you:</p>
       <Heading level="1">{title}</Heading>
-      <Form method="POST">
-        <input type="hidden" name="acceptLinkHref" value={acceptLink.href} />
-        <Button type="primary" size="large" action="submit">
-          Accept
-        </Button>
-      </Form>
+      {explanation && <p className="text-gray-600 mb-4">{explanation}</p>}
+      {acceptLink ? (
+        <Form method="POST">
+          <input type="hidden" name="acceptLinkHref" value={acceptLink.href} />
+          <Button type="primary" size="large" action="submit">
+            Accept
+          </Button>
+        </Form>
+      ) : (
+        <Form method="DELETE">
+          <input type="hidden" name="href" value={invitationUrl} />
+          <Button type="secondary" size="large" action="submit">
+            Dismiss
+          </Button>
+        </Form>
+      )}
     </>
   );
 }
