@@ -36,7 +36,7 @@ function CreatedFromChecklist({ checklistLink }: { checklistLink: ApiLink }) {
   }
 
   return (
-    <div className="text-sm text-gray-600 mb-4">
+    <div className="text-sm text-gray-600 dark:text-gray-300 mb-4">
       Created from
       <Link to={`/checklists/show/${encodeApiUrl(checklistLink.href)}`}>
         {checklist.title}
@@ -175,17 +175,17 @@ export function ChecklistRunDetail({
         </div>
       </div>
       {allItemsCompleted && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200">
-          <p className="text-green-800 font-semibold text-lg">
+        <div className="mb-6 p-4 bg-green-50 border border-green-200 dark:bg-green-950 dark:border-green-800">
+          <p className="text-green-800 font-semibold text-lg dark:text-green-300">
             🎉 Congratulations!
           </p>
-          <p className="text-green-700 text-sm mt-1">
+          <p className="text-green-700 text-sm mt-1 dark:text-green-400">
             You've completed all items in this checklist.
           </p>
         </div>
       )}
       {completedItems.length === 0 && todoItems.length === 0 ? (
-        <p className="text-gray-500 text-sm">No items in this run.</p>
+        <p className="text-gray-500 text-sm dark:text-gray-400">No items in this run.</p>
       ) : (
         <>
           {completedItems.length > 0 && (
@@ -215,14 +215,14 @@ export function ChecklistRunDetail({
 
           {addItemLink && (
             <div className="flex items-center gap-3 my-3">
-              <div className="flex-1 border-t border-gray-200" />
+              <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
               <Link
                 to={`/runs/add-item/${encodeApiUrl(addItemLink.href)}`}
                 className="text-sm whitespace-nowrap"
               >
                 + Add item
               </Link>
-              <div className="flex-1 border-t border-gray-200" />
+              <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
             </div>
           )}
 

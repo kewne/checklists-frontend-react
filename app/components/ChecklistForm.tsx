@@ -97,7 +97,7 @@ function ChecklistItemComponent({
         <div className="flex justify-between items-center mb-1">
           <label
             htmlFor={`item-title-${item.id}`}
-            className="text-xs font-medium text-gray-600"
+            className="text-xs font-medium text-gray-600 dark:text-gray-300"
           >
             Step Title
           </label>
@@ -258,7 +258,7 @@ export function ChecklistForm({
         <Panel>
           <label
             htmlFor="title"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
           >
             Title
           </label>

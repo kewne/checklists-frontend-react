@@ -75,6 +75,17 @@ export function getColorClasses(type: ButtonType, variant: ButtonVariant) {
             "focus-visible:border-emerald-500",
             "focus-visible:outline-emerald-500",
             "active:border-emerald-500",
+            "dark:bg-emerald-600",
+            "dark:border-emerald-600",
+            "dark:outline-emerald-600",
+            "dark:text-gray-900",
+            "dark:hover:bg-emerald-400",
+            "dark:hover:border-emerald-400",
+            "dark:hover:outline-emerald-400",
+            "dark:focus-visible:bg-emerald-400",
+            "dark:focus-visible:border-emerald-400",
+            "dark:focus-visible:outline-emerald-400",
+            "dark:active:border-emerald-400",
           ].join(" ");
         case "secondary":
           return [
@@ -85,6 +96,12 @@ export function getColorClasses(type: ButtonType, variant: ButtonVariant) {
             "hover:outline-emerald-500",
             "focus-visible:border-emerald-500",
             "active:border-emerald-500",
+            "dark:text-emerald-600",
+            "dark:outline-emerald-600",
+            "dark:hover:border-emerald-400",
+            "dark:hover:outline-emerald-400",
+            "dark:focus-visible:border-emerald-400",
+            "dark:active:border-emerald-400",
           ].join(" ");
       }
       break;

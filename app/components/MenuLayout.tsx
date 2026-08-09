@@ -29,6 +29,11 @@ function MenuLink({ link, to, children }: MenuLinkProps) {
     "focus-visible:border-emerald-500",
     "focus-visible:outline",
     "focus-visible:outline-emerald-500",
+    "dark:text-emerald-600",
+    "dark:hover:border-emerald-400",
+    "dark:hover:outline-emerald-400",
+    "dark:focus-visible:border-emerald-400",
+    "dark:focus-visible:outline-emerald-400",
   ];
   return (
     <NavLink
@@ -37,12 +42,15 @@ function MenuLink({ link, to, children }: MenuLinkProps) {
         [
           ...baseClasses,
           ...(isActive
-            ? ["border-emerald-700", "decoration-solid", "outline-emerald-700"]
+            ? ["border-emerald-700", "decoration-solid", "outline-emerald-700", "dark:border-emerald-600", "dark:outline-emerald-600"]
             : [
                 "border-gray-200",
                 "decoration",
                 "decoration-gray-100",
                 "hover:decoration-emerald-500",
+                "dark:border-gray-700",
+                "dark:decoration-gray-800",
+                "dark:hover:decoration-emerald-400",
               ]),
         ].join(" ")
       }
@@ -80,8 +88,8 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-white border-b border-gray-300">
+    <div className="min-h-screen bg-gray-100 dark:bg-black">
+      <nav className="bg-white border-b border-gray-300 dark:bg-black dark:border-gray-700">
         <div className="max-w-4xl mx-auto px-4 py-3 flex gap-3 justify-between items-center">
           <div className="flex gap-3">
             <MenuLink link={instancesLink} to="/runs">

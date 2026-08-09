@@ -13,10 +13,10 @@ export function List({ items, ariaLabel }: ListProps) {
   return (
     <ul
       aria-label={ariaLabel}
-      className="mt-4 divide-y divide-gray-100 border border-gray-200 bg-white"
+      className="mt-4 divide-y divide-gray-100 border border-gray-200 bg-white dark:divide-gray-800 dark:border-gray-700 dark:bg-black"
     >
       {items.map((item, index) => (
-        <li key={index} className="hover:bg-gray-50">
+        <li key={index} className="hover:bg-gray-50 dark:hover:bg-gray-900">
           <div className="flex px-4 py-3 items-center justify-between">
             {item}
           </div>

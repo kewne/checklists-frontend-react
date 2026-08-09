@@ -30,6 +30,12 @@ function getVariantClasses(variant: LinkVariant) {
         "focus-visible:border-emerald-500",
         "focus-visible:outline-emerald-500",
         "focus-visible:decoration-emerald-500",
+        "dark:text-gray-100",
+        "dark:decoration-gray-500",
+        "dark:hover:decoration-emerald-600",
+        "dark:focus-visible:border-emerald-600",
+        "dark:focus-visible:outline-emerald-600",
+        "dark:focus-visible:decoration-emerald-600",
       ].join(" ");
     case "inline-block":
       return [
@@ -49,6 +55,16 @@ function getVariantClasses(variant: LinkVariant) {
         "focus-visible:border-emerald-500",
         "focus-visible:outline-emerald-500",
         "focus-visible:decoration-emerald-500",
+        "dark:bg-black",
+        "dark:text-gray-100",
+        "dark:border-gray-700",
+        "dark:decoration-gray-500",
+        "dark:hover:border-emerald-600",
+        "dark:hover:outline-emerald-600",
+        "dark:hover:decoration-emerald-600",
+        "dark:focus-visible:border-emerald-600",
+        "dark:focus-visible:outline-emerald-600",
+        "dark:focus-visible:decoration-emerald-600",
       ].join(" ");
   }
 }

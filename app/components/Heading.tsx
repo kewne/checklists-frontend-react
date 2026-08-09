@@ -30,7 +30,7 @@ function getHeadingClasses(level: HeadingLevel, className?: string) {
       break;
   }
 
-  const allClasses = `text-emerald-700 ${baseClasses} ${className || ""}`.trim();
+  const allClasses = `text-emerald-700 dark:text-emerald-600 ${baseClasses} ${className || ""}`.trim();
   return allClasses;
 }
 

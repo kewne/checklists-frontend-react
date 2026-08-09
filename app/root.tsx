@@ -52,7 +52,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           pauseOnFocusLoss
           draggable
           pauseOnHover
-          theme="light"
+          theme="colored"
         />
         <ScrollRestoration />
         <Scripts />
