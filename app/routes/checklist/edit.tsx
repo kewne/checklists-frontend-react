@@ -1,18 +1,18 @@
-import { NavLink, useNavigate } from "react-router";
+import { NavLink, useNavigate, useRevalidator } from "react-router";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { apiResourceActions, type Checklist } from "~/lib/api";
 import { getUser } from "~/lib/auth";
+import { showErrorToast } from "~/lib/toastHelpers";
 import { Button } from "../../components/Button";
-import { Heading } from "../../components/Heading";
-import { List } from "../../components/List";
+import { ChecklistForm } from "../../components/ChecklistForm";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
-import type { Route } from "./+types/show";
+import type { Route } from "./+types/edit";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Checklist Detail" },
-    { name: "description", content: "View checklist details" },
+    { title: "Edit Checklist" },
+    { name: "description", content: "Edit checklist details" },
   ];
 }
 
@@ -46,14 +46,14 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     decodedUrl,
     user,
   ).get();
-  return { checklistResource, decodedUrl };
+  return { checklistResource, user, decodedUrl };
 }
 
-export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
+export default function ChecklistEdit({ loaderData }: Route.ComponentProps) {
   const navigate = useNavigate();
+  const { revalidate } = useRevalidator();
 
-  const { checklistResource, decodedUrl } = loaderData;
-  const { title, items } = checklistResource.properties;
+  const { checklistResource, user, decodedUrl } = loaderData;
 
   const createInstanceLink = checklistResource.getFirstLinkMatching(
     "create-from",
@@ -65,6 +65,17 @@ export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
     (link) => link.name === "shares",
   );
 
+  const handleSubmit = async (data: Checklist) => {
+    try {
+      await apiResourceActions<{ title: string }>(decodedUrl, user).put(data);
+      revalidate();
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to update checklist";
+      showErrorToast(message);
+    }
+  };
+
   return (
     <div>
       <div className="flex items-start justify-between gap-x-2 mb-4">
@@ -75,7 +86,7 @@ export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
               size="large"
               action={async () => {
                 const location = await createInstanceLink.actions().post({
-                  title,
+                  title: checklistResource.properties.title,
                 });
                 if (!location) {
                   return navigate("/runs");
@@ -88,13 +99,6 @@ export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
           ) : null}
         </div>
         <div className="space-x-2">
-          <Link
-            variant="inline-block"
-            size="large"
-            to={`/checklists/edit/${encodeApiUrl(decodedUrl)}`}
-          >
-            Edit
-          </Link>
           {sharesLink && (
             <Link
               variant="inline-block"
@@ -106,19 +110,10 @@ export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
           )}
         </div>
       </div>
-      <Heading level={1}>{title}</Heading>
-      <List
-        ariaLabel="checklist items"
-        items={items.map((item) => (
-          <div key={item.id}>
-            <p className="font-medium text-gray-900 dark:text-gray-100">{item.title}</p>
-            {item.description && (
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                {item.description}
-              </p>
-            )}
-          </div>
-        ))}
+      <ChecklistForm
+        initialValues={checklistResource.properties}
+        submitLabel="Save"
+        onSubmit={handleSubmit}
       />
     </div>
   );
