@@ -8,6 +8,7 @@ import { Heading } from "../../components/Heading";
 import { HexCheckbox } from "../../components/HexCheckbox";
 import { List } from "../../components/List";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
+import { renderWithLinks } from "../../lib/renderWithLinks";
 import type { Route } from "./+types/show";
 
 export function meta({}: Route.MetaArgs) {
@@ -118,8 +119,8 @@ export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
                 {item.title}
               </p>
               {item.description && (
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {item.description}
+                <p className="text-sm text-gray-600 whitespace-pre-wrap dark:text-gray-400">
+                  {renderWithLinks(item.description)}
                 </p>
               )}
             </div>
