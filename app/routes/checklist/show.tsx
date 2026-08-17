@@ -5,6 +5,7 @@ import { apiResourceActions, type Checklist } from "~/lib/api";
 import { getUser } from "~/lib/auth";
 import { Button } from "../../components/Button";
 import { Heading } from "../../components/Heading";
+import { HexCheckbox } from "../../components/HexCheckbox";
 import { List } from "../../components/List";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import type { Route } from "./+types/show";
@@ -67,7 +68,7 @@ export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
 
   return (
     <div>
-      <div className="flex items-start justify-between gap-x-2 mb-4">
+      <div className="flex items-start justify-between gap-x-2 mb-4 print:hidden">
         <div>
           {createInstanceLink ? (
             <Button
@@ -110,13 +111,18 @@ export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
       <List
         ariaLabel="checklist items"
         items={items.map((item) => (
-          <div key={item.id}>
-            <p className="font-medium text-gray-900 dark:text-gray-100">{item.title}</p>
-            {item.description && (
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                {item.description}
+          <div key={item.id} className="flex items-center gap-3">
+            <HexCheckbox className="hidden h-5 w-5 shrink-0 print:block" />
+            <div>
+              <p className="font-medium text-gray-900 dark:text-gray-100">
+                {item.title}
               </p>
-            )}
+              {item.description && (
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {item.description}
+                </p>
+              )}
+            </div>
           </div>
         ))}
       />

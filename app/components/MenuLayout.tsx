@@ -89,7 +89,7 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-black">
-      <nav className="bg-white border-b border-gray-300 dark:bg-black dark:border-gray-700">
+      <nav className="bg-white border-b border-gray-300 dark:bg-black dark:border-gray-700 print:hidden">
         <div className="max-w-4xl mx-auto px-4 py-3 flex gap-3 justify-between items-center">
           <div className="flex gap-3">
             <MenuLink link={instancesLink} to="/runs">
