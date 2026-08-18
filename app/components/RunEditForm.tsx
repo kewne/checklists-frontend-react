@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { v4 } from "uuid";
-import chevronDownSvg from "/chevron-down.svg?url";
 import { TextArea } from "~/components/TextArea";
 import { TextInput } from "~/components/TextInput";
-import chevronUpSvg from "/chevron-up.svg?url";
+import { ChevronDown } from "~/icons/ChevronDown";
+import { ChevronUp } from "~/icons/ChevronUp";
 import type { ChecklistRun, WriteableChecklistRun } from "~/lib/api";
 import { Button } from "./Button";
 import { MailtoForm, type MailtoValues } from "./MailtoForm";
@@ -104,12 +104,7 @@ function RunItemComponent({
                 action={onMoveUp}
                 aria-label={t("common.moveUp", { title: item.title || t("common.itemFallback") })}
               >
-                <img
-                  src={chevronUpSvg}
-                  alt=""
-                  aria-hidden="true"
-                  className="w-4 h-4"
-                />
+                <ChevronUp />
               </Button>
             )}
             {onMoveDown && (
@@ -118,12 +113,7 @@ function RunItemComponent({
                 action={onMoveDown}
                 aria-label={t("common.moveDown", { title: item.title || t("common.itemFallback") })}
               >
-                <img
-                  src={chevronDownSvg}
-                  alt=""
-                  aria-hidden="true"
-                  className="w-4 h-4"
-                />
+                <ChevronDown />
               </Button>
             )}
             <Button variant="danger" size="small" action={onRemove}>

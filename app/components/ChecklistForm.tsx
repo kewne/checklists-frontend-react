@@ -5,9 +5,9 @@ import { Button } from "~/components/Button";
 import { Panel } from "~/components/Panel";
 import { TextArea } from "~/components/TextArea";
 import { TextInput } from "~/components/TextInput";
+import { ChevronDown } from "~/icons/ChevronDown";
+import { ChevronUp } from "~/icons/ChevronUp";
 import type { Checklist, ChecklistItem } from "~/lib/api";
-import chevronDownSvg from "/chevron-down.svg?url";
-import chevronUpSvg from "/chevron-up.svg?url";
 import { MailtoForm, type MailtoValues } from "./MailtoForm";
 
 interface ChecklistFormProps {
@@ -110,12 +110,7 @@ function ChecklistItemComponent({
                 aria-label={t("common.moveUp", { title: item.title || t("common.itemFallback") })}
                 action={async () => onMoveUp()}
               >
-                <img
-                  src={chevronUpSvg}
-                  alt=""
-                  aria-hidden="true"
-                  className="w-4 h-4"
-                />
+                <ChevronUp />
               </Button>
             )}
             {onMoveDown && (
@@ -124,12 +119,7 @@ function ChecklistItemComponent({
                 aria-label={t("common.moveDown", { title: item.title || t("common.itemFallback") })}
                 action={async () => onMoveDown()}
               >
-                <img
-                  src={chevronDownSvg}
-                  alt=""
-                  aria-hidden="true"
-                  className="w-4 h-4"
-                />
+                <ChevronDown />
               </Button>
             )}
             <Button
