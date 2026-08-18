@@ -7,6 +7,7 @@ import { Button } from "../../components/Button";
 import { Heading } from "../../components/Heading";
 import { HexCheckbox } from "../../components/HexCheckbox";
 import { List } from "../../components/List";
+import { QrCode } from "../../components/QrCode";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import { renderWithLinks } from "../../lib/renderWithLinks";
 import type { Route } from "./+types/show";
@@ -49,6 +50,22 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     user,
   ).get();
   return { checklistResource, decodedUrl };
+}
+
+function findItemUrls(description: string | undefined): string[] {
+  if (!description) return [];
+  return description.split(/(\s+)/).filter((token) => {
+    const url = URL.parse(token);
+    return url?.protocol === "https:" || url?.protocol === "mailto:";
+  });
+}
+
+function urlLabel(token: string): string {
+  const url = URL.parse(token);
+  if (url?.protocol === "mailto:") {
+    return url.pathname;
+  }
+  return url?.hostname ?? token;
 }
 
 export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
@@ -111,22 +128,47 @@ export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
       <Heading level={1}>{title}</Heading>
       <List
         ariaLabel="checklist items"
-        items={items.map((item) => (
-          <div key={item.id} className="flex items-center gap-3">
-            <HexCheckbox className="hidden h-5 w-5 shrink-0 print:block" />
-            <div>
-              <p className="font-medium text-gray-900 dark:text-gray-100">
-                {item.title}
-              </p>
-              {item.description && (
-                <p className="text-sm text-gray-600 whitespace-pre-wrap dark:text-gray-400">
-                  {renderWithLinks(item.description)}
+        items={items.map((item) => {
+          const itemUrls = findItemUrls(item.description);
+          return (
+            <div
+              key={item.id}
+              className="flex items-center gap-3 print:break-inside-avoid w-full"
+            >
+              <HexCheckbox className="hidden h-5 w-5 shrink-0 print:block" />
+              <div className="grow">
+                <p className="font-medium text-gray-900 dark:text-gray-100">
+                  {item.title}
                 </p>
-              )}
+                {item.description && (
+                  <p className="text-sm text-gray-600 whitespace-pre-wrap dark:text-gray-400">
+                    {renderWithLinks(item.description)}
+                  </p>
+                )}
+              </div>
+              <div>
+              {itemUrls.map((itemUrl) => (
+                <div
+                  key={itemUrl}
+                  className="hidden shrink-0 text-center print:block"
+                >
+                  <QrCode value={itemUrl} className="h-24 w-24" />
+                  <p className="text-[10px] text-gray-600">
+                    {urlLabel(itemUrl)}
+                  </p>
+                </div>
+              ))}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       />
+      <div className="hidden mt-8 text-center print:block print:break-inside-avoid">
+        <QrCode value={window.location.origin} className="mx-auto h-24 w-24" />
+        <p className="text-[10px] text-gray-600">
+          Get the app: {urlLabel(window.location.origin)}
+        </p>
+      </div>
     </div>
   );
 }
