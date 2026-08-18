@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import type { ChecklistRun, WriteableChecklistRun } from "~/lib/api";
@@ -6,27 +6,30 @@ import { RunEditForm } from "../../components/RunEditForm";
 import { apiResourceActions } from "../../lib/api";
 import { getUser } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
+import i18n from "~/lib/i18n";
+import { useLocaleNavigate } from "~/lib/locale";
 import { showErrorToast } from "../../lib/toastHelpers";
 import type { Route } from "./+types/edit";
 
 export function meta({ }: Route.MetaArgs) {
   return [
-    { title: "Edit Run" },
-    { name: "description", content: "Edit checklist run details" },
+    { title: i18n.t("meta.runEdit.title") },
+    { name: "description", content: i18n.t("meta.runEdit.description") },
   ];
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
         <Panel>
           <div className="text-red-600 mb-4">
-            <p className="font-semibold">Error</p>
+            <p className="font-semibold">{t("error.title")}</p>
             <p className="text-sm">{String(error)}</p>
           </div>
           <Link to="/">
-            Back to Home
+            {t("common.backToHome")}
           </Link>
         </Panel>
       </div>
@@ -43,14 +46,15 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 
 export default function EditRun({ loaderData, params }: Route.ComponentProps) {
   const { runResource, user, decodedUrl } = loaderData;
-  const navigate = useNavigate();
+  const navigate = useLocaleNavigate();
+  const { t } = useTranslation();
 
   const handleSubmit = async (data: WriteableChecklistRun) => {
     try {
       await apiResourceActions<ChecklistRun, WriteableChecklistRun>(decodedUrl, user).put(data);
       navigate(`/runs/show/${params.apiUrlEncoded}`);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to update run";
+      const message = error instanceof Error ? error.message : t("toast.updateRunFailed");
       showErrorToast(message);
     }
   };
@@ -62,7 +66,7 @@ export default function EditRun({ loaderData, params }: Route.ComponentProps) {
   return (
     <RunEditForm
       initialValues={runResource.properties}
-      submitLabel="Save"
+      submitLabel={t("common.save")}
       onSubmit={handleSubmit}
       onCancel={handleCancel}
     />

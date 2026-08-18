@@ -1,4 +1,5 @@
 import { Form, redirect } from "react-router";
+import { useTranslation } from "react-i18next";
 import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
@@ -6,29 +7,31 @@ import { TextInput } from "~/components/TextInput";
 import { getUser } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import { apiResourceActions } from "~/lib/api";
+import i18n from "~/lib/i18n";
 import { showErrorToast } from "../../lib/toastHelpers";
 import type { Route } from "./+types/share-invitations-create";
 import { Button } from "~/components/Button";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Create Share Invitation" },
-    { name: "description", content: "Create a new share invitation" },
+    { title: i18n.t("meta.shareInvitationCreate.title") },
+    { name: "description", content: i18n.t("meta.shareInvitationCreate.description") },
   ];
 }
 
 export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
         <Panel>
           <div className="text-red-600 mb-4">
-            <p className="font-semibold">Error</p>
+            <p className="font-semibold">{t("error.title")}</p>
             <p className="text-sm">
-              Invalid URL. Please go back and try again.
+              {t("error.invalidUrl")}
             </p>
           </div>
-          <Link to="/">Back to Home</Link>
+          <Link to="/">{t("common.backToHome")}</Link>
         </Panel>
       </div>
     </div>
@@ -54,20 +57,21 @@ export async function clientAction({
     const newResourceUrl = await post({ title });
     if (newResourceUrl) {
       const encodedUrl = encodeApiUrl(newResourceUrl);
-      return redirect(`/checklists/share-invitations/show/${encodedUrl}`);
+      return redirect(`/${params.locale}/checklists/share-invitations/show/${encodedUrl}`);
     }
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Failed to create invitation";
+      error instanceof Error ? error.message : i18n.t("toast.createInvitationFailed");
     showErrorToast(message);
   }
 }
 
 export default function CreateShareInvitation(): React.JSX.Element {
+  const { t } = useTranslation();
   return (
     <>
       <Heading level="1">
-        Create Share Invitation
+        {t("share.createTitle")}
       </Heading>
       <Form method="POST" className="space-y-4">
         <Panel>
@@ -75,7 +79,7 @@ export default function CreateShareInvitation(): React.JSX.Element {
             htmlFor="title"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Title
+            {t("common.title")}
           </label>
           <TextInput
             id="title"
@@ -90,7 +94,7 @@ export default function CreateShareInvitation(): React.JSX.Element {
             type="primary"
             size="large"
           >
-            Create
+            {t("common.create")}
           </Button>
         </div>
       </Form>

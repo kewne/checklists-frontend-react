@@ -1,8 +1,11 @@
-import { NavLink, useNavigate, useRevalidator } from "react-router";
+import { NavLink, useRevalidator } from "react-router";
+import { useTranslation } from "react-i18next";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { apiResourceActions, type Checklist } from "~/lib/api";
 import { getUser } from "~/lib/auth";
+import i18n from "~/lib/i18n";
+import { localePath, useLocale, useLocaleNavigate } from "~/lib/locale";
 import { showErrorToast } from "~/lib/toastHelpers";
 import { Button } from "../../components/Button";
 import { ChecklistForm } from "../../components/ChecklistForm";
@@ -11,27 +14,29 @@ import type { Route } from "./+types/edit";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Edit Checklist" },
-    { name: "description", content: "Edit checklist details" },
+    { title: i18n.t("meta.checklistEdit.title") },
+    { name: "description", content: i18n.t("meta.checklistEdit.description") },
   ];
 }
 
 export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
+  const { t } = useTranslation();
+  const locale = useLocale();
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
         <Panel>
           <div className="text-red-600 mb-4">
-            <p className="font-semibold">Error</p>
+            <p className="font-semibold">{t("error.title")}</p>
             <p className="text-sm">
-              Invalid checklist URL. Please go back and try again.
+              {t("error.invalidChecklistUrl")}
             </p>
           </div>
           <NavLink
-            to="/"
+            to={localePath("/", locale)}
             className="inline-block bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700"
           >
-            Back to Checklists
+            {t("common.backToChecklists")}
           </NavLink>
         </Panel>
       </div>
@@ -50,8 +55,9 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 }
 
 export default function ChecklistEdit({ loaderData }: Route.ComponentProps) {
-  const navigate = useNavigate();
+  const navigate = useLocaleNavigate();
   const { revalidate } = useRevalidator();
+  const { t } = useTranslation();
 
   const { checklistResource, user, decodedUrl } = loaderData;
 
@@ -71,7 +77,7 @@ export default function ChecklistEdit({ loaderData }: Route.ComponentProps) {
       revalidate();
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Failed to update checklist";
+        error instanceof Error ? error.message : t("toast.updateChecklistFailed");
       showErrorToast(message);
     }
   };
@@ -94,7 +100,7 @@ export default function ChecklistEdit({ loaderData }: Route.ComponentProps) {
                 navigate(`/runs/show/${encodeApiUrl(location)}`);
               }}
             >
-              Run
+              {t("checklist.run")}
             </Button>
           ) : null}
         </div>
@@ -105,14 +111,14 @@ export default function ChecklistEdit({ loaderData }: Route.ComponentProps) {
               size="large"
               to={`/checklists/shares/list/${encodeApiUrl(sharesLink.href)}`}
             >
-              Shares
+              {t("checklist.shares")}
             </Link>
           )}
         </div>
       </div>
       <ChecklistForm
         initialValues={checklistResource.properties}
-        submitLabel="Save"
+        submitLabel={t("common.save")}
         onSubmit={handleSubmit}
       />
     </div>

@@ -1,34 +1,37 @@
-import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { RunEditForm } from "../../components/RunEditForm";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
+import i18n from "~/lib/i18n";
+import { useLocaleNavigate } from "~/lib/locale";
 import type { Route } from "./+types/create";
 import { apiResourceActions, type ChecklistRun, type WriteableChecklistRun } from "~/lib/api";
 import { showErrorToast, showSuccessToast } from "~/lib/toastHelpers";
 
 export function meta({ }: Route.MetaArgs) {
     return [
-        { title: "Create Run" },
-        { name: "description", content: "Create a new checklist run" },
+        { title: i18n.t("meta.runCreate.title") },
+        { name: "description", content: i18n.t("meta.runCreate.description") },
     ];
 }
 
 export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
+    const { t } = useTranslation();
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="max-w-4xl mx-auto py-8 px-4">
                 <Panel>
                     <div className="text-red-600 mb-4">
-                        <p className="font-semibold">Error</p>
+                        <p className="font-semibold">{t("error.title")}</p>
                         <p className="text-sm">
-                            Invalid runs URL. Please go back and try again.
+                            {t("error.invalidRunsUrl")}
                         </p>
                     </div>
                     <Link to="/">
-                        Back to Home
+                        {t("common.backToHome")}
                     </Link>
                 </Panel>
             </div>
@@ -38,7 +41,8 @@ export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
 
 export default function CreateRun({ params }: Route.ComponentProps) {
     const { user } = useAuth();
-    const navigate = useNavigate();
+    const navigate = useLocaleNavigate();
+    const { t } = useTranslation();
 
     const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
 
@@ -48,14 +52,14 @@ export default function CreateRun({ params }: Route.ComponentProps) {
         try {
             const url = await post(data);
             if (!url) {
-                showErrorToast("Failed to create run");
+                showErrorToast(t("toast.createRunFailed"));
                 return;
             }
-            showSuccessToast("Run created successfully");
+            showSuccessToast(t("toast.runCreated"));
             const encodedUrl = encodeApiUrl(url);
             navigate(`/runs/show/${encodedUrl}`);
         } catch (error) {
-            const message = error instanceof Error ? error.message : "Failed to create run";
+            const message = error instanceof Error ? error.message : t("toast.createRunFailed");
             showErrorToast(message);
         }
     };
@@ -68,11 +72,11 @@ export default function CreateRun({ params }: Route.ComponentProps) {
     return (
         <>
             <Heading level="1">
-                Create New Run
+                {t("run.createTitle")}
             </Heading>
             <RunEditForm
                 initialValues={initialValues}
-                submitLabel="Create"
+                submitLabel={t("common.create")}
                 onSubmit={handleSubmit}
                 onCancel={() => navigate(-1)}
             />

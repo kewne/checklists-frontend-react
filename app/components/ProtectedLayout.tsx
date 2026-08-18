@@ -1,11 +1,12 @@
 import { Outlet, redirect } from "react-router";
 import { getUser } from "../lib/auth";
+import type { Route } from "./+types/ProtectedLayout";
 
-export async function clientLoader() {
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   try {
     await getUser();
   } catch {
-    return redirect("/login");
+    return redirect(`/${params.locale}/login`);
   }
   return {};
 }

@@ -19,7 +19,7 @@ setup('authenticate', async ({ page }) => {
   }
 
   // Perform authentication steps
-  await page.goto('/login');
+  await page.goto('/en/login');
   
   // Wait for Firebase UI to load
   await page.waitForSelector('.firebase-auth-container, input[type="email"]', { timeout: 10000 });
@@ -31,11 +31,11 @@ setup('authenticate', async ({ page }) => {
   // Submit the form - look for Firebase UI submit button
   await page.click('button[type="submit"], .firebase-auth-container button');
   
-  // Wait until the page receives the cookies and redirect to home
-  await page.waitForURL('/', { timeout: 10000 });
+  // Wait until the page receives the cookies and redirects away from login
+  await page.waitForURL((url) => !url.pathname.endsWith('/login'), { timeout: 10000 });
   
-  // Wait for the page to be fully loaded and authenticated
-  await expect(page.locator('text=Welcome')).toBeVisible({ timeout: 5000 });
+  // Wait for the page to be fully loaded and authenticated (main navigation visible)
+  await expect(page.getByRole('link', { name: 'Runs' })).toBeVisible({ timeout: 10000 });
 
   // End of authentication steps - save the storage state
   await page.context().storageState({ indexedDB: true, path: authFile });

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { type ApiLink } from "~/lib/api";
 import { renderWithLinks } from "~/lib/renderWithLinks";
 import { Button } from "./Button";
@@ -28,6 +29,7 @@ interface CompleteButtonProps {
 }
 
 function CompleteButton({ completeLink, onItemUpdated }: CompleteButtonProps) {
+  const { t } = useTranslation();
   const handleCompleted = async () => {
     await completeLink.actions().post({});
     await onItemUpdated();
@@ -35,7 +37,7 @@ function CompleteButton({ completeLink, onItemUpdated }: CompleteButtonProps) {
 
   return (
     <Button type="primary" action={handleCompleted}>
-      Mark Complete
+      {t("run.markComplete")}
     </Button>
   );
 }
@@ -49,6 +51,7 @@ function MarkIncompleteButton({
   href,
   onItemUpdated,
 }: MarkIncompleteButtonProps) {
+  const { t } = useTranslation();
   const handleMarkIncomplete = async () => {
     await href.actions().post({});
     await onItemUpdated();
@@ -56,7 +59,7 @@ function MarkIncompleteButton({
 
   return (
     <Button variant="danger" action={handleMarkIncomplete}>
-      Mark Incomplete
+      {t("run.markIncomplete")}
     </Button>
   );
 }
@@ -92,6 +95,7 @@ export function RunItem({
   markIncompleteHref,
   onItemUpdated,
 }: RunItemProps) {
+  const { t } = useTranslation();
   const completedAt = completed
     ? new Intl.DateTimeFormat(undefined, {
       dateStyle: "medium",
@@ -117,7 +121,7 @@ export function RunItem({
           <div className="text-xs text-gray-400 dark:text-gray-500">
             {completed && (
               <>
-                <span>Completed on {completedAt}</span>
+                <span>{t("run.completedOn", { date: completedAt })}</span>
                 {completed.note && (
                   <p className="mt-1 text-gray-500 italic dark:text-gray-400">{completed.note}</p>
                 )}

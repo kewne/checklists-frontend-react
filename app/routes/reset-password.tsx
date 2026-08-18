@@ -1,8 +1,8 @@
 import { ForgotPasswordAuthForm } from '@firebase-oss/ui-react';
-import { useNavigate } from 'react-router';
+import { useLocaleNavigate } from '~/lib/locale';
 
 export default function ResetPassword() {
-    const navigate = useNavigate();
+    const navigate = useLocaleNavigate();
 
     return (
         <div className="min-h-screen flex items-center justify-center">

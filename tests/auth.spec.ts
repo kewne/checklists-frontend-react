@@ -13,7 +13,7 @@ test.describe('Authentication Flow', () => {
     }
     
     // Go to login page
-    await page.goto('/login');
+    await page.goto('/en/login');
     
     // Wait for Firebase UI to load
     await page.waitForSelector('.firebase-auth-container, input[type="email"]', { timeout: 10000 });
@@ -25,35 +25,35 @@ test.describe('Authentication Flow', () => {
     // Submit form
     await page.click('button[type="submit"], .firebase-auth-container button');
     
-    // Should redirect to home page
-    await expect(page).toHaveURL('/', { timeout: 10000 });
+    // Should redirect away from the login page to a locale-prefixed page
+    await expect(page).toHaveURL(/\/en\//, { timeout: 10000 });
     
-    // Should see authenticated content
-    await expect(page.locator('text=Welcome')).toBeVisible({ timeout: 5000 });
+    // Should see authenticated navigation
+    await expect(page.getByRole('link', { name: 'Runs' })).toBeVisible({ timeout: 5000 });
   });
 
   test('should maintain authentication state across page reloads', async ({ page }) => {
     // Go to home page (should already be authenticated)
-    await page.goto('/');
+    await page.goto('/en');
     
-    // Verify we're on home page and not redirected to login
-    await expect(page).toHaveURL('/');
-    await expect(page.locator('text=Welcome')).toBeVisible();
+    // Verify we're authenticated and not redirected to login
+    await expect(page).not.toHaveURL(/\/login/);
+    await expect(page.getByRole('link', { name: 'Runs' })).toBeVisible();
     
     // Reload page
     await page.reload();
     
     // Should still be authenticated
-    await expect(page).toHaveURL('/');
-    await expect(page.locator('text=Welcome')).toBeVisible();
+    await expect(page).not.toHaveURL(/\/login/);
+    await expect(page.getByRole('link', { name: 'Runs' })).toBeVisible();
   });
 
   test('should allow user to logout', async ({ page }) => {
     // Go to home page
-    await page.goto('/');
+    await page.goto('/en');
     
     // Verify we're authenticated
-    await expect(page).toHaveURL('/');
+    await expect(page.getByRole('link', { name: 'Runs' })).toBeVisible();
     
     // Look for logout/sign out option - this might be in various places
     const logoutSelectors = [
@@ -87,7 +87,7 @@ test.describe('Authentication Flow', () => {
 
   test('should show API status when authenticated', async ({ page }) => {
     // Go to home page
-    await page.goto('/');
+    await page.goto('/en');
     
     // Should see API status check
     const apiStatusBox = page.locator('[class*="border"]:has-text("API")').first();
@@ -101,7 +101,7 @@ test.describe('Authentication Flow', () => {
   });
 
   test('should handle invalid login credentials', async ({ page }) => {
-    await page.goto('/login');
+    await page.goto('/en/login');
     
     await page.getByLabel('email').fill('invalid@test.com');
     await page.getByLabel('password').fill('wrongpassword');

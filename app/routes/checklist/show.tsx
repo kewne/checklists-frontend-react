@@ -1,8 +1,11 @@
-import { NavLink, useNavigate } from "react-router";
+import { NavLink } from "react-router";
+import { useTranslation } from "react-i18next";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { apiResourceActions, type Checklist } from "~/lib/api";
 import { getUser } from "~/lib/auth";
+import i18n from "~/lib/i18n";
+import { localePath, useLocale, useLocaleNavigate } from "~/lib/locale";
 import { Button } from "../../components/Button";
 import { Heading } from "../../components/Heading";
 import { HexCheckbox } from "../../components/HexCheckbox";
@@ -14,27 +17,29 @@ import type { Route } from "./+types/show";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Checklist Detail" },
-    { name: "description", content: "View checklist details" },
+    { title: i18n.t("meta.checklistShow.title") },
+    { name: "description", content: i18n.t("meta.checklistShow.description") },
   ];
 }
 
 export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
+  const { t } = useTranslation();
+  const locale = useLocale();
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
         <Panel>
           <div className="text-red-600 mb-4">
-            <p className="font-semibold">Error</p>
+            <p className="font-semibold">{t("error.title")}</p>
             <p className="text-sm">
-              Invalid checklist URL. Please go back and try again.
+              {t("error.invalidChecklistUrl")}
             </p>
           </div>
           <NavLink
-            to="/"
+            to={localePath("/", locale)}
             className="inline-block bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700"
           >
-            Back to Checklists
+            {t("common.backToChecklists")}
           </NavLink>
         </Panel>
       </div>
@@ -69,7 +74,8 @@ function urlLabel(token: string): string {
 }
 
 export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
-  const navigate = useNavigate();
+  const navigate = useLocaleNavigate();
+  const { t } = useTranslation();
 
   const { checklistResource, decodedUrl } = loaderData;
   const { title, items } = checklistResource.properties;
@@ -102,7 +108,7 @@ export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
                 navigate(`/runs/show/${encodeApiUrl(location)}`);
               }}
             >
-              Run
+              {t("checklist.run")}
             </Button>
           ) : null}
         </div>
@@ -112,7 +118,7 @@ export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
             size="large"
             to={`/checklists/edit/${encodeApiUrl(decodedUrl)}`}
           >
-            Edit
+            {t("common.edit")}
           </Link>
           {sharesLink && (
             <Link
@@ -120,7 +126,7 @@ export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
               size="large"
               to={`/checklists/shares/list/${encodeApiUrl(sharesLink.href)}`}
             >
-              Shares
+              {t("checklist.shares")}
             </Link>
           )}
         </div>

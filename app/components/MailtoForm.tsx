@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "./Button";
 import { Panel } from "./Panel";
 import { TextArea } from "./TextArea";
@@ -19,6 +20,7 @@ export interface MailtoValues {
 }
 
 export function MailtoForm({ onGenerate, onCancel, initialValues }: MailtoFormProps) {
+  const { t } = useTranslation();
   const [to, setTo] = useState(initialValues?.to ?? "");
   const [cc, setCc] = useState(initialValues?.cc ?? "");
   const [bcc, setBcc] = useState(initialValues?.bcc ?? "");
@@ -39,28 +41,28 @@ export function MailtoForm({ onGenerate, onCancel, initialValues }: MailtoFormPr
     <Panel className="p-3 mt-2">
       <div className="space-y-2">
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1" htmlFor="mailto-to">To</label>
+          <label className="block text-xs font-medium text-gray-600 mb-1" htmlFor="mailto-to">{t("mailto.to")}</label>
           <TextInput id="mailto-to" type="email" value={to} onChange={(e) => setTo(e.target.value)} required />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1" htmlFor="mailto-cc">CC</label>
+          <label className="block text-xs font-medium text-gray-600 mb-1" htmlFor="mailto-cc">{t("mailto.cc")}</label>
           <TextInput id="mailto-cc" type="email" value={cc} onChange={(e) => setCc(e.target.value)} />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1" htmlFor="mailto-bcc">BCC</label>
+          <label className="block text-xs font-medium text-gray-600 mb-1" htmlFor="mailto-bcc">{t("mailto.bcc")}</label>
           <TextInput id="mailto-bcc" type="email" value={bcc} onChange={(e) => setBcc(e.target.value)} />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1" htmlFor="mailto-subject">Subject</label>
+          <label className="block text-xs font-medium text-gray-600 mb-1" htmlFor="mailto-subject">{t("mailto.subject")}</label>
           <TextInput id="mailto-subject" type="text" value={subject} onChange={(e) => setSubject(e.target.value)} />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1" htmlFor="mailto-body">Body</label>
+          <label className="block text-xs font-medium text-gray-600 mb-1" htmlFor="mailto-body">{t("mailto.body")}</label>
           <TextArea id="mailto-body" value={body} onChange={(e) => setBody(e.target.value)} rows={3} />
         </div>
         <div className="flex gap-2 justify-end">
-          <Button action={onCancel} size="small">Cancel</Button>
-          <Button action={handleGenerate} type="primary" size="small" disabled={!to}>Generate</Button>
+          <Button action={onCancel} size="small">{t("common.cancel")}</Button>
+          <Button action={handleGenerate} type="primary" size="small" disabled={!to}>{t("mailto.generate")}</Button>
         </div>
       </div>
     </Panel>

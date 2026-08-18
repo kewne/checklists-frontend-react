@@ -1,8 +1,10 @@
-import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { apiResourceActions } from "~/lib/api";
+import i18n from "~/lib/i18n";
+import { useLocaleNavigate } from "~/lib/locale";
 import { showErrorToast, showSuccessToast } from "~/lib/toastHelpers";
 import { ChecklistForm } from "../../components/ChecklistForm";
 import { useAuth } from "../../lib/auth";
@@ -11,24 +13,25 @@ import type { Route } from "./+types/create";
 
 export function meta({ }: Route.MetaArgs) {
   return [
-    { title: "Create Checklist" },
-    { name: "description", content: "Create a new checklist" },
+    { title: i18n.t("meta.checklistCreate.title") },
+    { name: "description", content: i18n.t("meta.checklistCreate.description") },
   ];
 }
 
 export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
         <Panel>
           <div className="text-red-600 mb-4">
-            <p className="font-semibold">Error</p>
+            <p className="font-semibold">{t("error.title")}</p>
             <p className="text-sm">
-              Invalid checklists URL. Please go back and try again.
+              {t("error.invalidChecklistsUrl")}
             </p>
           </div>
           <Link to="/">
-            Back to Home
+            {t("common.backToHome")}
           </Link>
         </Panel>
       </div>
@@ -38,7 +41,8 @@ export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
 
 export default function CreateChecklist({ params }: Route.ComponentProps) {
   const { user } = useAuth();
-  const navigate = useNavigate();
+  const navigate = useLocaleNavigate();
+  const { t } = useTranslation();
 
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
 
@@ -50,10 +54,10 @@ export default function CreateChecklist({ params }: Route.ComponentProps) {
   }) => {
     try {
       await post(data);
-      showSuccessToast("Checklist created successfully");
+      showSuccessToast(t("toast.checklistCreated"));
       navigate(`/checklists/list/${params.apiUrlEncoded}`);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to create checklist";
+      const message = error instanceof Error ? error.message : t("toast.createChecklistFailed");
       showErrorToast(message);
     }
   };
@@ -61,10 +65,10 @@ export default function CreateChecklist({ params }: Route.ComponentProps) {
   return (
     <>
       <Heading level="1">
-        Create New Checklist
+        {t("checklist.createTitle")}
       </Heading>
       <ChecklistForm
-        submitLabel="Create"
+        submitLabel={t("common.create")}
         onSubmit={handleSubmit}
         onCancel={async () => navigate(`/checklists/list/${params.apiUrlEncoded}`)}
       />

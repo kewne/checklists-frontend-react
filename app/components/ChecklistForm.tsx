@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { v4 } from "uuid";
 import { Button } from "~/components/Button";
 import { Panel } from "~/components/Panel";
@@ -33,6 +34,7 @@ function ChecklistItemComponent({
   onMoveDown,
   ref,
 }: ChecklistItemComponentProps) {
+  const { t } = useTranslation();
   const [showDescription, setShowDescription] = useState(
     item.description.length > 0,
   );
@@ -99,13 +101,13 @@ function ChecklistItemComponent({
             htmlFor={`item-title-${item.id}`}
             className="text-xs font-medium text-gray-600 dark:text-gray-300"
           >
-            Step Title
+            {t("checklist.stepTitle")}
           </label>
           <div className="flex items-center gap-1">
             {onMoveUp && (
               <Button
                 size="small"
-                aria-label={`Move "${item.title || "item"}" up`}
+                aria-label={t("common.moveUp", { title: item.title || t("common.itemFallback") })}
                 action={async () => onMoveUp()}
               >
                 <img
@@ -119,7 +121,7 @@ function ChecklistItemComponent({
             {onMoveDown && (
               <Button
                 size="small"
-                aria-label={`Move "${item.title || "item"}" down`}
+                aria-label={t("common.moveDown", { title: item.title || t("common.itemFallback") })}
                 action={async () => onMoveDown()}
               >
                 <img
@@ -135,7 +137,7 @@ function ChecklistItemComponent({
               size="small"
               action={async () => onRemove()}
             >
-              Remove
+              {t("common.remove")}
             </Button>
           </div>
         </div>
@@ -147,7 +149,7 @@ function ChecklistItemComponent({
               type="text"
               value={item.title}
               onChange={(e) => onUpdate(item.id, "title", e.target.value)}
-              placeholder="Wash hands"
+              placeholder={t("checklist.stepTitlePlaceholder")}
               required
             />
           </div>
@@ -159,7 +161,7 @@ function ChecklistItemComponent({
                 : async () => setShowDescription(true)
             }
           >
-            {showDescription ? "Description -" : "Description +"}
+            {showDescription ? t("common.descriptionHide") : t("common.descriptionShow")}
           </Button>
         </div>
       </div>
@@ -171,7 +173,7 @@ function ChecklistItemComponent({
               id={`item-description-${item.id}`}
               value={item.description}
               onChange={(e) => onUpdate(item.id, "description", e.target.value)}
-              placeholder="Item description"
+              placeholder={t("checklist.itemDescriptionPlaceholder")}
               rows={5}
               className="flex-1 py-1.5"
             />
@@ -198,6 +200,7 @@ export function ChecklistForm({
   onSubmit,
   onCancel,
 }: ChecklistFormProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState(initialValues?.title ?? "");
   const [items, setItems] = useState<ChecklistItem[]>(
     (initialValues?.items ?? []).map((item) => ({ ...item, id: v4() })),
@@ -260,14 +263,14 @@ export function ChecklistForm({
             htmlFor="title"
             className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
           >
-            Title
+            {t("common.title")}
           </label>
           <TextInput
             id="title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter checklist title"
+            placeholder={t("checklist.titlePlaceholder")}
             required
             autoFocus
           />
@@ -280,7 +283,7 @@ export function ChecklistForm({
               size={["full", "small"]}
               action={() => addItem(0)}
             >
-              + Add Item
+              {t("common.addItem")}
             </Button>
             </div>
             {items.map((item, index) => (
@@ -305,7 +308,7 @@ export function ChecklistForm({
                   size={['full', 'small']}
                   action={() => addItem(index + 1)}
                 >
-                  + Add Item
+                  {t("common.addItem")}
                 </Button>
               </li>
             ))}
@@ -320,7 +323,7 @@ export function ChecklistForm({
                 type="secondary"
                 size={["full", "medium"]}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
             </div>
           )}

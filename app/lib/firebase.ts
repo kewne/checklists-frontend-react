@@ -1,6 +1,8 @@
 import { initializeUI } from "@firebase-oss/ui-core";
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import i18n from "~/lib/i18n";
+import { firebaseUiLocales } from "~/lib/firebaseLocales";
 
 // TODO: Replace with your Firebase config
 const firebaseConfig = {
@@ -22,5 +24,14 @@ export const ui = initializeUI({
   behaviors: [],
 });
 
+// Keep Firebase UI translations in sync with the app locale
+const syncFirebaseUiLocale = (language: string | undefined) => {
+  const locale = language ? firebaseUiLocales[language] : undefined;
+  if (locale) {
+    ui.setKey("locale", locale);
+  }
+};
+syncFirebaseUiLocale(i18n.language);
+i18n.on("languageChanged", syncFirebaseUiLocale);
 
 export default app;

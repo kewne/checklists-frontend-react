@@ -15,8 +15,10 @@ import {
 } from "react-router";
 
 import { ToastContainer } from "react-toastify";
+import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/root";
 import { AuthProvider } from "./lib/auth";
+import "./lib/i18n";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -70,15 +72,16 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
+  const { t } = useTranslation();
+  let message = t("error.oops");
+  let details = t("error.unexpected");
   let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
+    message = error.status === 404 ? t("error.notFound") : t("error.title");
     details =
       error.status === 404
-        ? "The requested page could not be found."
+        ? t("error.notFoundDetails")
         : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;

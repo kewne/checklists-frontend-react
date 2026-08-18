@@ -1,6 +1,9 @@
-import { NavLink, Outlet, useRevalidator } from "react-router";
+import { NavLink, Outlet, useLocation, useNavigate, useRevalidator } from "react-router";
+import { useTranslation } from "react-i18next";
 import { apiResourceActions } from "../lib/api";
 import { getUser, useAuth } from "../lib/auth";
+import { SUPPORTED_LOCALES } from "~/lib/i18n";
+import { localePath, useLocale } from "~/lib/locale";
 import type { Route } from "./+types/MenuLayout";
 import { Button } from "./Button";
 
@@ -77,10 +80,41 @@ export async function clientLoader() {
   return { checklistsLink, instancesLink };
 }
 
+function LanguageSwitcher() {
+  const { t, i18n } = useTranslation();
+  const locale = useLocale();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const nextLocale = event.target.value;
+    i18n.changeLanguage(nextLocale);
+    const rest = location.pathname.replace(/^\/[^/]+/, "") || "/";
+    navigate(`/${nextLocale}${rest === "/" ? "" : rest}${location.search}${location.hash}`);
+  };
+
+  return (
+    <select
+      aria-label={t("nav.language")}
+      value={locale}
+      onChange={handleChange}
+      className="border border-gray-200 text-sm px-2 py-1 bg-white text-gray-700 dark:bg-black dark:text-gray-100 dark:border-gray-700"
+    >
+      {SUPPORTED_LOCALES.map((l) => (
+        <option key={l} value={l}>
+          {l.toUpperCase()}
+        </option>
+      ))}
+    </select>
+  );
+}
+
 export default function MenuLayout({ loaderData }: Route.ComponentProps) {
   const { checklistsLink, instancesLink } = loaderData;
   const { signOut } = useAuth();
   const { revalidate } = useRevalidator();
+  const { t } = useTranslation();
+  const locale = useLocale();
 
   const handleSignOut = async () => {
     await signOut();
@@ -92,16 +126,19 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
       <nav className="bg-white border-b border-gray-300 dark:bg-black dark:border-gray-700 print:hidden">
         <div className="max-w-4xl mx-auto px-4 py-3 flex gap-3 justify-between items-center">
           <div className="flex gap-3">
-            <MenuLink link={instancesLink} to="/runs">
-              Runs
+            <MenuLink link={instancesLink} to={localePath("/runs", locale)}>
+              {t("nav.runs")}
             </MenuLink>
-            <MenuLink link={checklistsLink} to="/checklists">
-              Checklists
+            <MenuLink link={checklistsLink} to={localePath("/checklists", locale)}>
+              {t("nav.checklists")}
             </MenuLink>
           </div>
-          <Button variant="danger" size="large" action={handleSignOut}>
-            Sign Out
-          </Button>
+          <div className="flex gap-3 items-center">
+            <LanguageSwitcher />
+            <Button variant="danger" size="large" action={handleSignOut}>
+              {t("nav.signOut")}
+            </Button>
+          </div>
         </div>
       </nav>
       <div className="max-w-4xl mx-auto py-8 px-4">

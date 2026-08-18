@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { useTranslation } from "react-i18next";
 import { Await, useFetcher } from "react-router";
 import { Button } from "~/components/Button";
 import { Heading } from "~/components/Heading";
@@ -7,6 +8,7 @@ import { List } from "~/components/List";
 import { Loading } from "~/components/Loading";
 import { Panel } from "~/components/Panel";
 import { getUser } from "~/lib/auth";
+import i18n from "~/lib/i18n";
 import { apiResourceActions } from "../../lib/api";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import type { Resource } from "../../lib/hal";
@@ -15,23 +17,24 @@ import type { Route } from "./+types/shares";
 
 export function meta({ }: Route.MetaArgs) {
   return [
-    { title: "Shares" },
-    { name: "description", content: "Manage shares" },
+    { title: i18n.t("meta.shares.title") },
+    { name: "description", content: i18n.t("meta.shares.description") },
   ];
 }
 
 export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
         <Panel>
           <div className="text-red-600 mb-4">
-            <p className="font-semibold">Error</p>
+            <p className="font-semibold">{t("error.title")}</p>
             <p className="text-sm">
-              Invalid URL. Please go back and try again.
+              {t("error.invalidUrl")}
             </p>
           </div>
-          <Link to="/">Back to Home</Link>
+          <Link to="/">{t("common.backToHome")}</Link>
         </Panel>
       </div>
     </div>
@@ -56,9 +59,9 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   try {
     const resource = apiResourceActions(href, user);
     await resource.delete();
-    showSuccessToast("Deleted successfully");
+    showSuccessToast(i18n.t("toast.deleted"));
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to delete";
+    const message = error instanceof Error ? error.message : i18n.t("toast.deleteFailed");
     showErrorToast(message);
   }
 }
@@ -79,6 +82,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 
 function InvitationsList({ resource }: { resource: Resource }) {
   const fetcher = useFetcher();
+  const { t } = useTranslation();
   const createLink = resource.getFirstLinkMatching("create");
   const items = resource.getLinkArray("items");
 
@@ -90,18 +94,18 @@ function InvitationsList({ resource }: { resource: Resource }) {
 
   return (
     <>
-      <Heading level="2" className="mt-8">Invitations</Heading>
+      <Heading level="2" className="mt-8">{t("share.invitations")}</Heading>
       {createLink && (
         <Link
           variant="inline-block"
           size="large"
           to={`/checklists/share-invitations/create/${encodeApiUrl(createLink.href)}`}
         >
-          Create
+          {t("common.create")}
         </Link>
       )}
       {items.length === 0 ? (
-        <p className="text-gray-500 text-sm">No invitations found.</p>
+        <p className="text-gray-500 text-sm">{t("share.emptyInvitations")}</p>
       ) : (
         <List
           ariaLabel="invitations"
@@ -111,14 +115,14 @@ function InvitationsList({ resource }: { resource: Resource }) {
                 variant="inline"
                 to={`/checklists/share-invitations/show/${encodeApiUrl(item.href)}`}
               >
-                {item.title ?? "Untitled"}
+                {item.title ?? t("common.untitled")}
               </Link>
               <Button
                 variant="danger"
                 size="small"
                 action={handleDeleteInvitation(item.href)}
               >
-                Delete
+                {t("common.delete")}
               </Button>
             </>
           ))}
@@ -130,6 +134,7 @@ function InvitationsList({ resource }: { resource: Resource }) {
 
 export default function Shares({ loaderData }: Route.ComponentProps) {
   const { sharesResource, invitationsPromise } = loaderData;
+  const { t } = useTranslation();
   const items = sharesResource.getLinkArray("items");
   const fetcher = useFetcher();
 
@@ -141,9 +146,9 @@ export default function Shares({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-      <Heading level="1">Shares</Heading>
+      <Heading level="1">{t("share.title")}</Heading>
       {items.length === 0 ? (
-        <p className="text-gray-500 text-sm">No shares found.</p>
+        <p className="text-gray-500 text-sm">{t("share.empty")}</p>
       ) : (
         <List
           ariaLabel="shares"
@@ -153,21 +158,21 @@ export default function Shares({ loaderData }: Route.ComponentProps) {
                 variant="inline"
                 to={`/checklist/shares/${encodeApiUrl(item.href)}`}
               >
-                {item.title ?? "Untitled"}
+                {item.title ?? t("common.untitled")}
               </Link>
               <Button
                 variant="danger"
                 size="small"
                 action={handleDeleteShare(item.href)}
               >
-                Delete
+                {t("common.delete")}
               </Button>
             </>
           ))}
         />
       )}
       {invitationsPromise && (
-        <Suspense fallback={<Loading text="Loading invitations..." />}>
+        <Suspense fallback={<Loading text={t("share.loadingInvitations")} />}>
           <Await resolve={invitationsPromise}>
             {(invitationsResource) => (
               <InvitationsList resource={invitationsResource} />

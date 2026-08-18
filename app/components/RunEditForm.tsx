@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { v4 } from "uuid";
 import chevronDownSvg from "/chevron-down.svg?url";
 import { TextArea } from "~/components/TextArea";
@@ -37,6 +38,7 @@ function RunItemComponent({
   onMoveDown,
   ref,
 }: RunItemComponentProps) {
+  const { t } = useTranslation();
   const [showDescription, setShowDescription] = useState(
     item.description?.length > 0,
   );
@@ -93,14 +95,14 @@ function RunItemComponent({
             htmlFor={`item-title-${item.name}`}
             className="text-xs font-medium text-gray-600"
           >
-            Title
+            {t("common.title")}
           </label>
           <div className="flex items-center gap-1">
             {onMoveUp && (
               <Button
                 size="small"
                 action={onMoveUp}
-                aria-label={`Move "${item.title || "item"}" up`}
+                aria-label={t("common.moveUp", { title: item.title || t("common.itemFallback") })}
               >
                 <img
                   src={chevronUpSvg}
@@ -114,7 +116,7 @@ function RunItemComponent({
               <Button
                 size="small"
                 action={onMoveDown}
-                aria-label={`Move "${item.title || "item"}" down`}
+                aria-label={t("common.moveDown", { title: item.title || t("common.itemFallback") })}
               >
                 <img
                   src={chevronDownSvg}
@@ -125,7 +127,7 @@ function RunItemComponent({
               </Button>
             )}
             <Button variant="danger" size="small" action={onRemove}>
-              Remove
+              {t("common.remove")}
             </Button>
           </div>
         </div>
@@ -137,7 +139,7 @@ function RunItemComponent({
               type="text"
               value={item.title}
               onChange={(e) => onUpdate(item.name, "title", e.target.value)}
-              placeholder="Item title"
+              placeholder={t("run.itemTitlePlaceholder")}
               required
             />
           </div>
@@ -150,7 +152,7 @@ function RunItemComponent({
             }
           >
             <label htmlFor={`item-description-${item.name}`}>
-              {showDescription ? "Description -" : "Description +"}
+              {showDescription ? t("common.descriptionHide") : t("common.descriptionShow")}
             </label>
           </Button>
         </div>
@@ -165,7 +167,7 @@ function RunItemComponent({
               onChange={(e) =>
                 onUpdate(item.name, "description", e.target.value)
               }
-              placeholder="Item description"
+              placeholder={t("checklist.itemDescriptionPlaceholder")}
               rows={5}
               className="flex-1 py-1.5"
             />
@@ -195,6 +197,7 @@ export function RunEditForm({
   onSubmit,
   onCancel,
 }: RunEditFormProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState(initialValues.title);
   const [items, setItems] = useState<WriteableChecklistRun["items"]>(
     initialValues.items.map(({ completed: _completed, ...item }) => item),
@@ -259,14 +262,14 @@ export function RunEditForm({
             htmlFor="title"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Title
+            {t("common.title")}
           </label>
           <TextInput
             id="title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter run title"
+            placeholder={t("run.titlePlaceholder")}
             required
             autoFocus
           />
@@ -275,7 +278,7 @@ export function RunEditForm({
         <div className="mb-4">
           <ol className="space-y-3 my-1">
             <Button size={["full", "small"]} action={async () => addItem(0)}>
-              + Add Item
+              {t("common.addItem")}
             </Button>
             {items.map((item, index) => (
               <li key={item.name}>
@@ -299,7 +302,7 @@ export function RunEditForm({
                   size={["full", "small"]}
                   action={async () => addItem(index + 1)}
                 >
-                  + Add Item
+                  {t("common.addItem")}
                 </Button>
               </li>
             ))}
@@ -310,7 +313,7 @@ export function RunEditForm({
           <div className="flex-1">
             {onCancel && (
               <Button action={onCancel} size={["full", "large"]}>
-                Cancel
+                {t("common.cancel")}
               </Button>
             )}
           </div>

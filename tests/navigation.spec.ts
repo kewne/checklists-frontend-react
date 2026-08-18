@@ -2,28 +2,22 @@ import { expect } from '@playwright/test';
 import { test } from './utils/auth';
 
 test.describe('Navigation and Routing', () => {
-  test('should render home page with welcome content when authenticated', async ({ page }) => {
-    await page.goto('/');
-    
-    // Verify we're on the home page
-    await expect(page).toHaveURL('/');
-    
-    // Check for welcome content
-    await expect(page.locator('text=Welcome')).toBeVisible();
-    
-    // Check page title
-    await expect(page).toHaveTitle(/New React Router App/);
-    
-    // Check for meta description
-    const metaDescription = page.locator('meta[name="description"]');
-    await expect(metaDescription).toHaveAttribute('content', /Welcome to React Router!/);
-  });
-
-  test('should show API status box on home page', async ({ page }) => {
+  test('should redirect the root path to the detected locale', async ({ page }) => {
     await page.goto('/');
 
-    await expect(page.getByRole('status', { name: "api connection status" })).toBeVisible();
+    await expect(page).toHaveURL(/\/en(\/|$)/);
   });
 
+  test('should show the main navigation when authenticated', async ({ page }) => {
+    await page.goto('/en');
 
+    await expect(page.getByRole('link', { name: 'Runs' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Checklists' })).toBeVisible();
+  });
+
+  test('should redirect legacy non-locale URLs to the detected locale', async ({ page }) => {
+    await page.goto('/checklists');
+
+    await expect(page).toHaveURL(/\/en\//);
+  });
 });

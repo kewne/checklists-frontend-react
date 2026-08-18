@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import {
   ApiResource,
   type ApiLink,
   type Checklist,
   type ChecklistRun,
 } from "~/lib/api";
+import { useLocaleNavigate } from "~/lib/locale";
 import { useModal } from "~/lib/useModal";
 import { encodeApiUrl } from "../lib/encoding";
 import { showSuccessToast } from "../lib/toastHelpers";
@@ -23,6 +24,7 @@ interface ChecklistRunDetailProps {
 }
 
 function CreatedFromChecklist({ checklistLink }: { checklistLink: ApiLink }) {
+  const { t } = useTranslation();
   const [checklist, setChecklist] = useState<Checklist>();
   useEffect(() => {
     checklistLink
@@ -37,7 +39,7 @@ function CreatedFromChecklist({ checklistLink }: { checklistLink: ApiLink }) {
 
   return (
     <div className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-      Created from
+      {t("run.createdFrom")}
       <Link to={`/checklists/show/${encodeApiUrl(checklistLink.href)}`}>
         {checklist.title}
       </Link>
@@ -64,7 +66,8 @@ export function ChecklistRunDetail({
   );
 
   const listRef = useRef<HTMLUListElement>(null);
-  const navigate = useNavigate();
+  const navigate = useLocaleNavigate();
+  const { t } = useTranslation();
 
   const deleteModal = useModal();
 
@@ -91,7 +94,7 @@ export function ChecklistRunDetail({
 
   const performDelete = async () => {
     await onDelete?.();
-    showSuccessToast("Run deleted successfully");
+    showSuccessToast(t("toast.runDeleted"));
     deleteModal.close();
   };
 
@@ -118,7 +121,7 @@ export function ChecklistRunDetail({
               className="ml-3"
               to={`/runs/edit/${encodeApiUrl(resource.getFirstLinkMatching("self")!.href)}`}
             >
-              Edit...
+              {t("common.editEllipsis")}
             </Link>
           </Heading>
           {checklistLink && (
@@ -129,14 +132,14 @@ export function ChecklistRunDetail({
           <MenuButton
             type="secondary"
             size={["large", "medium"]}
-            ariaLabel="More actions"
+            ariaLabel={t("run.moreActions")}
           >
             <div className="flex flex-col gap-1 content-stretch items-stretch">
               {createChecklistFrom && (
                 <Button
                   action={async () => {
                     const location = await createChecklistFrom.actions().post({
-                      title: `Copy of ${resource.properties.title}`,
+                      title: t("run.copyTitle", { title: resource.properties.title }),
                     });
                     if (location) {
                       return navigate(
@@ -146,7 +149,7 @@ export function ChecklistRunDetail({
                     navigate("/checklists/list");
                   }}
                 >
-                  Create Checklist
+                  {t("run.createChecklist")}
                 </Button>
               )}
               {updateChecklistFrom && (
@@ -161,14 +164,14 @@ export function ChecklistRunDetail({
                     navigate("/checklists/list");
                   }}
                 >
-                  Update Checklist
+                  {t("run.updateChecklist")}
                 </Button>
               )}
               <Button
                 variant="danger"
                 action={handleDeleteClick}
               >
-                {!allItemsCompleted ? "Delete..." : "Delete"}
+                {!allItemsCompleted ? t("common.deleteEllipsis") : t("common.delete")}
               </Button>
             </div>
           </MenuButton>
@@ -177,15 +180,15 @@ export function ChecklistRunDetail({
       {allItemsCompleted && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200 dark:bg-green-950 dark:border-green-800">
           <p className="text-green-800 font-semibold text-lg dark:text-green-300">
-            🎉 Congratulations!
+            {t("run.congratulations")}
           </p>
           <p className="text-green-700 text-sm mt-1 dark:text-green-400">
-            You've completed all items in this checklist.
+            {t("run.allCompleted")}
           </p>
         </div>
       )}
       {completedItems.length === 0 && todoItems.length === 0 ? (
-        <p className="text-gray-500 text-sm dark:text-gray-400">No items in this run.</p>
+        <p className="text-gray-500 text-sm dark:text-gray-400">{t("run.noItems")}</p>
       ) : (
         <>
           {completedItems.length > 0 && (
@@ -220,7 +223,7 @@ export function ChecklistRunDetail({
                 to={`/runs/add-item/${encodeApiUrl(addItemLink.href)}`}
                 className="text-sm whitespace-nowrap"
               >
-                + Add item
+                {t("run.addItem")}
               </Link>
               <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
             </div>
@@ -256,14 +259,14 @@ export function ChecklistRunDetail({
         </>
       )}
       <deleteModal.Modal>
-        <Heading level="2">Delete run?</Heading>
+        <Heading level="2">{t("run.deleteTitle")}</Heading>
         <p className="text-gray-600 text-sm mb-6">
-          This run has incomplete items. Delete anyway?
+          {t("run.deleteConfirm")}
         </p>
         <div className="flex justify-end gap-2">
-          <Button action={deleteModal.close}>Cancel</Button>
+          <Button action={deleteModal.close}>{t("common.cancel")}</Button>
           <Button type="primary" variant="danger" action={performDelete}>
-            Delete
+            {t("common.delete")}
           </Button>
         </div>
       </deleteModal.Modal>

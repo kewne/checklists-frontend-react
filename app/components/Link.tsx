@@ -1,5 +1,6 @@
 import { Link as RouterLink } from "react-router";
 import { getSizeClasses, type ButtonSize } from "~/components/Button";
+import { localePath, useLocale } from "~/lib/locale";
 
 export type LinkVariant = "inline" | "inline-block";
 
@@ -77,6 +78,7 @@ export function Link({
   size,
   target,
 }: LinkProps) {
+  const locale = useLocale();
   const baseClasses =
     "text-emerald-700 active:text-emerald-600 underline-offset-4";
   const sizeClasses = variant !== "inline" ? getSizeClasses(size ?? "medium") : null;
@@ -89,7 +91,7 @@ export function Link({
     .filter(Boolean)
     .join(" ");
   return (
-    <RouterLink to={to} className={classes} target={target}>
+    <RouterLink to={localePath(to, locale)} className={classes} target={target}>
       {children}
     </RouterLink>
   );

@@ -1,38 +1,41 @@
 import { redirect } from "react-router";
+import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/home";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { apiResourceActions } from "~/lib/api";
 import { getUser } from "../lib/auth";
 import { encodeApiUrl } from "~/lib/encoding";
+import i18n from "~/lib/i18n";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Checklists" },
-    { name: "description", content: "Manage your checklists" },
+    { title: i18n.t("meta.home.title") },
+    { name: "description", content: i18n.t("meta.home.description") },
   ];
 }
 
 export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
+  const { t } = useTranslation();
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       <Panel>
         <div className="text-red-600 mb-4">
-          <p className="font-semibold">API connection failed</p>
-          <p className="text-sm">Could not connect to the API. Please try again later.</p>
+          <p className="font-semibold">{t("error.apiConnectionFailed")}</p>
+          <p className="text-sm">{t("error.apiConnectionFailedDetails")}</p>
         </div>
-        <Link to="/">Retry</Link>
+        <Link to="/">{t("common.retry")}</Link>
       </Panel>
     </div>
   );
 }
 
-export async function clientLoader() {
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
   const rootResource = await apiResourceActions("https://api.checklists.keeoon.dev/", user).get();
   const instancesLink = rootResource.getFirstLinkMatching("related", (link) => link.name === "checklist-instances");
   if (instancesLink) {
-    return redirect(`/runs/list/${encodeApiUrl(instancesLink.href)}`);
+    return redirect(`/${params.locale}/runs/list/${encodeApiUrl(instancesLink.href)}`);
   }
   return {};
 }
