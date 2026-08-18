@@ -18,6 +18,7 @@ import { ToastContainer } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/root";
 import { AuthProvider } from "./lib/auth";
+import { Link } from "./components/Link";
 import "./lib/i18n";
 
 export const links: Route.LinksFunction = () => [
@@ -91,7 +92,10 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   return (
     <main className="pt-16 p-4 container mx-auto">
       <Heading level="1">{message}</Heading>
-      <p>{details}</p>
+      <p className="text-gray-800 dark:text-gray-300">{details}</p>
+      <p className="mt-4">
+        <Link to="/">{t("common.backToHome")}</Link>
+      </p>
       {stack && (
         <pre className="w-full p-4 overflow-x-auto">
           <code>{stack}</code>

@@ -46,6 +46,8 @@ export default [
           route("edit/:apiUrlEncoded", "routes/run/edit.tsx"),
           route("add-item/:apiUrlEncoded", "routes/run/add-item.tsx"),
         ]),
+        // Catch-all: show a 404 for unmatched paths inside a valid locale
+        route("*", "routes/not-found.tsx"),
       ]),
     ]),
   ]),
