@@ -65,7 +65,8 @@
     "deleteFailed": "Failed to delete",
     "dismissInvitationFailed": "Failed to dismiss invitation",
     "acceptInvitationFailed": "Failed to accept invitation",
-    "createInvitationFailed": "Failed to create invitation"
+    "createInvitationFailed": "Failed to create invitation",
+    "completedItemsCleared": "Completed items cleared"
   },
   "checklist": {
     "createTitle": "Create New Checklist",
@@ -103,7 +104,8 @@
     "deleteTitle": "Delete run?",
     "deleteConfirm": "This run has incomplete items. Delete anyway?",
     "copyTitle": "Copy of {{title}}",
-    "moreActions": "More actions"
+    "moreActions": "More actions",
+    "clearCompleted": "Clear completed items"
   },
   "share": {
     "title": "Shares",

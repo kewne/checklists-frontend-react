@@ -64,6 +64,10 @@ export function ChecklistRunDetail({
     "update",
     (link) => link.name === "add-item",
   );
+  const clearCompletedLink = resource.getFirstLinkMatching(
+    "update",
+    (link) => link.name === "clear-completed-items",
+  );
 
   const listRef = useRef<HTMLUListElement>(null);
   const navigate = useLocaleNavigate();
@@ -165,6 +169,17 @@ export function ChecklistRunDetail({
                   }}
                 >
                   {t("run.updateChecklist")}
+                </Button>
+              )}
+              {clearCompletedLink && (
+                <Button
+                  action={async () => {
+                    await clearCompletedLink.actions().post();
+                    await onItemUpdated();
+                    showSuccessToast(t("toast.completedItemsCleared"));
+                  }}
+                >
+                  {t("run.clearCompleted")}
                 </Button>
               )}
               <Button

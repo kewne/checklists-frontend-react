@@ -65,7 +65,8 @@
     "deleteFailed": "Error al eliminar",
     "dismissInvitationFailed": "Error al descartar la invitación",
     "acceptInvitationFailed": "Error al aceptar la invitación",
-    "createInvitationFailed": "Error al crear la invitación"
+    "createInvitationFailed": "Error al crear la invitación",
+    "completedItemsCleared": "Elementos completados eliminados"
   },
   "checklist": {
     "createTitle": "Crear nueva lista",
@@ -103,7 +104,8 @@
     "deleteTitle": "¿Eliminar ejecución?",
     "deleteConfirm": "Esta ejecución tiene elementos incompletos. ¿Eliminar de todos modos?",
     "copyTitle": "Copia de {{title}}",
-    "moreActions": "Más acciones"
+    "moreActions": "Más acciones",
+    "clearCompleted": "Eliminar elementos completados"
   },
   "share": {
     "title": "Compartidos",
