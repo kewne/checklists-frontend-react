@@ -48,7 +48,7 @@ export function MenuButton({
   }, [isDropdownOpen]);
 
   return (
-    <div className="relative inline-block bg-white" ref={dropdownRef}>
+    <div className="relative inline-block bg-white dark:bg-black" ref={dropdownRef}>
       <Button
         type={type}
         variant={variant}
@@ -61,7 +61,7 @@ export function MenuButton({
       </Button>
 
       <div
-        className={`${isDropdownOpen ? "" : "scale-y-0 -translate-y-1/2"} transition-transform duration-300 ease-in-out absolute right-0 top-full mt-1 z-50`}
+        className={`${isDropdownOpen ? "" : "scale-y-0 -translate-y-1/2"} transition-transform duration-300 ease-in-out absolute right-0 top-full mt-1 z-50 bg-white p-2 dark:bg-black`}
       >
         {children}
       </div>
