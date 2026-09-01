@@ -29,7 +29,8 @@
     "runs": "Execuções",
     "checklists": "Checklists",
     "signOut": "Terminar sessão",
-    "language": "Idioma"
+    "language": "Idioma",
+    "menu": "Menu"
   },
   "auth": {
     "forgotPassword": "Esqueceu-se da palavra-passe?"

@@ -5,6 +5,7 @@ import { getUser, useAuth } from "../lib/auth";
 import { localePath, useLocale } from "~/lib/locale";
 import type { Route } from "./+types/MenuLayout";
 import { Button } from "./Button";
+import { Drawer } from "./Drawer";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { Loading } from "./Loading";
 
@@ -97,21 +98,19 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-black">
       <nav className="bg-white border-b border-gray-300 dark:bg-black dark:border-gray-700 print:hidden">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex gap-3 justify-between items-center">
-          <div className="flex gap-3">
+        <div className="max-w-4xl mx-auto px-4 py-3">
+          <Drawer>
             <MenuLink link={instancesLink} to={localePath("/runs", locale)}>
               {t("nav.runs")}
             </MenuLink>
             <MenuLink link={checklistsLink} to={localePath("/checklists", locale)}>
               {t("nav.checklists")}
             </MenuLink>
-          </div>
-          <div className="flex gap-3 items-center">
             <LanguageSwitcher />
             <Button variant="danger" size="large" action={handleSignOut}>
               {t("nav.signOut")}
             </Button>
-          </div>
+          </Drawer>
         </div>
       </nav>
       <div className="max-w-4xl mx-auto py-8 px-4">

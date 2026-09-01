@@ -29,7 +29,8 @@
     "runs": "Runs",
     "checklists": "Checklists",
     "signOut": "Sign Out",
-    "language": "Language"
+    "language": "Language",
+    "menu": "Menu"
   },
   "auth": {
     "forgotPassword": "Forgot password?"
