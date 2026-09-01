@@ -6,7 +6,7 @@ import { apiResourceActions, type Checklist } from "~/lib/api";
 import { getUser } from "~/lib/auth";
 import i18n from "~/lib/i18n";
 import { localePath, useLocale, useLocaleNavigate } from "~/lib/locale";
-import { showErrorToast } from "~/lib/toastHelpers";
+import { showErrorToast, showSuccessToast } from "~/lib/toastHelpers";
 import { Button } from "../../components/Button";
 import { ChecklistForm } from "../../components/ChecklistForm";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
@@ -74,6 +74,7 @@ export default function ChecklistEdit({ loaderData }: Route.ComponentProps) {
   const handleSubmit = async (data: Checklist) => {
     try {
       await apiResourceActions<{ title: string }>(decodedUrl, user).put(data);
+      showSuccessToast(t("toast.checklistSaved"));
       revalidate();
     } catch (error) {
       const message =

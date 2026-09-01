@@ -51,6 +51,7 @@
   },
   "toast": {
     "checklistCreated": "Lista creada correctamente",
+    "checklistSaved": "Lista guardada correctamente",
     "checklistDeleted": "Lista eliminada correctamente",
     "runCreated": "Ejecución creada correctamente",
     "runDeleted": "Ejecución eliminada correctamente",
