@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useRevalidator } from "react-router";
+import { NavLink, Outlet, useNavigation, useRevalidator } from "react-router";
 import { useTranslation } from "react-i18next";
 import { apiResourceActions } from "../lib/api";
 import { getUser, useAuth } from "../lib/auth";
@@ -6,6 +6,7 @@ import { localePath, useLocale } from "~/lib/locale";
 import type { Route } from "./+types/MenuLayout";
 import { Button } from "./Button";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { Loading } from "./Loading";
 
 interface MenuLinkProps {
   link: unknown | null;
@@ -84,6 +85,7 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
   const { checklistsLink, instancesLink } = loaderData;
   const { signOut } = useAuth();
   const { revalidate } = useRevalidator();
+  const navigation = useNavigation();
   const { t } = useTranslation();
   const locale = useLocale();
 
@@ -113,7 +115,17 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
         </div>
       </nav>
       <div className="max-w-4xl mx-auto py-8 px-4">
+        {navigation.state === "loading" ? (
+          <div
+            role="status"
+            aria-live="polite"
+            className="flex min-h-[50vh] items-center justify-center"
+          >
+            <Loading />
+          </div>
+        ) : (
           <Outlet />
+        )}
       </div>
     </div>
   );
