@@ -154,7 +154,7 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
               <span className="flex items-center justify-between gap-2">
                 <span className="flex items-center gap-2">
                   <Logo size="md" />
-                  <span className="font-semibold text-lg text-gray-900 dark:text-white">
+                  <span className="font-sans font-thin text-xl text-gray-900 dark:text-white">
                     CheckOff
                   </span>
                 </span>
