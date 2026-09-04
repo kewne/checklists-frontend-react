@@ -136,6 +136,7 @@
   },
   "meta": {
     "home": { "title": "Checklists", "description": "Gira as suas checklists" },
+    "social": { "title": "CheckOff", "description": "Gira as suas checklists com CheckOff." },
     "checklistsIndex": { "title": "Checklists", "description": "A redirecionar para as checklists..." },
     "checklistCreate": { "title": "Criar checklist", "description": "Criar uma nova checklist" },
     "checklistList": { "title": "Checklists", "description": "Gira as suas checklists" },
