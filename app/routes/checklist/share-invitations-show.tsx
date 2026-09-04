@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Button } from "~/components/Button";
 import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
@@ -15,6 +17,27 @@ type ShareInvitation = {
   createdAt: string;
   expiresAt: string;
 };
+
+function CopyShareUrlButton({ shareUrl }: { shareUrl: string }) {
+  const { t } = useTranslation();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Ignore clipboard errors; the URL is still visible for manual copying.
+    }
+  };
+
+  return (
+    <Button action={handleCopy} type="secondary" size="medium">
+      {copied ? t("share.copied") : t("share.copy")}
+    </Button>
+  );
+}
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -84,6 +107,19 @@ export default function ShareInvitationShow({
             <pre className="bg-gray-100 border border-gray-200 px-4 py-3 text-gray-600 text-sm break-all whitespace-pre-wrap">
               {shareUrl}
             </pre>
+            <div className="mt-2">
+              {typeof navigator !== "undefined" && navigator.share ? (
+                <Button
+                  action={() => navigator.share({ url: shareUrl })}
+                  type="secondary"
+                  size="medium"
+                >
+                  {t("share.share")}
+                </Button>
+              ) : (
+                <CopyShareUrlButton shareUrl={shareUrl as string} />
+              )}
+            </div>
           </div>
         )}
       </Panel>

@@ -124,7 +124,10 @@
     "checklistLabel": "Checklist: {{title}}",
     "createdAt": "Criado em {{date}}",
     "expiresAt": "Expira em {{date}}",
-    "shareLinkPrompt": "Partilhe esta ligação para convidar alguém:"
+    "shareLinkPrompt": "Partilhe esta ligação para convidar alguém:",
+    "share": "Partilhar",
+    "copy": "Copiar ligação",
+    "copied": "Copiado!"
   },
   "mailto": {
     "to": "Para",

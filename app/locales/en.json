@@ -124,7 +124,10 @@
     "checklistLabel": "Checklist: {{title}}",
     "createdAt": "Created at {{date}}",
     "expiresAt": "Expires at {{date}}",
-    "shareLinkPrompt": "Share this link to invite someone:"
+    "shareLinkPrompt": "Share this link to invite someone:",
+    "share": "Share",
+    "copy": "Save to clipboard",
+    "copied": "Saved to clipboard"
   },
   "mailto": {
     "to": "To",
