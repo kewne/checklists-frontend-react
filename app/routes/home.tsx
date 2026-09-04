@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/home";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
+import { Logo } from "~/components/Logo";
 import { apiResourceActions } from "~/lib/api";
 import { getUser } from "../lib/auth";
 import { encodeApiUrl } from "~/lib/encoding";
@@ -42,8 +43,11 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 
 export default function Home() {
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4 flex items-center justify-center">
-      <div className="animate-spin h-6 w-6 border-b-2 border-indigo-600"></div>
+    <div className="max-w-4xl mx-auto py-8 px-4 flex flex-col items-center justify-center min-h-[50vh] gap-6">
+      <Logo size="xl" />
+      <div className="animate-spin-logo">
+        <div className="h-6 w-6 border-b-2 border-indigo-600 dark:border-emerald-600 rounded-full"></div>
+      </div>
     </div>
   );
 }

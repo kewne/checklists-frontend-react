@@ -22,6 +22,8 @@ import { Link } from "./components/Link";
 import "./lib/i18n";
 
 export const links: Route.LinksFunction = () => [
+  { rel: "icon", href: "/logo_checkoff.svg", type: "image/svg+xml" },
+  { rel: "apple-touch-icon", href: "/logo_checkoff.svg" },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",

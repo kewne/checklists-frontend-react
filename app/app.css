@@ -8,5 +8,18 @@
 html,
 body {
   @apply bg-white dark:bg-black;
-
 }
+
+@keyframes spin-logo {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-logo {
+  animation: spin-logo 2s linear infinite;
+}
+

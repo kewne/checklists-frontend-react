@@ -2,6 +2,7 @@ import { SignInAuthScreen } from "@firebase-oss/ui-react";
 import { useTranslation } from "react-i18next";
 import { Link, redirect, useRevalidator } from "react-router";
 import { LanguageSwitcher } from "~/components/LanguageSwitcher";
+import { Logo } from "~/components/Logo";
 import { auth } from "~/lib/firebase";
 import { localePath, useLocale } from "~/lib/locale";
 
@@ -21,7 +22,10 @@ export default function Login() {
       <div className="absolute top-4 right-4">
         <LanguageSwitcher />
       </div>
-      <div className="max-w-md w-full">
+      <div className="max-w-md w-full flex flex-col items-center">
+        <div className="mb-8">
+          <Logo size="lg" />
+        </div>
         <SignInAuthScreen onSignIn={revalidate} />
         <div className="text-center mt-4">
           <Link
