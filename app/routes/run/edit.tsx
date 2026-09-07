@@ -5,7 +5,8 @@ import type { ChecklistRun, WriteableChecklistRun } from "~/lib/api";
 import { RunEditForm } from "../../components/RunEditForm";
 import { apiResourceActions } from "../../lib/api";
 import { getUser } from "../../lib/auth";
-import { decodeApiUrl } from "../../lib/encoding";
+import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
+import { type RouteHandle } from "../../lib/upLink";
 import i18n from "~/lib/i18n";
 import { useLocaleNavigate } from "~/lib/locale";
 import { showErrorToast } from "../../lib/toastHelpers";
@@ -43,6 +44,13 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const runResource = await apiResourceActions<ChecklistRun>(decodedUrl, user).get();
   return { runResource, user, decodedUrl };
 }
+
+export const handle: RouteHandle<{ decodedUrl: string }> = {
+  up: ({ decodedUrl }) => ({
+    labelKey: "up.run",
+    to: `/runs/show/${encodeApiUrl(decodedUrl)}`,
+  }),
+};
 
 export default function EditRun({ loaderData, params }: Route.ComponentProps) {
   const { runResource, user, decodedUrl } = loaderData;

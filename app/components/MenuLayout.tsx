@@ -1,4 +1,12 @@
-import { Link, NavLink, Outlet, useNavigation, useRevalidator, useLocation } from "react-router";
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useMatches,
+  useNavigation,
+  useRevalidator,
+  useLocation,
+} from "react-router";
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
 import { apiResourceActions } from "../lib/api";
@@ -12,11 +20,19 @@ import { Logo } from "./Logo";
 import { ChevronDown } from "../icons/ChevronDown";
 import { ChevronUp } from "../icons/ChevronUp";
 import { Panel } from "./Panel";
+import { UpLinks } from "./UpLinks";
+import type { RouteHandle } from "../lib/upLink";
 
 interface MenuLinkProps {
   link: unknown | null;
   to: string;
   children: React.ReactNode;
+}
+
+interface MatchWithHandle {
+  id: string;
+  loaderData: unknown;
+  handle: RouteHandle;
 }
 
 function MenuLink({ link, to, children }: MenuLinkProps) {
@@ -94,7 +110,20 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
   const { t } = useTranslation();
   const locale = useLocale();
   const location = useLocation();
+  const matches = useMatches() as MatchWithHandle[];
   const [isOpen, setIsOpen] = useState(false);
+
+  const upLinks = matches
+    .map((match) => {
+      const up = match.handle?.up;
+      if (typeof up === "function") {
+        return up(match.loaderData);
+      }
+      return up;
+    })
+    .filter((up) => up !== undefined)
+    .map((up) => ({ label: t(up.labelKey), to: localePath(up.to, locale) }));
+
   const drawerRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLSpanElement>(null);
 
@@ -196,6 +225,7 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
         </div>
       </nav>
       <div className="max-w-4xl mx-auto py-8 px-4">
+        <UpLinks links={upLinks} />
         {navigation.state === "loading" ? (
           <div
             role="status"

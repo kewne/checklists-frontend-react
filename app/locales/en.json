@@ -25,6 +25,15 @@
     "accept": "Accept",
     "dismiss": "Dismiss"
   },
+  "up": {
+    "label": "Up",
+    "checklists": "Checklists",
+    "checklist": "Checklist",
+    "shares": "Shares",
+    "runs": "Runs",
+    "run": "Run",
+    "edit": "Edit"
+  },
   "nav": {
     "runs": "Runs",
     "checklists": "Checklists",

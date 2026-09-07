@@ -13,6 +13,7 @@ import { apiResourceActions } from "../../lib/api";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import type { Resource } from "../../lib/hal";
 import { showErrorToast, showSuccessToast } from "../../lib/toastHelpers";
+import { resourceUpLink, type RouteHandle } from "../../lib/upLink";
 import type { Route } from "./+types/shares";
 
 export function meta({ }: Route.MetaArgs) {
@@ -79,6 +80,11 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     ),
   };
 }
+
+export const handle: RouteHandle<{ sharesResource: Resource }> = {
+  up: ({ sharesResource }) =>
+    resourceUpLink(sharesResource, "/checklists/show", "up.checklist"),
+};
 
 function InvitationsList({ resource }: { resource: Resource }) {
   const fetcher = useFetcher();

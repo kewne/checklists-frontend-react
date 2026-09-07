@@ -10,6 +10,7 @@ import { showErrorToast, showSuccessToast } from "~/lib/toastHelpers";
 import { Button } from "../../components/Button";
 import { ChecklistForm } from "../../components/ChecklistForm";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
+import { type RouteHandle } from "../../lib/upLink";
 import type { Route } from "./+types/edit";
 
 export function meta({}: Route.MetaArgs) {
@@ -53,6 +54,13 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   ).get();
   return { checklistResource, user, decodedUrl };
 }
+
+export const handle: RouteHandle<{ decodedUrl: string }> = {
+  up: ({ decodedUrl }) => ({
+    labelKey: "up.checklist",
+    to: `/checklists/show/${encodeApiUrl(decodedUrl)}`,
+  }),
+};
 
 export default function ChecklistEdit({ loaderData }: Route.ComponentProps) {
   const navigate = useLocaleNavigate();

@@ -25,6 +25,15 @@
     "accept": "Aceitar",
     "dismiss": "Dispensar"
   },
+  "up": {
+    "label": "Subir",
+    "checklists": "Checklists",
+    "checklist": "Checklist",
+    "shares": "Partilhas",
+    "runs": "Execuções",
+    "run": "Execução",
+    "edit": "Editar"
+  },
   "nav": {
     "runs": "Execuções",
     "checklists": "Checklists",

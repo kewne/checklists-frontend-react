@@ -25,6 +25,15 @@
     "accept": "Aceptar",
     "dismiss": "Descartar"
   },
+  "up": {
+    "label": "Subir",
+    "checklists": "Listas",
+    "checklist": "Lista",
+    "shares": "Compartidos",
+    "runs": "Ejecuciones",
+    "run": "Ejecución",
+    "edit": "Editar"
+  },
   "nav": {
     "runs": "Ejecuciones",
     "checklists": "Listas",
