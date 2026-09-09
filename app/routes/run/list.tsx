@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useFetcher } from "react-router";
+import { BookmarkToggle } from "~/components/BookmarkToggle";
 import { Button } from "~/components/Button";
 import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
@@ -111,9 +112,15 @@ export default function ChecklistInstances({
               <Link to={`/runs/show/${encodeApiUrl(item.href)}`}>
                 {item.title ?? item.name}
               </Link>
-              <Button variant="danger" action={handleDelete(item.href)}>
-                {t("common.delete")}
-              </Button>
+              <span className="flex items-center gap-2">
+                <BookmarkToggle
+                  href={item.href}
+                  title={item.title ?? item.name ?? t("common.untitled")}
+                />
+                <Button variant="danger" action={handleDelete(item.href)}>
+                  {t("common.delete")}
+                </Button>
+              </span>
             </>
           ))}
         />

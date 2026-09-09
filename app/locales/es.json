@@ -39,7 +39,8 @@
     "checklists": "Listas",
     "signOut": "Cerrar sesión",
     "language": "Idioma",
-    "menu": "Menú"
+    "menu": "Menú",
+    "bookmarkedRuns": "Ejecuciones guardadas"
   },
   "auth": {
     "forgotPassword": "¿Olvidaste tu contraseña?"
@@ -116,7 +117,9 @@
     "deleteConfirm": "Esta ejecución tiene elementos incompletos. ¿Eliminar de todos modos?",
     "copyTitle": "Copia de {{title}}",
     "moreActions": "Más acciones",
-    "clearCompleted": "Eliminar elementos completados"
+    "clearCompleted": "Eliminar elementos completados",
+    "bookmark": "Guardar \"{{title}}\"",
+    "removeBookmark": "Quitar \"{{title}}\" de guardadas"
   },
   "share": {
     "title": "Compartidos",

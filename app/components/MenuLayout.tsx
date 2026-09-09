@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
 import { apiResourceActions } from "../lib/api";
 import { getUser, useAuth } from "../lib/auth";
+import { useBookmarks } from "../lib/useBookmarks";
 import { localePath, useLocale } from "~/lib/locale";
 import type { Route } from "./+types/MenuLayout";
 import { Button } from "./Button";
@@ -112,6 +113,7 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
   const location = useLocation();
   const matches = useMatches() as MatchWithHandle[];
   const [isOpen, setIsOpen] = useState(false);
+  const bookmarks = useBookmarks();
 
   const upLinks = matches
     .map((match) => {
@@ -214,6 +216,25 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
                   <MenuLink link={checklistsLink} to={localePath("/checklists", locale)}>
                     {t("nav.checklists")}
                   </MenuLink>
+                  {bookmarks.length > 0 && (
+                    <section aria-label={t("nav.bookmarkedRuns")}>
+                      <h2 className="px-4 pt-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                        {t("nav.bookmarkedRuns")}
+                      </h2>
+                      {bookmarks.map((bookmark) => (
+                        <MenuLink
+                          key={bookmark.href}
+                          link={bookmark}
+                          to={localePath(
+                            `/runs/show/${bookmark.encodedHref}`,
+                            locale,
+                          )}
+                        >
+                          {bookmark.title}
+                        </MenuLink>
+                      ))}
+                    </section>
+                  )}
                   <LanguageSwitcher />
                   <Button variant="danger" size="large" action={handleSignOut}>
                     {t("nav.signOut")}

@@ -39,7 +39,8 @@
     "checklists": "Checklists",
     "signOut": "Sign Out",
     "language": "Language",
-    "menu": "Menu"
+    "menu": "Menu",
+    "bookmarkedRuns": "Bookmarked runs"
   },
   "auth": {
     "forgotPassword": "Forgot password?"
@@ -116,7 +117,9 @@
     "deleteConfirm": "This run has incomplete items. Delete anyway?",
     "copyTitle": "Copy of {{title}}",
     "moreActions": "More actions",
-    "clearCompleted": "Clear completed items"
+    "clearCompleted": "Clear completed items",
+    "bookmark": "Bookmark \"{{title}}\"",
+    "removeBookmark": "Remove bookmark for \"{{title}}\""
   },
   "share": {
     "title": "Shares",

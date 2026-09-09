@@ -39,7 +39,8 @@
     "checklists": "Checklists",
     "signOut": "Terminar sessão",
     "language": "Idioma",
-    "menu": "Menu"
+    "menu": "Menu",
+    "bookmarkedRuns": "Execuções marcadas"
   },
   "auth": {
     "forgotPassword": "Esqueceu-se da palavra-passe?"
@@ -116,7 +117,9 @@
     "deleteConfirm": "Esta execução tem itens por concluir. Eliminar mesmo assim?",
     "copyTitle": "Cópia de {{title}}",
     "moreActions": "Mais ações",
-    "clearCompleted": "Limpar itens concluídos"
+    "clearCompleted": "Limpar itens concluídos",
+    "bookmark": "Marcar \"{{title}}\"",
+    "removeBookmark": "Remover \"{{title}}\" dos marcados"
   },
   "share": {
     "title": "Partilhas",
