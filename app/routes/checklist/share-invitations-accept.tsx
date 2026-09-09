@@ -1,7 +1,6 @@
 import { Form, redirect } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "~/components/Button";
-import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { apiResourceActions } from "~/lib/api";
@@ -9,7 +8,10 @@ import { getUser } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
 import i18n from "~/lib/i18n";
 import { showErrorToast, showSuccessToast } from "../../lib/toastHelpers";
+import { resourceHeading, type RouteHandle } from "../../lib/routeHandle";
 import type { Route } from "./+types/share-invitations-accept";
+
+import type { Resource } from "../../lib/hal";
 
 type ShareInvitation = {
   checklistTitle: string;
@@ -88,6 +90,15 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   return { invitationResource, invitationUrl: decodedUrl };
 }
 
+export const handle: RouteHandle<{
+  invitationResource: Resource<{ checklistTitle: string }>;
+}> = {
+  heading: ({ invitationResource }) =>
+    resourceHeading(invitationResource, "checklistTitle") ?? {
+      labelKey: "common.untitled",
+    },
+};
+
 export default function ShareInvitationAccept({ loaderData }: Route.ComponentProps) {
   const { invitationResource, invitationUrl } = loaderData;
   const { t } = useTranslation();
@@ -105,7 +116,6 @@ export default function ShareInvitationAccept({ loaderData }: Route.ComponentPro
   return (
     <>
       <p className="text-gray-600 mb-4">{t("share.sharedWithYou")}</p>
-      <Heading level="1">{title}</Heading>
       {explanation && <p className="text-gray-600 mb-4">{explanation}</p>}
       {acceptLink ? (
         <Form method="POST">

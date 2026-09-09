@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { apiResourceActions } from "~/lib/api";
@@ -9,7 +8,12 @@ import { showErrorToast, showSuccessToast } from "~/lib/toastHelpers";
 import { ChecklistForm } from "../../components/ChecklistForm";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
+import { type RouteHandle } from "../../lib/routeHandle";
 import type { Route } from "./+types/create";
+
+export const handle: RouteHandle = {
+  heading: { labelKey: "checklist.createTitle" },
+};
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -64,9 +68,6 @@ export default function CreateChecklist({ params }: Route.ComponentProps) {
 
   return (
     <>
-      <Heading level="1">
-        {t("checklist.createTitle")}
-      </Heading>
       <ChecklistForm
         submitLabel={t("common.create")}
         onSubmit={handleSubmit}

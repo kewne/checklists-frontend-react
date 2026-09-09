@@ -1,6 +1,5 @@
 import { Form, redirect } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { TextInput } from "~/components/TextInput";
@@ -10,7 +9,12 @@ import { apiResourceActions } from "~/lib/api";
 import i18n from "~/lib/i18n";
 import { showErrorToast } from "../../lib/toastHelpers";
 import type { Route } from "./+types/share-invitations-create";
+import { type RouteHandle } from "../../lib/routeHandle";
 import { Button } from "~/components/Button";
+
+export const handle: RouteHandle = {
+  heading: { labelKey: "share.createTitle" },
+};
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -70,9 +74,6 @@ export default function CreateShareInvitation(): React.JSX.Element {
   const { t } = useTranslation();
   return (
     <>
-      <Heading level="1">
-        {t("share.createTitle")}
-      </Heading>
       <Form method="POST" className="space-y-4">
         <Panel>
           <label

@@ -7,13 +7,25 @@ import { getUser } from "~/lib/auth";
 import i18n from "~/lib/i18n";
 import { localePath, useLocale, useLocaleNavigate } from "~/lib/locale";
 import { Button } from "../../components/Button";
-import { Heading } from "../../components/Heading";
 import { HexCheckbox } from "../../components/HexCheckbox";
 import { List } from "../../components/List";
 import { QrCode } from "../../components/QrCode";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
+import type { Resource } from "../../lib/hal";
 import { renderWithLinks } from "../../lib/renderWithLinks";
+import { resourceHeading, type RouteHandle } from "../../lib/routeHandle";
 import type { Route } from "./+types/show";
+
+export const handle: RouteHandle<{
+  checklistResource: Resource<{ title: string }>;
+}> = {
+  heading: ({ checklistResource }) => ({
+    labelKey: "checklist.showTitle",
+    values: {
+      title: resourceHeading(checklistResource, "title") ?? "",
+    },
+  }),
+};
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -91,7 +103,7 @@ export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
   );
 
   return (
-    <div>
+    <div className="-mt-4">
       <div className="flex items-start justify-between gap-x-2 mb-4 print:hidden">
         <div>
           {createInstanceLink ? (
@@ -131,7 +143,6 @@ export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
           )}
         </div>
       </div>
-      <Heading level={1}>{title}</Heading>
       <List
         ariaLabel="checklist items"
         items={items.map((item) => {

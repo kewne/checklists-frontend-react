@@ -82,6 +82,8 @@
   },
   "checklist": {
     "createTitle": "Create New Checklist",
+    "listTitle": "Checklists",
+    "showTitle": "Checklist: {{title}}",
     "run": "Run",
     "shares": "Shares",
     "create": "Create Checklist",
@@ -113,6 +115,7 @@
     "congratulations": "🎉 Congratulations!",
     "allCompleted": "You've completed all items in this checklist.",
     "noItems": "No items in this run.",
+    "showTitle": "Run: {{title}}",
     "deleteTitle": "Delete run?",
     "deleteConfirm": "This run has incomplete items. Delete anyway?",
     "copyTitle": "Copy of {{title}}",

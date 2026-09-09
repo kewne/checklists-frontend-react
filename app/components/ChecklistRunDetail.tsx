@@ -118,16 +118,14 @@ export function ChecklistRunDetail({
     <div>
       <div className="flex justify-between items-start mb-6">
         <div>
-          <Heading level="1">
-            {resource.properties.title}
+          <div className="flex items-center gap-3 mb-2">
             <Link
               variant="inline-block"
-              className="ml-3"
               to={`/runs/edit/${encodeApiUrl(resource.getFirstLinkMatching("self")!.href)}`}
             >
               {t("common.editEllipsis")}
             </Link>
-          </Heading>
+          </div>
           {checklistLink && (
             <CreatedFromChecklist checklistLink={checklistLink} />
           )}

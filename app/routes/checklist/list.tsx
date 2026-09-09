@@ -12,7 +12,12 @@ import { getUser } from "~/lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "~/lib/encoding";
 import i18n from "~/lib/i18n";
 import { showErrorToast, showSuccessToast } from "../../lib/toastHelpers";
+import { type RouteHandle } from "../../lib/routeHandle";
 import type { Route } from "./+types/list";
+
+export const handle: RouteHandle = {
+  heading: { labelKey: "checklist.listTitle" },
+};
 
 export function meta({ }: Route.MetaArgs) {
   return [

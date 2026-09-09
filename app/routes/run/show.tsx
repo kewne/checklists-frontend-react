@@ -8,8 +8,19 @@ import { getUser } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
 import i18n from "~/lib/i18n";
 import { useLocaleNavigate } from "~/lib/locale";
+import { resourceHeading, type RouteHandle } from "../../lib/routeHandle";
+import type { Resource } from "../../lib/hal";
 import type { Route } from "./+types/show";
 import type { ChecklistRun } from "~/lib/api";
+
+export const handle: RouteHandle<{
+  runResource: Resource<{ title: string }>;
+}> = {
+  heading: ({ runResource }) => ({
+    labelKey: "run.showTitle",
+    values: { title: resourceHeading(runResource, "title") ?? "" },
+  }),
+};
 
 export function meta({}: Route.MetaArgs) {
   return [

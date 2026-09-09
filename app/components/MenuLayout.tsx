@@ -22,7 +22,8 @@ import { ChevronDown } from "../icons/ChevronDown";
 import { ChevronUp } from "../icons/ChevronUp";
 import { Panel } from "./Panel";
 import { UpLinks } from "./UpLinks";
-import type { RouteHandle } from "../lib/upLink";
+import type { RouteHandle } from "../lib/routeHandle";
+import { useRouteHeading } from "../lib/useRouteHeading";
 
 interface MenuLinkProps {
   link: unknown | null;
@@ -115,6 +116,8 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
   const [isOpen, setIsOpen] = useState(false);
   const bookmarks = useBookmarks();
 
+  const routeHeading = useRouteHeading();
+
   const upLinks = matches
     .map((match) => {
       const up = match.handle?.up;
@@ -183,10 +186,18 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
               aria-label={t("nav.menu")}
             >
               <span className="flex items-center justify-between gap-2">
-                <span className="flex items-center gap-2">
+                <span className="flex items-center gap-2 min-w-0">
                   <Logo size="md" />
-                  <span className="font-sans font-thin text-xl text-gray-900 dark:text-white">
+                  <span className="hidden sm:inline font-sans font-thin text-xl text-gray-900 dark:text-white">
                     CheckOff
+                  </span>
+                  {routeHeading && (
+                    <span className="hidden sm:inline text-gray-400 dark:text-gray-500 mx-1">
+                      ·
+                    </span>
+                  )}
+                  <span className="font-sans font-thin text-xl text-gray-900 dark:text-white truncate">
+                    {routeHeading ?? ""}
                   </span>
                 </span>
                 {isOpen ? <ChevronUp /> : <ChevronDown />}

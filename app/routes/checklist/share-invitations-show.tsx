@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "~/components/Button";
-import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { apiResourceActions } from "../../lib/api";
@@ -9,7 +8,10 @@ import { getUser } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import i18n from "~/lib/i18n";
 import { useLocale } from "~/lib/locale";
+import { resourceHeading, type RouteHandle } from "../../lib/routeHandle";
 import type { Route } from "./+types/share-invitations-show";
+
+import type { Resource } from "../../lib/hal";
 
 type ShareInvitation = {
   title: string;
@@ -75,6 +77,15 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   return { invitationResource };
 }
 
+export const handle: RouteHandle<{
+  invitationResource: Resource<{ title: string }>;
+}> = {
+  heading: ({ invitationResource }) =>
+    resourceHeading(invitationResource, "title") ?? {
+      labelKey: "common.untitled",
+    },
+};
+
 export default function ShareInvitationShow({
   loaderData,
 }: Route.ComponentProps) {
@@ -90,7 +101,6 @@ export default function ShareInvitationShow({
 
   return (
     <>
-      <Heading level="1">{title}</Heading>
       <Panel>
         <p className="text-sm text-gray-600">{t("share.checklistLabel", { title: checklistTitle })}</p>
         <p className="text-sm text-gray-600">

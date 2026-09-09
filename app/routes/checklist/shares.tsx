@@ -13,7 +13,7 @@ import { apiResourceActions } from "../../lib/api";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import type { Resource } from "../../lib/hal";
 import { showErrorToast, showSuccessToast } from "../../lib/toastHelpers";
-import { resourceUpLink, type RouteHandle } from "../../lib/upLink";
+import { resourceUpLink, type RouteHandle } from "../../lib/routeHandle";
 import type { Route } from "./+types/shares";
 
 export function meta({ }: Route.MetaArgs) {
@@ -84,6 +84,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 export const handle: RouteHandle<{ sharesResource: Resource }> = {
   up: ({ sharesResource }) =>
     resourceUpLink(sharesResource, "/checklists/show", "up.checklist"),
+  heading: { labelKey: "share.title" },
 };
 
 function InvitationsList({ resource }: { resource: Resource }) {
@@ -152,7 +153,6 @@ export default function Shares({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-      <Heading level="1">{t("share.title")}</Heading>
       {items.length === 0 ? (
         <p className="text-gray-500 text-sm">{t("share.empty")}</p>
       ) : (

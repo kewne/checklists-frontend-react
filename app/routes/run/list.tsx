@@ -2,7 +2,6 @@ import { useTranslation } from "react-i18next";
 import { useFetcher } from "react-router";
 import { BookmarkToggle } from "~/components/BookmarkToggle";
 import { Button } from "~/components/Button";
-import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { List } from "~/components/List";
 import { Panel } from "~/components/Panel";
@@ -12,6 +11,11 @@ import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import i18n from "~/lib/i18n";
 import { showErrorToast, showSuccessToast } from "../../lib/toastHelpers";
 import type { Route } from "./+types/list";
+import { type RouteHandle } from "../../lib/routeHandle";
+
+export const handle: RouteHandle = {
+  heading: { labelKey: "run.title" },
+};
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -90,7 +94,6 @@ export default function ChecklistInstances({
 
   return (
     <>
-      <Heading level="1">{t("run.title")}</Heading>
       {createLink && (
         <Link
           variant="inline-block"

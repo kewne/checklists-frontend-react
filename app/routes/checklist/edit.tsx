@@ -10,7 +10,7 @@ import { showErrorToast, showSuccessToast } from "~/lib/toastHelpers";
 import { Button } from "../../components/Button";
 import { ChecklistForm } from "../../components/ChecklistForm";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
-import { type RouteHandle } from "../../lib/upLink";
+import { type RouteHandle } from "../../lib/routeHandle";
 import type { Route } from "./+types/edit";
 
 export function meta({}: Route.MetaArgs) {

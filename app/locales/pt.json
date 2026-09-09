@@ -82,6 +82,8 @@
   },
   "checklist": {
     "createTitle": "Criar nova checklist",
+    "listTitle": "Checklists",
+    "showTitle": "Checklist: {{title}}",
     "run": "Executar",
     "shares": "Partilhas",
     "create": "Criar checklist",
@@ -113,6 +115,7 @@
     "congratulations": "🎉 Parabéns!",
     "allCompleted": "Concluiu todos os itens desta checklist.",
     "noItems": "Sem itens nesta execução.",
+    "showTitle": "Execução: {{title}}",
     "deleteTitle": "Eliminar execução?",
     "deleteConfirm": "Esta execução tem itens por concluir. Eliminar mesmo assim?",
     "copyTitle": "Cópia de {{title}}",

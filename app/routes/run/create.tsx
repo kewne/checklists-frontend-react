@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { RunEditForm } from "../../components/RunEditForm";
@@ -10,6 +9,11 @@ import { useLocaleNavigate } from "~/lib/locale";
 import type { Route } from "./+types/create";
 import { apiResourceActions, type ChecklistRun, type WriteableChecklistRun } from "~/lib/api";
 import { showErrorToast, showSuccessToast } from "~/lib/toastHelpers";
+import { type RouteHandle } from "../../lib/routeHandle";
+
+export const handle: RouteHandle = {
+  heading: { labelKey: "run.createTitle" },
+};
 
 export function meta({ }: Route.MetaArgs) {
     return [
@@ -71,9 +75,6 @@ export default function CreateRun({ params }: Route.ComponentProps) {
 
     return (
         <>
-            <Heading level="1">
-                {t("run.createTitle")}
-            </Heading>
             <RunEditForm
                 initialValues={initialValues}
                 submitLabel={t("common.create")}

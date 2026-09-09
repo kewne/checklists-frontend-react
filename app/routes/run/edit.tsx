@@ -6,7 +6,7 @@ import { RunEditForm } from "../../components/RunEditForm";
 import { apiResourceActions } from "../../lib/api";
 import { getUser } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
-import { type RouteHandle } from "../../lib/upLink";
+import { type RouteHandle } from "../../lib/routeHandle";
 import i18n from "~/lib/i18n";
 import { useLocaleNavigate } from "~/lib/locale";
 import { showErrorToast } from "../../lib/toastHelpers";

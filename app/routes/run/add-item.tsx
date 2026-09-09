@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Heading } from "~/components/Heading";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { TextArea } from "~/components/TextArea";
@@ -11,7 +10,12 @@ import { useLocaleNavigate } from "~/lib/locale";
 import { Button } from "../../components/Button";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
+import { type RouteHandle } from "../../lib/routeHandle";
 import type { Route } from "./+types/add-item";
+
+export const handle: RouteHandle = {
+  heading: { labelKey: "run.addItemTitle" },
+};
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -67,7 +71,6 @@ export default function AddItem({ params }: Route.ComponentProps) {
 
   return (
     <>
-      <Heading level="1">{t("run.addItemTitle")}</Heading>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label
