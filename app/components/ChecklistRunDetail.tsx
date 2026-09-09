@@ -202,76 +202,73 @@ export function ChecklistRunDetail({
           </p>
         </div>
       )}
-      {completedItems.length === 0 && todoItems.length === 0 ? (
+      {completedItems.length === 0 && todoItems.length === 0 && (
         <p className="text-gray-500 text-sm dark:text-gray-400">{t("run.noItems")}</p>
-      ) : (
-        <>
-          {completedItems.length > 0 && (
-            <ul className="space-y-3">
-              {completedItems.map((item) => {
-                const completeLink = resource
-                  .getLinkArray("complete-item")
-                  .find((l) => l.name === item.name);
-                const markIncompleteLink = resource
-                  .getLinkArray("mark-incomplete-item")
-                  .find((l) => l.name === item.name);
-                return (
-                  <li key={item.name}>
-                    <RunItem
-                      title={item.title ?? item.name}
-                      description={item.description}
-                      completed={item.completed}
-                      completeHref={completeLink}
-                      markIncompleteHref={markIncompleteLink}
-                      onItemUpdated={onItemUpdated}
-                    />
-                  </li>
-                );
-              })}
-            </ul>
-          )}
+      )}
+      {completedItems.length > 0 && (
+        <ul className="space-y-3">
+          {completedItems.map((item) => {
+            const completeLink = resource
+              .getLinkArray("complete-item")
+              .find((l) => l.name === item.name);
+            const markIncompleteLink = resource
+              .getLinkArray("mark-incomplete-item")
+              .find((l) => l.name === item.name);
+            return (
+              <li key={item.name}>
+                <RunItem
+                  title={item.title ?? item.name}
+                  description={item.description}
+                  completed={item.completed}
+                  completeHref={completeLink}
+                  markIncompleteHref={markIncompleteLink}
+                  onItemUpdated={onItemUpdated}
+                />
+              </li>
+            );
+          })}
+        </ul>
+      )}
 
-          {addItemLink && (
-            <div className="flex items-center gap-3 my-3">
-              <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
-              <Link
-                to={`/runs/add-item/${encodeApiUrl(addItemLink.href)}`}
-                className="text-sm whitespace-nowrap"
-              >
-                {t("run.addItem")}
-              </Link>
-              <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
-            </div>
-          )}
+      {addItemLink && (
+        <div className="flex items-center gap-3 my-3">
+          <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
+          <Link
+            to={`/runs/add-item/${encodeApiUrl(addItemLink.href)}`}
+            className="text-sm whitespace-nowrap"
+          >
+            {t("run.addItem")}
+          </Link>
+          <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
+        </div>
+      )}
 
-          {todoItems.length > 0 && (
-            <ul
-              className="space-y-3 overflow-y-auto overscroll-y-contain max-h-100 snap-y snap-mandatory"
-              ref={listRef}
-            >
-              {todoItems.map((item) => {
-                const completeLink = resource
-                  .getLinkArray("complete-item")
-                  .find((l) => l.name === item.name);
-                const markIncompleteLink = resource
-                  .getLinkArray("mark-incomplete-item")
-                  .find((l) => l.name === item.name);
-                return (
-                  <li key={item.name}>
-                    <RunItem
-                      title={item.title ?? item.name}
-                      description={item.description}
-                      completed={item.completed}
-                      completeHref={completeLink}
-                      markIncompleteHref={markIncompleteLink}
-                      onItemUpdated={onItemUpdated}
-                    />
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </>
+      {todoItems.length > 0 && (
+        <ul
+          className="space-y-3 overflow-y-auto overscroll-y-contain max-h-100 snap-y snap-mandatory"
+          ref={listRef}
+        >
+          {todoItems.map((item) => {
+            const completeLink = resource
+              .getLinkArray("complete-item")
+              .find((l) => l.name === item.name);
+            const markIncompleteLink = resource
+              .getLinkArray("mark-incomplete-item")
+              .find((l) => l.name === item.name);
+            return (
+              <li key={item.name}>
+                <RunItem
+                  title={item.title ?? item.name}
+                  description={item.description}
+                  completed={item.completed}
+                  completeHref={completeLink}
+                  markIncompleteHref={markIncompleteLink}
+                  onItemUpdated={onItemUpdated}
+                />
+              </li>
+            );
+          })}
+        </ul>
       )}
       <deleteModal.Modal>
         <Heading level="2">{t("run.deleteTitle")}</Heading>
