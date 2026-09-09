@@ -185,18 +185,18 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
               action={() => (isOpen ? close() : setIsOpen(true))}
               aria-label={t("nav.menu")}
             >
-              <span className="flex items-center justify-between gap-2">
-                <span className="flex items-center gap-2 min-w-0">
+              <span className="flex items-center justify-between gap-2 min-w-0">
+                <span className="flex items-center gap-2 min-w-0 overflow-hidden">
                   <Logo size="md" />
-                  <span className="hidden sm:inline font-sans font-thin text-xl text-gray-900 dark:text-white">
+                  <span className="hidden sm:inline shrink-0 font-sans font-thin text-xl text-gray-900 dark:text-white">
                     CheckOff
                   </span>
                   {routeHeading && (
-                    <span className="hidden sm:inline text-gray-400 dark:text-gray-500 mx-1">
+                    <span className="hidden sm:inline shrink-0 text-gray-400 dark:text-gray-500 mx-1">
                       ·
                     </span>
                   )}
-                  <span className="font-sans font-thin text-xl text-gray-900 dark:text-white truncate">
+                  <span className="font-sans font-thin text-xl text-gray-900 dark:text-white truncate shrink min-w-0">
                     {routeHeading ?? ""}
                   </span>
                 </span>
