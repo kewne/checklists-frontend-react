@@ -78,7 +78,8 @@
     "dismissInvitationFailed": "Falha ao dispensar o convite",
     "acceptInvitationFailed": "Falha ao aceitar o convite",
     "createInvitationFailed": "Falha ao criar o convite",
-    "completedItemsCleared": "Itens concluídos eliminados"
+    "completedItemsCleared": "Itens concluídos eliminados",
+    "itemAdded": "Item adicionado com sucesso"
   },
   "checklist": {
     "createTitle": "Criar nova checklist",
@@ -122,7 +123,8 @@
     "moreActions": "Mais ações",
     "clearCompleted": "Limpar itens concluídos",
     "bookmark": "Marcar \"{{title}}\"",
-    "removeBookmark": "Remover \"{{title}}\" dos marcados"
+    "removeBookmark": "Remover \"{{title}}\" dos marcados",
+    "addMore": "Adicionar mais"
   },
   "share": {
     "title": "Partilhas",

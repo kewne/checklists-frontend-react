@@ -78,7 +78,8 @@
     "dismissInvitationFailed": "Error al descartar la invitación",
     "acceptInvitationFailed": "Error al aceptar la invitación",
     "createInvitationFailed": "Error al crear la invitación",
-    "completedItemsCleared": "Elementos completados eliminados"
+    "completedItemsCleared": "Elementos completados eliminados",
+    "itemAdded": "Elemento añadido correctamente"
   },
   "checklist": {
     "createTitle": "Crear nueva lista",
@@ -122,7 +123,8 @@
     "moreActions": "Más acciones",
     "clearCompleted": "Eliminar elementos completados",
     "bookmark": "Guardar \"{{title}}\"",
-    "removeBookmark": "Quitar \"{{title}}\" de guardadas"
+    "removeBookmark": "Quitar \"{{title}}\" de guardadas",
+    "addMore": "Añadir más"
   },
   "share": {
     "title": "Compartidos",

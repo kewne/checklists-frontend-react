@@ -7,6 +7,7 @@ import { TextInput } from "~/components/TextInput";
 import { apiResourceActions } from "~/lib/api";
 import i18n from "~/lib/i18n";
 import { useLocaleNavigate } from "~/lib/locale";
+import { showSuccessToast } from "~/lib/toastHelpers";
 import { Button } from "../../components/Button";
 import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
@@ -58,10 +59,19 @@ export default function AddItem({ params }: Route.ComponentProps) {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [addMore, setAddMore] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await post({ title, description: description || undefined });
+
+    if (addMore) {
+      showSuccessToast(t("toast.itemAdded"));
+      setTitle("");
+      setDescription("");
+      return;
+    }
+
     navigate(-1);
   };
 
@@ -102,6 +112,17 @@ export default function AddItem({ params }: Route.ComponentProps) {
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
           />
+        </div>
+        <div>
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+            <input
+              type="checkbox"
+              checked={addMore}
+              onChange={(e) => setAddMore(e.target.checked)}
+              className="h-4 w-4"
+            />
+            <span>{t("run.addMore")}</span>
+          </label>
         </div>
         <div className="flex justify-end gap-2 pt-2">
           <Button action={handleCancel}>

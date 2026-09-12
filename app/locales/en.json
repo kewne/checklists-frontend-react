@@ -78,7 +78,8 @@
     "dismissInvitationFailed": "Failed to dismiss invitation",
     "acceptInvitationFailed": "Failed to accept invitation",
     "createInvitationFailed": "Failed to create invitation",
-    "completedItemsCleared": "Completed items cleared"
+    "completedItemsCleared": "Completed items cleared",
+    "itemAdded": "Item added successfully"
   },
   "checklist": {
     "createTitle": "Create New Checklist",
@@ -122,7 +123,8 @@
     "moreActions": "More actions",
     "clearCompleted": "Clear completed items",
     "bookmark": "Bookmark \"{{title}}\"",
-    "removeBookmark": "Remove bookmark for \"{{title}}\""
+    "removeBookmark": "Remove bookmark for \"{{title}}\"",
+    "addMore": "Add more"
   },
   "share": {
     "title": "Shares",
