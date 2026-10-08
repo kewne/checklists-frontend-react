@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 import type { Route } from "./+types/root";
 import { AuthProvider } from "./lib/auth";
 import { Link } from "./components/Link";
-import { Loading } from "./components/Loading";
+import { LoadingScreen } from "./components/Loading";
 import "./lib/i18n";
 
 const siteUrl = "https://checklists.keeoon.dev";
@@ -132,11 +132,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export function HydrateFallback() {
-  return (
-    <div className="max-w-4xl mx-auto py-8 px-4 flex flex-col items-center justify-center min-h-[50vh] gap-6">
-      <Loading />
-    </div>
-  );
+  return <LoadingScreen animation="ping" />;
 }
 
 export default function App() {

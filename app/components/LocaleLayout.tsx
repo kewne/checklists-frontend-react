@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Navigate, Outlet, useLocation, useParams } from "react-router";
 import { getDetectedLocale, isLocale } from "~/lib/i18n";
+import { LoadingScreen } from "./Loading";
 
 /**
  * Layout for the `/:locale` route segment. Validates the locale param,
@@ -29,10 +30,13 @@ export default function LocaleLayout() {
     const detected = getDetectedLocale();
     const rest = location.pathname.replace(/^\/[^/]+/, "") || "/";
     return (
-      <Navigate
-        to={`/${detected}${rest}${location.search}${location.hash}`}
-        replace
-      />
+      <>
+        <LoadingScreen />
+        <Navigate
+          to={`/${detected}${rest}${location.search}${location.hash}`}
+          replace
+        />
+      </>
     );
   }
 

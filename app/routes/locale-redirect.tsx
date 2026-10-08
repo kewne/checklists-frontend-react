@@ -1,4 +1,5 @@
 import { Navigate, useLocation } from "react-router";
+import { LoadingScreen } from "~/components/Loading";
 import { getDetectedLocale } from "~/lib/i18n";
 
 /**
@@ -10,9 +11,12 @@ export default function LocaleRedirect() {
   const locale = getDetectedLocale();
   const path = location.pathname === "/" ? "" : location.pathname;
   return (
-    <Navigate
-      to={`/${locale}${path}${location.search}${location.hash}`}
-      replace
-    />
+    <>
+      <LoadingScreen />
+      <Navigate
+        to={`/${locale}${path}${location.search}${location.hash}`}
+        replace
+      />
+    </>
   );
 }
