@@ -12,13 +12,13 @@ body {
 
 @keyframes spin-logo {
   from {
-    transform: rotate(0deg);
+    transform: perspective(240px) rotateY(0deg);
   }
   to {
-    transform: rotate(360deg);
+    transform: perspective(240px) rotateY(360deg);
   }
 }
 
 .animate-spin-logo {
-  animation: spin-logo 2s linear infinite;
+  animation: spin-logo 1s linear infinite;
 }

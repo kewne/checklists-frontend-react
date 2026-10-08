@@ -258,7 +258,7 @@ export default function MenuLayout({ loaderData }: Route.ComponentProps) {
       </nav>
       <div className="max-w-4xl mx-auto py-8 px-4">
         <UpLinks links={upLinks} />
-        {navigation.state === "loading" ? (
+        {Boolean(navigation.location) ? (
           <div
             role="status"
             aria-live="polite"
