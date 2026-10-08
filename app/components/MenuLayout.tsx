@@ -10,6 +10,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
 import { apiResourceActions } from "../lib/api";
+import { apiBaseUrl } from "../lib/config";
 import { getUser, useAuth } from "../lib/auth";
 import { useBookmarks } from "../lib/useBookmarks";
 import { localePath, useLocale } from "~/lib/locale";
@@ -90,7 +91,7 @@ function MenuLink({ link, to, children }: MenuLinkProps) {
 export async function clientLoader() {
   const user = await getUser();
   const rootResource = await apiResourceActions(
-    "https://api.checklists.keeoon.dev/",
+    apiBaseUrl,
     user,
   ).get();
   const checklistsLink = rootResource.getFirstLinkMatching(

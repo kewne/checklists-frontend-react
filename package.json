@@ -4,7 +4,11 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
+    "build:staging": "react-router build --mode staging",
     "dev": "react-router dev",
+    "dev:staging": "react-router dev --mode staging",
+    "deploy:staging": "pnpm build:staging && firebase deploy --only hosting --project checklists-staging-486418",
+    "deploy:production": "react-router build --mode production && firebase deploy --only hosting --project checklists-486418",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "test": "playwright test",

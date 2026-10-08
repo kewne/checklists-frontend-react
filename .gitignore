@@ -3,6 +3,8 @@
 # Authentication state - contains sensitive cookies/tokens
 playwright/.auth
 .env
+.env.local
+.env.*.local
 /node_modules/
 
 # React Router

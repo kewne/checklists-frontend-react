@@ -3,16 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import i18n from "~/lib/i18n";
 import { firebaseUiLocales } from "~/lib/firebaseLocales";
-
-// TODO: Replace with your Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyDNgo8t6wJLKfpiGqOSt493dsLoMR9ENB0",
-  authDomain: "checklists-486418.firebaseapp.com",
-  projectId: "checklists-486418",
-  storageBucket: "checklists-486418.firebasestorage.app",
-  messagingSenderId: "240319760723",
-  appId: "1:240319760723:web:e5a55dd4d542a2e4bef9a6",
-};
+import { firebaseConfig } from "~/lib/config";
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

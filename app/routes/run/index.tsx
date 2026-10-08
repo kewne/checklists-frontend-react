@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { apiResourceActions } from "~/lib/api";
+import { apiBaseUrl } from "~/lib/config";
 import { getUser } from "~/lib/auth";
 import { encodeApiUrl } from "~/lib/encoding";
 import i18n from "~/lib/i18n";
@@ -34,7 +35,7 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
-  const rootResource = await apiResourceActions("https://api.checklists.keeoon.dev/", user).get();
+  const rootResource = await apiResourceActions(apiBaseUrl, user).get();
   const instancesLink = rootResource.getFirstLinkMatching("related", (link) => link.name === "checklist-instances");
   if (instancesLink) {
     return redirect(`/${params.locale}/runs/list/${encodeApiUrl(instancesLink.href)}`);

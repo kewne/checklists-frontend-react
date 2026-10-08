@@ -1,4 +1,5 @@
 import type { User } from "firebase/auth";
+import { apiBaseUrl } from "./config";
 import {
   Resource,
   type HalDocument,
@@ -6,16 +7,16 @@ import {
   type JsonProperties,
 } from "./hal";
 
-const ALLOWED_DOMAIN = "api.checklists.keeoon.dev";
+const allowedOrigin = new URL(apiBaseUrl).origin;
 
 function validateHref(href: string): URL {
-  const url = URL.parse(href, "https://api.checklists.keeoon.dev/");
+  const url = URL.parse(href, apiBaseUrl);
   if (url === null) {
     throw new Error(`Invalid href: ${href}`);
   }
-  if (url.hostname !== ALLOWED_DOMAIN) {
+  if (url.protocol !== "https:" || url.origin !== allowedOrigin) {
     throw new Error(
-      `Invalid domain: ${url.hostname}. Only ${ALLOWED_DOMAIN} is allowed.`,
+      `Invalid origin: ${url.origin}. Only ${allowedOrigin} is allowed.`,
     );
   }
   return url;
