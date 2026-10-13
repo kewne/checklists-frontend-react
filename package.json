@@ -10,6 +10,7 @@
     "deploy:staging": "pnpm build:staging && firebase deploy --only hosting --project checklists-staging-486418",
     "deploy:production": "react-router build --mode production && firebase deploy --only hosting --project checklists-486418",
     "start": "react-router-serve ./build/server/index.js",
+    "test:e2e": "playwright test",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
@@ -32,6 +33,7 @@
     "uuid": "^14.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.0",
     "@react-router/dev": "7.12.0",
     "@tailwindcss/vite": "^4.1.13",
     "@types/node": "^22",
@@ -39,6 +41,7 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-basic-ssl": "^2.1.4",
+    "firebase-admin": "^14.5.0",
     "prettier": "^3.8.3",
     "sharp": "^0.35.4",
     "tailwindcss": "^4.1.13",

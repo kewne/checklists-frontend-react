@@ -11,3 +11,7 @@
 
 firebase-debug.log
 .firebase/
+
+/test-results/
+/playwright-report/
+/playwright/.auth/
