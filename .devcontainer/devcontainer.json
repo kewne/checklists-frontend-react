@@ -14,16 +14,6 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
-	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "pnpm exec playwright install chromium --with-deps",
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"ms-playwright.playwright"
-			]
-		}
-	},
-
 	// Configure tool-specific properties.
 	// "customizations": {},
 
