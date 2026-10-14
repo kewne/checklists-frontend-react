@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ApiResource,
@@ -69,24 +69,10 @@ export function ChecklistRunDetail({
     (link) => link.name === "clear-completed-items",
   );
 
-  const listRef = useRef<HTMLUListElement>(null);
   const navigate = useLocaleNavigate();
   const { t } = useTranslation();
 
   const deleteModal = useModal();
-
-  useEffect(() => {
-    const listNode = listRef.current;
-    if (listNode) {
-      const itemNodes = listNode?.querySelectorAll("li");
-      if (itemNodes.length > 0) {
-        itemNodes[0].scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-    }
-  }, [resource]);
 
   const handleDeleteClick = async () => {
     if (!allItemsCompleted) {
@@ -244,7 +230,6 @@ export function ChecklistRunDetail({
       {todoItems.length > 0 && (
         <ul
           className="space-y-3 overflow-y-auto overscroll-y-contain max-h-100 snap-y snap-mandatory"
-          ref={listRef}
         >
           {todoItems.map((item) => {
             const completeLink = resource
