@@ -3,11 +3,12 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, loadEnv } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import basicSsl from "@vitejs/plugin-basic-ssl";
+import { root } from "./app/lib/restspec-api";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "VITE_");
   const requiredVariables = [
-    "VITE_API_BASE_URL",
+    "VITE_API_ENV",
     "VITE_FIREBASE_API_KEY",
     "VITE_FIREBASE_AUTH_DOMAIN",
     "VITE_FIREBASE_PROJECT_ID",
@@ -21,18 +22,20 @@ export default defineConfig(({ mode }) => {
     }
   }
 
-  const staging = mode === "staging";
+  if (!Object.hasOwn(root.env, env.VITE_API_ENV)) {
+    throw new Error(
+      `Invalid ${mode} configuration: VITE_API_ENV must be one of ${Object.keys(root.env).join(", ")}`,
+    );
+  }
+
+  const staging = env.VITE_API_ENV === "staging";
   const projectId = staging ? "checklists-staging-486418" : "checklists-486418";
-  const apiBaseUrl = staging
-    ? "https://checklists-staging-486418.ew.r.appspot.com/"
-    : "https://api.checklists.keeoon.dev/";
   if (
     env.VITE_FIREBASE_PROJECT_ID !== projectId ||
-    env.VITE_FIREBASE_AUTH_DOMAIN !== `${projectId}.firebaseapp.com` ||
-    env.VITE_API_BASE_URL !== apiBaseUrl
+    env.VITE_FIREBASE_AUTH_DOMAIN !== `${projectId}.firebaseapp.com`
   ) {
     throw new Error(
-      `Invalid ${mode} configuration: expected Firebase project ${projectId}, its auth domain, and API ${apiBaseUrl}`,
+      `Invalid ${mode} configuration: expected Firebase project ${projectId} and its auth domain for API environment ${env.VITE_API_ENV}`,
     );
   }
 

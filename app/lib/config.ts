@@ -1,6 +1,8 @@
 import type { FirebaseOptions } from "firebase/app";
+import { root } from "./restspec-api";
 
-export const apiBaseUrl: string = import.meta.env.VITE_API_BASE_URL;
+export const apiEnvironment = import.meta.env.VITE_API_ENV as keyof typeof root.env;
+export const apiBaseUrl = root.env[apiEnvironment];
 
 export const firebaseConfig: FirebaseOptions = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,

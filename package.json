@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "generate:api": "restspec generate-types --config restspec.config.yml --out app/lib/restspec-api.ts",
     "build": "react-router build",
     "build:staging": "react-router build --mode staging",
     "dev": "react-router dev",
@@ -18,6 +19,7 @@
     "@firebase-oss/ui-react": "7.0.2-beta",
     "@firebase-oss/ui-styles": "7.0.2-beta",
     "@firebase-oss/ui-translations": "7.0.2-beta",
+    "@kewne/restspec": "0.3.0-beta.2",
     "@react-router/node": "7.12.0",
     "@react-router/serve": "7.12.0",
     "firebase": "^12.10.0",

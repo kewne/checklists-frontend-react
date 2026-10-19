@@ -1,0 +1,6 @@
+entrypoint: https://api.checklists.keeoon.dev/restspec
+profiles:
+  - https://api.checklists.keeoon.dev/profiles/root
+  - https://api.checklists.keeoon.dev/profiles/checklist
+  - https://api.checklists.keeoon.dev/profiles/checklist-instance
+  - https://api.checklists.keeoon.dev/profiles/subscription

@@ -47,8 +47,7 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
         env.VITE_FIREBASE_PROJECT_ID !== "checklists-staging-486418" ||
         env.VITE_FIREBASE_AUTH_DOMAIN !==
           "checklists-staging-486418.firebaseapp.com" ||
-        env.VITE_API_BASE_URL !==
-          "https://checklists-staging-486418.ew.r.appspot.com/"
+        env.VITE_API_ENV !== "staging"
       ) {
         throw new Error(
           "Playwright requires valid staging Firebase and backend settings.",
