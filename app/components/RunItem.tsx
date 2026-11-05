@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
+import { useSubmit } from "react-router";
 import type { Link as ApiLink } from "@kewne/restspec";
-import { apiResourceActions } from "~/lib/api";
-import { getUser } from "~/lib/auth";
 import type { ChecklistInstance } from "~/lib/restspec-api";
 import { renderWithLinks } from "~/lib/renderWithLinks";
 import { Button } from "./Button";
@@ -12,25 +11,21 @@ interface RunItemProps {
   completed?: ChecklistInstance["properties"]["items"][number]["completed"];
   completeHref?: ApiLink;
   markIncompleteHref?: ApiLink;
-  onItemUpdated: () => Promise<void>;
 }
 
 interface RunItemActionsProps {
   completeHref?: ApiLink;
   markIncompleteHref?: ApiLink;
-  onItemUpdated: () => Promise<void>;
 }
 
-interface CompleteButtonProps {
-  completeLink: ApiLink;
-  onItemUpdated: () => Promise<void>;
-}
-
-function CompleteButton({ completeLink, onItemUpdated }: CompleteButtonProps) {
+function CompleteButton({ completeLink }: { completeLink: ApiLink }) {
   const { t } = useTranslation();
+  const submit = useSubmit();
   const handleCompleted = async () => {
-    await apiResourceActions(completeLink.href, await getUser()).post({});
-    await onItemUpdated();
+    await submit(
+      { intent: "complete-item", href: completeLink.href },
+      { method: "post" },
+    );
   };
 
   return (
@@ -40,19 +35,14 @@ function CompleteButton({ completeLink, onItemUpdated }: CompleteButtonProps) {
   );
 }
 
-interface MarkIncompleteButtonProps {
-  href: ApiLink;
-  onItemUpdated: () => Promise<void>;
-}
-
-function MarkIncompleteButton({
-  href,
-  onItemUpdated,
-}: MarkIncompleteButtonProps) {
+function MarkIncompleteButton({ href }: { href: ApiLink }) {
   const { t } = useTranslation();
+  const submit = useSubmit();
   const handleMarkIncomplete = async () => {
-    await apiResourceActions(href.href, await getUser()).post({});
-    await onItemUpdated();
+    await submit(
+      { intent: "mark-incomplete-item", href: href.href },
+      { method: "post" },
+    );
   };
 
   return (
@@ -65,22 +55,11 @@ function MarkIncompleteButton({
 function RunItemActions({
   completeHref,
   markIncompleteHref,
-  onItemUpdated,
 }: RunItemActionsProps) {
   return (
     <div className="flex flex-row justify-end">
-      {completeHref && (
-        <CompleteButton
-          completeLink={completeHref}
-          onItemUpdated={onItemUpdated}
-        />
-      )}
-      {markIncompleteHref && (
-        <MarkIncompleteButton
-          href={markIncompleteHref}
-          onItemUpdated={onItemUpdated}
-        />
-      )}
+      {completeHref && <CompleteButton completeLink={completeHref} />}
+      {markIncompleteHref && <MarkIncompleteButton href={markIncompleteHref} />}
     </div>
   );
 }
@@ -91,7 +70,6 @@ export function RunItem({
   completed,
   completeHref,
   markIncompleteHref,
-  onItemUpdated,
 }: RunItemProps) {
   const { t } = useTranslation();
   const completedAt = completed
@@ -129,7 +107,6 @@ export function RunItem({
           <RunItemActions
             completeHref={completeHref}
             markIncompleteHref={markIncompleteHref}
-            onItemUpdated={onItemUpdated}
           />
         </div>
       </div>

@@ -18,7 +18,6 @@ import { Panel } from "./Panel";
 
 interface ChecklistRunDetailProps {
   resource: ChecklistInstance;
-  onItemUpdated: () => Promise<void>;
   onDelete?: () => Promise<void>;
 }
 
@@ -50,7 +49,6 @@ function CreatedFromChecklist({ checklistLink }: { checklistLink: ApiLink }) {
 
 export function ChecklistRunDetail({
   resource,
-  onItemUpdated,
   onDelete,
 }: ChecklistRunDetailProps) {
   const items = resource.properties.items;
@@ -208,7 +206,6 @@ export function ChecklistRunDetail({
                   completed={item.completed}
                   completeHref={completeLink}
                   markIncompleteHref={markIncompleteLink}
-                  onItemUpdated={onItemUpdated}
                 />
               </li>
             );
@@ -248,7 +245,6 @@ export function ChecklistRunDetail({
                   completed={item.completed}
                   completeHref={completeLink}
                   markIncompleteHref={markIncompleteLink}
-                  onItemUpdated={onItemUpdated}
                 />
               </li>
             );

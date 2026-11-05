@@ -477,6 +477,51 @@ test.describe("generated-read routes with mocked authentication", () => {
     for (const authorization of authorizations) expect(authorization).toMatch(/^Bearer /);
   });
 
+  test("completes and reopens run items with bearer-authenticated POSTs", async ({ page }) => {
+    const href = new URL("test-runs/eighth", root.env.staging).href;
+    const completeHref = `${href}/complete/todo`;
+    const incompleteHref = `${href}/incomplete/done`;
+    const posts: { url: string; authorization?: string }[] = [];
+    await page.route(href, (route) => route.fulfill({
+      json: {
+        id: "eighth",
+        title: "Toggle run",
+        checklistId: null,
+        createdBy: "test-user",
+        createdAt: "2026-01-01T00:00:00Z",
+        items: [
+          { name: "todo", title: "Pending step", completed: null },
+          {
+            name: "done",
+            title: "Finished step",
+            completed: { completed_at: "2026-01-01T00:00:00Z", note: null },
+          },
+        ],
+        _links: {
+          self: { href },
+          "complete-item": { name: "todo", href: completeHref },
+          "mark-incomplete-item": { name: "done", href: incompleteHref },
+        },
+      },
+    }));
+    for (const target of [completeHref, incompleteHref]) {
+      await page.route(target, (route) => {
+        posts.push({
+          url: route.request().url(),
+          authorization: route.request().headers()["authorization"],
+        });
+        return route.fulfill({ status: 204 });
+      });
+    }
+    await page.goto(`/en/runs/show/${encodeApiUrl(href)}`);
+    await page.getByRole("button", { name: "Mark Complete", exact: true }).click();
+    await expect.poll(() => posts.length).toBe(1);
+    await page.getByRole("button", { name: "Mark Incomplete", exact: true }).click();
+    await expect.poll(() => posts.length).toBe(2);
+    expect(posts.map((post) => post.url)).toEqual([completeHref, incompleteHref]);
+    for (const post of posts) expect(post.authorization).toMatch(/^Bearer /);
+  });
+
   test("renders and edits nullable generated run fields and reads its source checklist", async ({ page }) => {
     const href = new URL("test-runs/first", root.env.staging).href;
     const sourceHref = new URL("test-checklists/source", root.env.staging).href;

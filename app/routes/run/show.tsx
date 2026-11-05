@@ -1,4 +1,4 @@
-import { redirect, useRevalidator } from "react-router";
+import { redirect } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
@@ -14,6 +14,7 @@ import type { Route } from "./+types/show";
 import type { LocationResponse, Response as RestspecResponse } from "@kewne/restspec";
 import type {
   ChecklistInstance,
+  CompleteChecklistInstanceItemRequest,
   CreateChecklistFromInstanceRequest,
 } from "~/lib/restspec-api";
 
@@ -83,6 +84,20 @@ export async function clientAction({ params, request }: Route.ClientActionArgs) 
     return;
   }
 
+  if (intent === "complete-item" || intent === "mark-incomplete-item") {
+    const link = linkFromHref<{
+      post: [CompleteChecklistInstanceItemRequest, unknown];
+    }>(href);
+    try {
+      await client.post(link, {});
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : i18n.t("toast.updateRunFailed");
+      showErrorToast(message);
+    }
+    return;
+  }
+
   const title = formData.get("title");
   if (intent !== "create-checklist" || typeof title !== "string") {
     throw new Response("Invalid request", { status: 400 });
@@ -112,7 +127,6 @@ export async function clientAction({ params, request }: Route.ClientActionArgs) 
 export default function ChecklistRun({ loaderData, params }: Route.ComponentProps) {
   const { runResource, user, decodedUrl } = loaderData;
   const navigate = useLocaleNavigate();
-  const { revalidate } = useRevalidator();
 
   const doDelete = async () => {
     await apiResourceActions(decodedUrl, user).delete();
@@ -122,7 +136,6 @@ export default function ChecklistRun({ loaderData, params }: Route.ComponentProp
   return (
     <ChecklistRunDetail
       resource={runResource}
-      onItemUpdated={revalidate}
       onDelete={doDelete}
     />
   );
