@@ -1,12 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { useFetcher } from "react-router";
-import { fromHref, type Link as RestspecLink } from "@kewne/restspec";
+import type { Link as RestspecLink } from "@kewne/restspec";
 import { BookmarkToggle } from "~/components/BookmarkToggle";
 import { Button } from "~/components/Button";
 import { Link } from "~/components/Link";
 import { List } from "~/components/List";
 import { Panel } from "~/components/Panel";
-import { apiResourceActions, validateHref } from "../../lib/api";
+import { apiResourceActions, getApiResource } from "../../lib/api";
 import { getUser } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import i18n from "~/lib/i18n";
@@ -77,11 +77,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
-  const href = validateHref(decodedUrl).href;
-  const token = await user.getIdToken();
-  const runsResource = await fromHref<RunCollection>(href, {
-    credentials: { type: "bearer", token },
-  }).request.get();
+  const runsResource = await getApiResource<RunCollection>(decodedUrl, user);
   return { runsResource };
 }
 

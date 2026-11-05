@@ -1,5 +1,5 @@
 import type { User } from "firebase/auth";
-import { createHttpClient, fromRoot } from "@kewne/restspec";
+import { createHttpClient, createLink, fromRoot, type Link } from "@kewne/restspec";
 import { apiBaseUrl, apiEnvironment } from "./config";
 import { root } from "./restspec-api";
 import {
@@ -8,6 +8,8 @@ import {
   type HalLink,
   type JsonProperties,
 } from "./hal";
+
+type TokenProvider = Pick<User, "getIdToken">;
 
 const allowedOrigin = new URL(apiBaseUrl).origin;
 
@@ -24,16 +26,31 @@ export function validateHref(href: string): URL {
   return url;
 }
 
-export async function createApiClient(user: User) {
+export async function createApiClient(user: TokenProvider) {
   const token = await user.getIdToken();
   return createHttpClient({
     credentials: { [allowedOrigin]: { type: "bearer", token } },
   });
 }
 
-export async function getApiRoot(user: User) {
+export async function getApiRoot(user: TokenProvider) {
   const client = await createApiClient(user);
   return client.get(fromRoot(root, apiEnvironment));
+}
+
+export function validateApiLink<L extends Link<any>>(link: L): L {
+  validateHref(link.href);
+  return link;
+}
+
+export async function getApiResource<RESOURCE>(href: string, user: TokenProvider) {
+  const link = validateApiLink(createLink<RESOURCE>(validateHref(href).href));
+  const client = await createApiClient(user);
+  const resource = await client.get(link);
+  if (resource === undefined) {
+    throw new Error("Empty API response");
+  }
+  return resource;
 }
 
 export interface ApiLink extends HalLink {
