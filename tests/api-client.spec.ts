@@ -437,6 +437,46 @@ test.describe("generated-read routes with mocked authentication", () => {
     expect(posts[0].body).toEqual({ title: "New item" });
   });
 
+  test("lists shares and invitations from generated list resources", async ({ page }) => {
+    const sharesHref = new URL("test-checklists/seventh/shares", root.env.staging).href;
+    const invitationsHref = new URL("test-checklists/seventh/invitations", root.env.staging).href;
+    const checklistHref = new URL("test-checklists/seventh", root.env.staging).href;
+    const createHref = new URL("test-checklists/seventh/invitations/new", root.env.staging).href;
+    const authorizations: (string | undefined)[] = [];
+    await page.route(sharesHref, (route) => {
+      authorizations.push(route.request().headers()["authorization"]);
+      return route.fulfill({
+        json: {
+          _links: {
+            self: { href: sharesHref },
+            up: { name: "checklist", href: checklistHref },
+            related: { name: "invitations", href: invitationsHref },
+            items: [{ href: `${sharesHref}/1`, title: "Shared with Alice" }],
+          },
+        },
+      });
+    });
+    await page.route(invitationsHref, (route) => {
+      authorizations.push(route.request().headers()["authorization"]);
+      return route.fulfill({
+        json: {
+          _links: {
+            self: { href: invitationsHref },
+            create: { href: createHref },
+            items: [{ href: `${invitationsHref}/1`, title: "Invite Bob" }],
+          },
+        },
+      });
+    });
+    await page.goto(`/en/checklists/shares/list/${encodeApiUrl(sharesHref)}`);
+    await expect(page.getByText("Shared with Alice", { exact: true })).toBeVisible();
+    await expect(page.getByText("Invite Bob", { exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Create", exact: true }))
+      .toHaveAttribute("href", `/en/checklists/share-invitations/create/${encodeApiUrl(createHref)}`);
+    expect(authorizations).toHaveLength(2);
+    for (const authorization of authorizations) expect(authorization).toMatch(/^Bearer /);
+  });
+
   test("renders and edits nullable generated run fields and reads its source checklist", async ({ page }) => {
     const href = new URL("test-runs/first", root.env.staging).href;
     const sourceHref = new URL("test-checklists/source", root.env.staging).href;

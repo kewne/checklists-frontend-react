@@ -1,5 +1,4 @@
 import { encodeApiUrl } from "./encoding";
-import type { Resource } from "./hal";
 
 export interface UpLinkDefinition {
   labelKey: string;
@@ -25,11 +24,11 @@ export interface RouteHandle<T = unknown> {
 }
 
 export function resourceUpLink(
-  resource: Resource,
+  resource: { getRel(rel: string): { href: string }[] },
   routePattern: string,
   labelKey: string,
 ): UpLinkDefinition | undefined {
-  const up = resource.getFirstLinkMatching("up");
+  const up = resource.getRel("up")[0];
   if (!up) {
     return undefined;
   }

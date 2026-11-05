@@ -9,9 +9,9 @@ import { Loading } from "~/components/Loading";
 import { Panel } from "~/components/Panel";
 import { getUser } from "~/lib/auth";
 import i18n from "~/lib/i18n";
-import { apiResourceActions } from "../../lib/api";
+import { apiResourceActions, getApiResource } from "../../lib/api";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
-import type { Resource } from "../../lib/hal";
+import type { List as ShareList } from "../../lib/restspec-api";
 import { showErrorToast, showSuccessToast } from "../../lib/toastHelpers";
 import { resourceUpLink, type RouteHandle } from "../../lib/routeHandle";
 import type { Route } from "./+types/shares";
@@ -70,28 +70,28 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
-  const sharesResource = await apiResourceActions(decodedUrl, user).get();
+  const sharesResource = await getApiResource<ShareList>(decodedUrl, user);
+  const invitationsLink = sharesResource.getNamedLink("related", "invitations");
 
   return {
     sharesResource,
-    invitationsPromise: sharesResource.getLinked(
-      "related",
-      (l) => l.name === "invitations",
-    ),
+    invitationsPromise: invitationsLink
+      ? getApiResource<ShareList>(invitationsLink.href, user)
+      : null,
   };
 }
 
-export const handle: RouteHandle<{ sharesResource: Resource }> = {
+export const handle: RouteHandle<{ sharesResource: ShareList }> = {
   up: ({ sharesResource }) =>
     resourceUpLink(sharesResource, "/checklists/show", "up.checklist"),
   heading: { labelKey: "share.title" },
 };
 
-function InvitationsList({ resource }: { resource: Resource }) {
+function InvitationsList({ resource }: { resource: ShareList }) {
   const fetcher = useFetcher();
   const { t } = useTranslation();
-  const createLink = resource.getFirstLinkMatching("create");
-  const items = resource.getLinkArray("items");
+  const createLink = resource.getRel("create")[0];
+  const items = resource.getRel("items");
 
   const handleDeleteInvitation = (href: string) => async () => {
     const formData = new FormData();
@@ -142,7 +142,7 @@ function InvitationsList({ resource }: { resource: Resource }) {
 export default function Shares({ loaderData }: Route.ComponentProps) {
   const { sharesResource, invitationsPromise } = loaderData;
   const { t } = useTranslation();
-  const items = sharesResource.getLinkArray("items");
+  const items = sharesResource.getRel("items");
   const fetcher = useFetcher();
 
   const handleDeleteShare = (href: string) => async () => {
