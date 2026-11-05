@@ -7,7 +7,7 @@ import { Link } from "~/components/Link";
 import { List } from "~/components/List";
 import { Loading } from "~/components/Loading";
 import { Panel } from "~/components/Panel";
-import { ApiResource, apiResourceActions, getApiResource } from "~/lib/api";
+import { ApiResource, apiResourceActions, createApiClient, getApiResource, linkFromHref } from "~/lib/api";
 import type { List as ChecklistCollection } from "~/lib/restspec-api";
 import { getUser } from "~/lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "~/lib/encoding";
@@ -64,8 +64,8 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   }
 
   try {
-    const resource = apiResourceActions(href, user);
-    await resource.delete();
+    const client = await createApiClient(user);
+    await client.delete(linkFromHref<{ delete: [void, unknown] }>(href));
     showSuccessToast(i18n.t("toast.checklistDeleted"));
   } catch (error) {
     const message = error instanceof Error ? error.message : i18n.t("toast.deleteChecklistFailed");

@@ -18,7 +18,6 @@ import { Panel } from "./Panel";
 
 interface ChecklistRunDetailProps {
   resource: ChecklistInstance;
-  onDelete?: () => Promise<void>;
 }
 
 function CreatedFromChecklist({ checklistLink }: { checklistLink: ApiLink }) {
@@ -49,7 +48,6 @@ function CreatedFromChecklist({ checklistLink }: { checklistLink: ApiLink }) {
 
 export function ChecklistRunDetail({
   resource,
-  onDelete,
 }: ChecklistRunDetailProps) {
   const items = resource.properties.items;
   const completedItems = items.filter((item) => item.completed != null);
@@ -83,9 +81,11 @@ export function ChecklistRunDetail({
   };
 
   const performDelete = async () => {
-    await onDelete?.();
-    showSuccessToast(t("toast.runDeleted"));
     deleteModal.close();
+    await submit(
+      { intent: "delete", href: resource.getRel("self")[0]!.href },
+      { method: "post" },
+    );
   };
 
   const additionalActions: MenuItem[] = [];

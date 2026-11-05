@@ -522,6 +522,41 @@ test.describe("generated-read routes with mocked authentication", () => {
     for (const post of posts) expect(post.authorization).toMatch(/^Bearer /);
   });
 
+  test("deletes a completed run with a bearer-authenticated DELETE and returns home", async ({ page }) => {
+    const href = new URL("test-runs/ninth", root.env.staging).href;
+    const deletes: { method: string; authorization?: string }[] = [];
+    await page.route(href, (route) => {
+      const request = route.request();
+      if (request.method() === "DELETE") {
+        deletes.push({ method: request.method(), authorization: request.headers()["authorization"] });
+        return route.fulfill({ status: 204 });
+      }
+      return route.fulfill({
+        json: {
+          id: "ninth",
+          title: "Deletable run",
+          checklistId: null,
+          createdBy: "test-user",
+          createdAt: "2026-01-01T00:00:00Z",
+          items: [
+            {
+              name: "done",
+              title: "Finished step",
+              completed: { completed_at: "2026-01-01T00:00:00Z", note: null },
+            },
+          ],
+          _links: { self: { href } },
+        },
+      });
+    });
+    await page.goto(`/en/runs/show/${encodeApiUrl(href)}`);
+    await page.getByRole("button", { name: "More actions", exact: true }).click();
+    await page.getByRole("button", { name: "Delete", exact: true }).click();
+    await expect(page.getByText("Run deleted successfully")).toBeVisible();
+    expect(deletes).toHaveLength(1);
+    expect(deletes[0].authorization).toMatch(/^Bearer /);
+  });
+
   test("renders and edits nullable generated run fields and reads its source checklist", async ({ page }) => {
     const href = new URL("test-runs/first", root.env.staging).href;
     const sourceHref = new URL("test-checklists/source", root.env.staging).href;

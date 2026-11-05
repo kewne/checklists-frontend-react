@@ -9,7 +9,7 @@ import { Loading } from "~/components/Loading";
 import { Panel } from "~/components/Panel";
 import { getUser } from "~/lib/auth";
 import i18n from "~/lib/i18n";
-import { apiResourceActions, getApiResource } from "../../lib/api";
+import { createApiClient, getApiResource, linkFromHref } from "../../lib/api";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import type { List as ShareList } from "../../lib/restspec-api";
 import { showErrorToast, showSuccessToast } from "../../lib/toastHelpers";
@@ -58,8 +58,8 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   }
 
   try {
-    const resource = apiResourceActions(href, user);
-    await resource.delete();
+    const client = await createApiClient(user);
+    await client.delete(linkFromHref<{ delete: [void, unknown] }>(href));
     showSuccessToast(i18n.t("toast.deleted"));
   } catch (error) {
     const message = error instanceof Error ? error.message : i18n.t("toast.deleteFailed");

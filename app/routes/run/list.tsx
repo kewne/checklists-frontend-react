@@ -6,7 +6,7 @@ import { Button } from "~/components/Button";
 import { Link } from "~/components/Link";
 import { List } from "~/components/List";
 import { Panel } from "~/components/Panel";
-import { apiResourceActions, getApiResource } from "../../lib/api";
+import { createApiClient, getApiResource, linkFromHref } from "../../lib/api";
 import { getUser } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import i18n from "~/lib/i18n";
@@ -64,8 +64,8 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   }
 
   try {
-    const resource = apiResourceActions(href, user);
-    await resource.delete();
+    const client = await createApiClient(user);
+    await client.delete(linkFromHref<{ delete: [void, unknown] }>(href));
     showSuccessToast(i18n.t("toast.runDeleted"));
   } catch (error) {
     const message =

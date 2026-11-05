@@ -3,11 +3,10 @@ import { useTranslation } from "react-i18next";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { ChecklistRunDetail } from "../../components/ChecklistRunDetail";
-import { apiResourceActions, createApiClient, getApiResource, linkFromHref } from "../../lib/api";
+import { createApiClient, getApiResource, linkFromHref } from "../../lib/api";
 import { getUser } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import i18n from "~/lib/i18n";
-import { useLocaleNavigate } from "~/lib/locale";
 import { showErrorToast, showSuccessToast } from "~/lib/toastHelpers";
 import { resourceHeading, type RouteHandle } from "../../lib/routeHandle";
 import type { Route } from "./+types/show";
@@ -57,7 +56,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
   const runResource = await getApiResource<ChecklistInstance>(decodedUrl, user);
-  return { runResource, user, decodedUrl };
+  return { runResource };
 }
 
 export async function clientAction({ params, request }: Route.ClientActionArgs) {
@@ -82,6 +81,19 @@ export async function clientAction({ params, request }: Route.ClientActionArgs) 
     }
     showSuccessToast(i18n.t("toast.completedItemsCleared"));
     return;
+  }
+
+  if (intent === "delete") {
+    try {
+      await client.delete(linkFromHref<{ delete: [void, unknown] }>(href));
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : i18n.t("toast.deleteFailed");
+      showErrorToast(message);
+      return;
+    }
+    showSuccessToast(i18n.t("toast.runDeleted"));
+    return redirect(`/${params.locale}`);
   }
 
   if (intent === "complete-item" || intent === "mark-incomplete-item") {
@@ -124,19 +136,6 @@ export async function clientAction({ params, request }: Route.ClientActionArgs) 
   return redirect(`/${params.locale}/checklists/show/${encodeApiUrl(location)}`);
 }
 
-export default function ChecklistRun({ loaderData, params }: Route.ComponentProps) {
-  const { runResource, user, decodedUrl } = loaderData;
-  const navigate = useLocaleNavigate();
-
-  const doDelete = async () => {
-    await apiResourceActions(decodedUrl, user).delete();
-    navigate("/");
-  };
-
-  return (
-    <ChecklistRunDetail
-      resource={runResource}
-      onDelete={doDelete}
-    />
-  );
+export default function ChecklistRun({ loaderData }: Route.ComponentProps) {
+  return <ChecklistRunDetail resource={loaderData.runResource} />;
 }
