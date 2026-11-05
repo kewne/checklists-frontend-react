@@ -5,9 +5,9 @@ import { Panel } from "~/components/Panel";
 import {
   getApiResource,
   createApiClient,
+  linkFromHref,
   type Checklist,
 } from "~/lib/api";
-import type { Link as RestspecLink } from "@kewne/restspec";
 import type {
   Checklist as ChecklistResource,
   ReplaceChecklistRequest,
@@ -68,9 +68,9 @@ export async function clientAction({ params, request }: Route.ClientActionArgs) 
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
   const data = (await request.json()) as Checklist;
   try {
-    const link: RestspecLink<{
+    const link = linkFromHref<{
       put: [ReplaceChecklistRequest, ChecklistResource];
-    }> = { href: decodedUrl };
+    }>(decodedUrl);
     const client = await createApiClient(user);
     await client.put(link, data);
     showSuccessToast(i18n.t("toast.checklistSaved"));

@@ -1,13 +1,19 @@
+import { redirect, useSubmit } from "react-router";
 import { useTranslation } from "react-i18next";
+import {
+    type LocationResponse,
+    type Response as RestspecResponse,
+} from "@kewne/restspec";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { RunEditForm } from "../../components/RunEditForm";
-import { useAuth } from "../../lib/auth";
+import { getUser } from "~/lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import i18n from "~/lib/i18n";
 import { useLocaleNavigate } from "~/lib/locale";
 import type { Route } from "./+types/create";
-import { apiResourceActions, type ChecklistRun, type WriteableChecklistRun } from "~/lib/api";
+import { createApiClient, linkFromHref, type ChecklistRun, type WriteableChecklistRun } from "~/lib/api";
+import type { CreateChecklistInstanceRequest } from "~/lib/restspec-api";
 import { showErrorToast, showSuccessToast } from "~/lib/toastHelpers";
 import { type RouteHandle } from "../../lib/routeHandle";
 
@@ -43,29 +49,37 @@ export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
     );
 }
 
-export default function CreateRun({ params }: Route.ComponentProps) {
-    const { user } = useAuth();
+export async function clientAction({ params, request }: Route.ClientActionArgs) {
+    const user = await getUser();
+    const link = linkFromHref<{
+        post: [CreateChecklistInstanceRequest, LocationResponse<RestspecResponse, {}>];
+    }>(decodeApiUrl(params.apiUrlEncoded));
+    const data = (await request.json()) as CreateChecklistInstanceRequest;
+    let location: string | undefined;
+    try {
+        const client = await createApiClient(user);
+        const created = await client.post(link, data);
+        location = created.location?.href;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : i18n.t("toast.createRunFailed");
+        showErrorToast(message);
+        return;
+    }
+    if (!location) {
+        showErrorToast(i18n.t("toast.createRunFailed"));
+        return;
+    }
+    showSuccessToast(i18n.t("toast.runCreated"));
+    return redirect(`/${params.locale}/runs/show/${encodeApiUrl(location)}`);
+}
+
+export default function CreateRun({}: Route.ComponentProps) {
     const navigate = useLocaleNavigate();
+    const submit = useSubmit();
     const { t } = useTranslation();
 
-    const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
-
-    const { post } = apiResourceActions(decodedUrl, user!);
-
     const handleSubmit = async (data: WriteableChecklistRun) => {
-        try {
-            const url = await post(data);
-            if (!url) {
-                showErrorToast(t("toast.createRunFailed"));
-                return;
-            }
-            showSuccessToast(t("toast.runCreated"));
-            const encodedUrl = encodeApiUrl(url);
-            navigate(`/runs/show/${encodedUrl}`);
-        } catch (error) {
-            const message = error instanceof Error ? error.message : t("toast.createRunFailed");
-            showErrorToast(message);
-        }
+        await submit(data, { method: "post", encType: "application/json" });
     };
 
     const initialValues: ChecklistRun = {

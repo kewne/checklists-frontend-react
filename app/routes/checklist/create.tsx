@@ -1,9 +1,8 @@
 import { redirect, useSubmit } from "react-router";
 import { useTranslation } from "react-i18next";
-import type { Link as RestspecLink } from "@kewne/restspec";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
-import { createApiClient, type Checklist } from "~/lib/api";
+import { createApiClient, linkFromHref, type Checklist } from "~/lib/api";
 import { getUser } from "~/lib/auth";
 import i18n from "~/lib/i18n";
 import { useLocaleNavigate } from "~/lib/locale";
@@ -48,9 +47,9 @@ export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
 
 export async function clientAction({ params, request }: Route.ClientActionArgs) {
   const user = await getUser();
-  const link: RestspecLink<{ post: [CreateChecklistRequest, unknown] }> = {
-    href: decodeApiUrl(params.apiUrlEncoded),
-  };
+  const link = linkFromHref<{ post: [CreateChecklistRequest, unknown] }>(
+    decodeApiUrl(params.apiUrlEncoded),
+  );
   const data = (await request.json()) as CreateChecklistRequest;
   try {
     const client = await createApiClient(user);

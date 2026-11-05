@@ -240,6 +240,40 @@ test.describe("generated-read routes with mocked authentication", () => {
     expect(posts[0].body.title).toBe("New checklist");
   });
 
+  test("creates a run with a bearer-authenticated POST and follows its location", async ({ page }) => {
+    const href = new URL("test-runs", root.env.staging).href;
+    const location = new URL("test-runs/new", root.env.staging).href;
+    const posts: { authorization?: string; body: { title: string } }[] = [];
+    await page.route(href, (route) => {
+      const request = route.request();
+      if (request.method() === "POST") {
+        posts.push({
+          authorization: request.headers()["authorization"],
+          body: request.postDataJSON(),
+        });
+        return route.fulfill({
+          status: 201,
+          headers: {
+            Location: location,
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Expose-Headers": "Location",
+          },
+        });
+      }
+      return route.fulfill({ json: { _links: {} } });
+    });
+    await page.route(location, (route) => route.fulfill({
+      json: { id: "new", title: "New run", items: [], _links: { self: { href: location } } },
+    }));
+    await page.goto(`/en/runs/create/${encodeApiUrl(href)}`);
+    await page.getByLabel("Title", { exact: true }).fill("New run");
+    await page.getByRole("button", { name: "Create", exact: true }).click();
+    await expect(page).toHaveURL(`/en/runs/show/${encodeApiUrl(location)}`);
+    expect(posts).toHaveLength(1);
+    expect(posts[0].authorization).toMatch(/^Bearer /);
+    expect(posts[0].body.title).toBe("New run");
+  });
+
   test("renders and edits nullable generated run fields and reads its source checklist", async ({ page }) => {
     const href = new URL("test-runs/first", root.env.staging).href;
     const sourceHref = new URL("test-checklists/source", root.env.staging).href;

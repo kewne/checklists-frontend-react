@@ -1,5 +1,12 @@
 import type { User } from "firebase/auth";
-import { createHttpClient, createLink, fromRoot } from "@kewne/restspec";
+import {
+  createHttpClient,
+  createLink,
+  fromHref,
+  fromRoot,
+  type Link,
+  type Methods,
+} from "@kewne/restspec";
 import { apiBaseUrl, apiEnvironment } from "./config";
 import { root } from "./restspec-api";
 import {
@@ -36,6 +43,11 @@ export async function createApiClient(user: TokenProvider) {
 export async function getApiRoot(user: TokenProvider) {
   const client = await createApiClient(user);
   return client.get(fromRoot(root, apiEnvironment));
+}
+
+// fromHref only types GET; remove once restspec supports all methods.
+export function linkFromHref<TYPES extends Methods>(href: string) {
+  return fromHref(href) as unknown as Link<TYPES>;
 }
 
 export async function getApiResource<RESOURCE>(href: string, user: TokenProvider) {
