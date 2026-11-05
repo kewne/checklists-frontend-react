@@ -8,10 +8,11 @@ import { TextInput } from "~/components/TextInput";
 import { ChevronDown } from "~/icons/ChevronDown";
 import { ChevronUp } from "~/icons/ChevronUp";
 import type { Checklist, ChecklistItem } from "~/lib/api";
+import type { Checklist as ChecklistResource } from "~/lib/restspec-api";
 import { MailtoForm, type MailtoValues } from "./MailtoForm";
 
 interface ChecklistFormProps {
-  initialValues?: Checklist;
+  initialValues?: Pick<ChecklistResource["properties"], "title" | "items">;
   submitLabel: string;
   onSubmit?: (data: Checklist) => Promise<void>;
   onCancel?: () => Promise<void>;
@@ -193,7 +194,11 @@ export function ChecklistForm({
   const { t } = useTranslation();
   const [title, setTitle] = useState(initialValues?.title ?? "");
   const [items, setItems] = useState<ChecklistItem[]>(
-    (initialValues?.items ?? []).map((item) => ({ ...item, id: v4() })),
+    (initialValues?.items ?? []).map((item) => ({
+      ...item,
+      id: v4(),
+      description: item.description ?? "",
+    })),
   );
   const addedItemRef = useRef<HTMLInputElement>(null);
   const lastAddedId = useRef<string | null>(null);

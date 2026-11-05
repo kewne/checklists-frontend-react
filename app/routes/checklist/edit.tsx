@@ -2,7 +2,8 @@ import { NavLink, useRevalidator } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
-import { apiResourceActions, type Checklist } from "~/lib/api";
+import { apiResourceActions, getApiResource, type Checklist } from "~/lib/api";
+import type { Checklist as ChecklistResource } from "~/lib/restspec-api";
 import { getUser } from "~/lib/auth";
 import i18n from "~/lib/i18n";
 import { localePath, useLocale, useLocaleNavigate } from "~/lib/locale";
@@ -48,10 +49,10 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
-  const checklistResource = await apiResourceActions<Checklist>(
+  const checklistResource = await getApiResource<ChecklistResource>(
     decodedUrl,
     user,
-  ).get();
+  );
   return { checklistResource, user, decodedUrl };
 }
 
@@ -69,14 +70,14 @@ export default function ChecklistEdit({ loaderData }: Route.ComponentProps) {
 
   const { checklistResource, user, decodedUrl } = loaderData;
 
-  const createInstanceLink = checklistResource.getFirstLinkMatching(
+  const createInstanceLink = checklistResource.getNamedLink(
     "create-from",
-    (link) => link.name === "instance",
+    "instance",
   );
 
-  const sharesLink = checklistResource.getFirstLinkMatching(
+  const sharesLink = checklistResource.getNamedLink(
     "related",
-    (link) => link.name === "shares",
+    "shares",
   );
 
   const handleSubmit = async (data: Checklist) => {
@@ -100,7 +101,7 @@ export default function ChecklistEdit({ loaderData }: Route.ComponentProps) {
               type="primary"
               size="large"
               action={async () => {
-                const location = await createInstanceLink.actions().post({
+                const location = await apiResourceActions(createInstanceLink.href, user).post({
                   title: checklistResource.properties.title,
                 });
                 if (!location) {

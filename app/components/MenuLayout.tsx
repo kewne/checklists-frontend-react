@@ -9,9 +9,7 @@ import {
 } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
-import { fromRoot } from "@kewne/restspec";
-import { root } from "../lib/restspec-api";
-import { apiEnvironment } from "../lib/config";
+import { getApiRoot } from "../lib/api";
 import { getUser, useAuth } from "../lib/auth";
 import { useBookmarks } from "../lib/useBookmarks";
 import { localePath, useLocale } from "~/lib/locale";
@@ -91,12 +89,9 @@ function MenuLink({ link, to, children }: MenuLinkProps) {
 
 export async function clientLoader() {
   const user = await getUser();
-  const token = await user.getIdToken();
-  const rootResource = await fromRoot(root, apiEnvironment, {
-    credentials: { type: "bearer", token },
-  }).request.get();
-  const checklistsLink = rootResource.rels.related.checklists;
-  const instancesLink = rootResource.rels.related["checklist-instances"];
+  const rootResource = await getApiRoot(user);
+  const checklistsLink = rootResource.getNamedLink("related", "checklists");
+  const instancesLink = rootResource.getNamedLink("related", "checklist-instances");
   return { checklistsLink, instancesLink };
 }
 

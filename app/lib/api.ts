@@ -1,5 +1,7 @@
 import type { User } from "firebase/auth";
-import { apiBaseUrl } from "./config";
+import { createHttpClient, fromRoot } from "@kewne/restspec";
+import { apiBaseUrl, apiEnvironment } from "./config";
+import { root } from "./restspec-api";
 import {
   Resource,
   type HalDocument,
@@ -9,7 +11,7 @@ import {
 
 const allowedOrigin = new URL(apiBaseUrl).origin;
 
-function validateHref(href: string): URL {
+export function validateHref(href: string): URL {
   const url = URL.parse(href, apiBaseUrl);
   if (url === null) {
     throw new Error(`Invalid href: ${href}`);
@@ -20,6 +22,18 @@ function validateHref(href: string): URL {
     );
   }
   return url;
+}
+
+export async function createApiClient(user: User) {
+  const token = await user.getIdToken();
+  return createHttpClient({
+    credentials: { [allowedOrigin]: { type: "bearer", token } },
+  });
+}
+
+export async function getApiRoot(user: User) {
+  const client = await createApiClient(user);
+  return client.get(fromRoot(root, apiEnvironment));
 }
 
 export interface ApiLink extends HalLink {

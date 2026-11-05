@@ -2,5 +2,20 @@ entrypoint: https://api.checklists.keeoon.dev/restspec
 profiles:
   - https://api.checklists.keeoon.dev/profiles/root
   - https://api.checklists.keeoon.dev/profiles/checklist
+  - https://api.checklists.keeoon.dev/profiles/checklist-list
   - https://api.checklists.keeoon.dev/profiles/checklist-instance
   - https://api.checklists.keeoon.dev/profiles/subscription
+  - https://api.checklists.keeoon.dev/profiles/add-checklist-instance-item
+  - https://api.checklists.keeoon.dev/profiles/checklist-instance-list
+  - https://api.checklists.keeoon.dev/profiles/checklist-invitations
+  - https://api.checklists.keeoon.dev/profiles/checklist-shares
+  - https://api.checklists.keeoon.dev/profiles/clear-completed-checklist-instance-items
+  - https://api.checklists.keeoon.dev/profiles/complete-checklist-instance-item
+  - https://api.checklists.keeoon.dev/profiles/create-checklist
+  - https://api.checklists.keeoon.dev/profiles/create-checklist-from-instance
+  - https://api.checklists.keeoon.dev/profiles/create-checklist-instance
+  - https://api.checklists.keeoon.dev/profiles/create-checklist-instance-from-checklist
+  # - https://api.checklists.keeoon.dev/profiles/create-checklist-invitation
+  # - https://api.checklists.keeoon.dev/profiles/invitation
+  - https://api.checklists.keeoon.dev/profiles/mark-checklist-instance-item-incomplete
+  - https://api.checklists.keeoon.dev/profiles/share

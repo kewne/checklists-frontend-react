@@ -21,8 +21,8 @@ importers:
         specifier: 7.0.2-beta
         version: 7.0.2-beta
       '@kewne/restspec':
-        specifier: 0.3.0-beta.2
-        version: 0.3.0-beta.2
+        specifier: 0.3.0-beta.7
+        version: 0.3.0-beta.7
       '@react-router/node':
         specifier: 7.12.0
         version: 7.12.0(react-router@7.12.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(typescript@5.9.3)
@@ -882,8 +882,8 @@ packages:
   '@js-sdsl/ordered-map@4.4.2':
     resolution: {integrity: sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw==}
 
-  '@kewne/restspec@0.3.0-beta.2':
-    resolution: {integrity: sha512-lmaaaB0Abwl14dqghxtVheUqzfPCfViRlRigprlphWlc1boncFwzBiUol2ICemHljumdpOScnMyWjMRaKsnDzg==}
+  '@kewne/restspec@0.3.0-beta.7':
+    resolution: {integrity: sha512-uoRHmzFX5/hD1z4Y73N+9csGWsva8EPEbEeWyC6C/HqTE+UNh1GTpkWfjanfR4h3Lqp9VqrCDcxiaSViA5gYuw==}
     engines: {node: '>=22'}
     hasBin: true
 
@@ -2530,6 +2530,9 @@ packages:
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
+  tslib@2.9.1:
+    resolution: {integrity: sha512-a4Ux9VKuIMHsOS7ENbEq6hK2ZGYIT27Rtl0E4eD9KqwxhKiQeMZE/9xb3IdYwWaSOyIBQLExhQgXDTYoiCxnWA==}
+
   type-is@1.6.18:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
     engines: {node: '>= 0.6'}
@@ -3097,7 +3100,7 @@ snapshots:
       '@firebase/component': 0.7.5
       '@firebase/logger': 0.5.2
       '@firebase/util': 1.15.3
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@firebase/app-types@0.9.6':
     dependencies:
@@ -3109,7 +3112,7 @@ snapshots:
       '@firebase/logger': 0.5.2
       '@firebase/util': 1.15.3
       idb: 7.1.1
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@firebase/auth-compat@0.6.11(@firebase/app-compat@0.5.18)(@firebase/app-types@0.9.6)(@firebase/app@0.16.2)':
     dependencies:
@@ -3142,7 +3145,7 @@ snapshots:
   '@firebase/component@0.7.5':
     dependencies:
       '@firebase/util': 1.15.3
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@firebase/data-connect@0.7.4(@firebase/app@0.16.2)':
     dependencies:
@@ -3257,7 +3260,7 @@ snapshots:
 
   '@firebase/logger@0.5.2':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@firebase/messaging-compat@0.2.30(@firebase/app-compat@0.5.18)(@firebase/app@0.16.2)':
     dependencies:
@@ -3351,7 +3354,7 @@ snapshots:
 
   '@firebase/util@1.15.3':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@firebase/webchannel-wrapper@1.0.7': {}
 
@@ -3571,7 +3574,7 @@ snapshots:
   '@js-sdsl/ordered-map@4.4.2':
     optional: true
 
-  '@kewne/restspec@0.3.0-beta.2':
+  '@kewne/restspec@0.3.0-beta.7':
     dependencies:
       quicktype-core: 26.0.0
       yaml: 2.9.1
@@ -5303,6 +5306,8 @@ snapshots:
       typescript: 5.9.3
 
   tslib@2.8.1: {}
+
+  tslib@2.9.1: {}
 
   type-is@1.6.18:
     dependencies:

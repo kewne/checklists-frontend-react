@@ -2,8 +2,7 @@ import { redirect } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
-import { apiResourceActions } from "~/lib/api";
-import { apiBaseUrl } from "~/lib/config";
+import { getApiRoot } from "~/lib/api";
 import { getUser } from "~/lib/auth";
 import { encodeApiUrl } from "~/lib/encoding";
 import i18n from "~/lib/i18n";
@@ -35,8 +34,8 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
-  const rootResource = await apiResourceActions(apiBaseUrl, user).get();
-  const checklistsLink = rootResource.getFirstLinkMatching("related", (link) => link.name === "checklists");
+  const rootResource = await getApiRoot(user);
+  const checklistsLink = rootResource.getNamedLink("related", "checklists");
   if (checklistsLink) {
     return redirect(`/${params.locale}/checklists/list/${encodeApiUrl(checklistsLink.href)}`);
   }

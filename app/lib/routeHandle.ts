@@ -40,7 +40,7 @@ export function resourceUpLink(
 }
 
 export function resourceHeading<T extends Record<string, unknown>>(
-  resource: Resource<T>,
+  resource: { properties: T },
   propertyName: keyof T,
 ): string | undefined {
   const value = resource.properties[propertyName];

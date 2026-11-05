@@ -3,7 +3,8 @@ import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import type { ChecklistRun, WriteableChecklistRun } from "~/lib/api";
 import { RunEditForm } from "../../components/RunEditForm";
-import { apiResourceActions } from "../../lib/api";
+import { apiResourceActions, getApiResource } from "../../lib/api";
+import type { ChecklistInstance } from "~/lib/restspec-api";
 import { getUser } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import { type RouteHandle } from "../../lib/routeHandle";
@@ -41,7 +42,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
-  const runResource = await apiResourceActions<ChecklistRun>(decodedUrl, user).get();
+  const runResource = await getApiResource<ChecklistInstance>(decodedUrl, user);
   return { runResource, user, decodedUrl };
 }
 

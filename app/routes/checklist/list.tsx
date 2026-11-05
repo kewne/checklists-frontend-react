@@ -7,7 +7,8 @@ import { Link } from "~/components/Link";
 import { List } from "~/components/List";
 import { Loading } from "~/components/Loading";
 import { Panel } from "~/components/Panel";
-import { ApiResource, apiResourceActions } from "~/lib/api";
+import { ApiResource, apiResourceActions, getApiResource } from "~/lib/api";
+import type { List as ChecklistCollection } from "~/lib/restspec-api";
 import { getUser } from "~/lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "~/lib/encoding";
 import i18n from "~/lib/i18n";
@@ -75,8 +76,8 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
-  const checklistsResource = await apiResourceActions(decodedUrl, user).get();
-  const sharedLink = checklistsResource.getFirstLinkMatching("related", (link) => link.name === "shared");
+  const checklistsResource = await getApiResource<ChecklistCollection>(decodedUrl, user);
+  const sharedLink = checklistsResource.getNamedLink("related", "shared");
   return {
     checklistsResource,
     sharedChecklistsPromise: sharedLink
@@ -113,7 +114,7 @@ export default function ChecklistList({ loaderData, params }: Route.ComponentPro
   const { checklistsResource, sharedChecklistsPromise } = loaderData;
   const { t } = useTranslation();
   const fetcher = useFetcher();
-  const items = checklistsResource.getLinkArray("items");
+  const items = checklistsResource.getRel("items");
 
   const handleDelete = (href: string) => async () => {
     const formData = new FormData();

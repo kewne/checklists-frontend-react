@@ -5,13 +5,14 @@ import { TextArea } from "~/components/TextArea";
 import { TextInput } from "~/components/TextInput";
 import { ChevronDown } from "~/icons/ChevronDown";
 import { ChevronUp } from "~/icons/ChevronUp";
-import type { ChecklistRun, WriteableChecklistRun } from "~/lib/api";
+import type { WriteableChecklistRun } from "~/lib/api";
+import type { ChecklistInstance } from "~/lib/restspec-api";
 import { Button } from "./Button";
 import { MailtoForm, type MailtoValues } from "./MailtoForm";
 import { Panel } from "./Panel";
 
 interface RunEditFormProps {
-  initialValues: ChecklistRun;
+  initialValues: Pick<ChecklistInstance["properties"], "title" | "items">;
   submitLabel: string;
   onSubmit?: (data: WriteableChecklistRun) => Promise<void>;
   onCancel?: () => void | Promise<void>;
@@ -190,7 +191,10 @@ export function RunEditForm({
   const { t } = useTranslation();
   const [title, setTitle] = useState(initialValues.title);
   const [items, setItems] = useState<WriteableChecklistRun["items"]>(
-    initialValues.items.map(({ completed: _completed, ...item }) => item),
+    initialValues.items.map(({ completed: _completed, description, ...item }) => ({
+      ...item,
+      description: description ?? "",
+    })),
   );
   const addedItemRef = useRef<HTMLInputElement>(null);
   const lastAddedId = useRef<string | null>(null);

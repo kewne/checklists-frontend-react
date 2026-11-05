@@ -3,18 +3,17 @@ import { useTranslation } from "react-i18next";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { ChecklistRunDetail } from "../../components/ChecklistRunDetail";
-import { apiResourceActions } from "../../lib/api";
+import { apiResourceActions, getApiResource } from "../../lib/api";
 import { getUser } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
 import i18n from "~/lib/i18n";
 import { useLocaleNavigate } from "~/lib/locale";
 import { resourceHeading, type RouteHandle } from "../../lib/routeHandle";
-import type { Resource } from "../../lib/hal";
 import type { Route } from "./+types/show";
-import type { ChecklistRun } from "~/lib/api";
+import type { ChecklistInstance } from "~/lib/restspec-api";
 
 export const handle: RouteHandle<{
-  runResource: Resource<{ title: string }>;
+  runResource: ChecklistInstance;
 }> = {
   heading: ({ runResource }) => ({
     labelKey: "run.showTitle",
@@ -51,7 +50,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
-  const runResource = await apiResourceActions<ChecklistRun>(decodedUrl, user).get();
+  const runResource = await getApiResource<ChecklistInstance>(decodedUrl, user);
   return { runResource, user, decodedUrl };
 }
 

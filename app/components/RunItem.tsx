@@ -1,17 +1,15 @@
 import { useTranslation } from "react-i18next";
-import { type ApiLink } from "~/lib/api";
+import type { Link as ApiLink } from "@kewne/restspec";
+import { apiResourceActions } from "~/lib/api";
+import { getUser } from "~/lib/auth";
+import type { ChecklistInstance } from "~/lib/restspec-api";
 import { renderWithLinks } from "~/lib/renderWithLinks";
 import { Button } from "./Button";
-
-interface RunItemCompleted {
-  completed_at: string;
-  note?: string;
-}
 
 interface RunItemProps {
   title: string;
   description?: string;
-  completed?: RunItemCompleted;
+  completed?: ChecklistInstance["properties"]["items"][number]["completed"];
   completeHref?: ApiLink;
   markIncompleteHref?: ApiLink;
   onItemUpdated: () => Promise<void>;
@@ -31,7 +29,7 @@ interface CompleteButtonProps {
 function CompleteButton({ completeLink, onItemUpdated }: CompleteButtonProps) {
   const { t } = useTranslation();
   const handleCompleted = async () => {
-    await completeLink.actions().post({});
+    await apiResourceActions(completeLink.href, await getUser()).post({});
     await onItemUpdated();
   };
 
@@ -53,7 +51,7 @@ function MarkIncompleteButton({
 }: MarkIncompleteButtonProps) {
   const { t } = useTranslation();
   const handleMarkIncomplete = async () => {
-    await href.actions().post({});
+    await apiResourceActions(href.href, await getUser()).post({});
     await onItemUpdated();
   };
 

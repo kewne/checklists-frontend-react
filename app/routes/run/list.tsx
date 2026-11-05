@@ -1,17 +1,22 @@
 import { useTranslation } from "react-i18next";
 import { useFetcher } from "react-router";
+import { fromHref, type Link as RestspecLink } from "@kewne/restspec";
 import { BookmarkToggle } from "~/components/BookmarkToggle";
 import { Button } from "~/components/Button";
 import { Link } from "~/components/Link";
 import { List } from "~/components/List";
 import { Panel } from "~/components/Panel";
-import { apiResourceActions } from "../../lib/api";
+import { apiResourceActions, validateHref } from "../../lib/api";
 import { getUser } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import i18n from "~/lib/i18n";
 import { showErrorToast, showSuccessToast } from "../../lib/toastHelpers";
 import type { Route } from "./+types/list";
 import { type RouteHandle } from "../../lib/routeHandle";
+
+interface RunCollection {
+  getRel(rel: string): RestspecLink[];
+}
 
 export const handle: RouteHandle = {
   heading: { labelKey: "run.title" },
@@ -72,7 +77,11 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
-  const runsResource = await apiResourceActions(decodedUrl, user).get();
+  const href = validateHref(decodedUrl).href;
+  const token = await user.getIdToken();
+  const runsResource = await fromHref<RunCollection>(href, {
+    credentials: { type: "bearer", token },
+  }).request.get();
   return { runsResource };
 }
 
@@ -83,8 +92,8 @@ export default function ChecklistInstances({
   const { t } = useTranslation();
   const fetcher = useFetcher();
 
-  const items = runsResource.getLinkArray("items");
-  const createLink = runsResource.getFirstLinkMatching("create");
+  const items = runsResource.getRel("items");
+  const createLink = runsResource.getRel("create")[0];
 
   const handleDelete = (href: string) => async () => {
     const formData = new FormData();

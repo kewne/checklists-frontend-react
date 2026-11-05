@@ -2,7 +2,8 @@ import { NavLink } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
-import { apiResourceActions, type Checklist } from "~/lib/api";
+import { apiResourceActions, getApiResource } from "~/lib/api";
+import type { Checklist } from "~/lib/restspec-api";
 import { getUser } from "~/lib/auth";
 import i18n from "~/lib/i18n";
 import { localePath, useLocale, useLocaleNavigate } from "~/lib/locale";
@@ -11,13 +12,12 @@ import { HexCheckbox } from "../../components/HexCheckbox";
 import { List } from "../../components/List";
 import { QrCode } from "../../components/QrCode";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
-import type { Resource } from "../../lib/hal";
 import { renderWithLinks } from "../../lib/renderWithLinks";
 import { resourceHeading, type RouteHandle } from "../../lib/routeHandle";
 import type { Route } from "./+types/show";
 
 export const handle: RouteHandle<{
-  checklistResource: Resource<{ title: string }>;
+  checklistResource: Checklist;
 }> = {
   heading: ({ checklistResource }) => ({
     labelKey: "checklist.showTitle",
@@ -62,11 +62,11 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
-  const checklistResource = await apiResourceActions<Checklist>(
+  const checklistResource = await getApiResource<Checklist>(
     decodedUrl,
     user,
-  ).get();
-  return { checklistResource, decodedUrl };
+  );
+  return { checklistResource, decodedUrl, user };
 }
 
 function findItemUrls(description: string | undefined): string[] {
@@ -89,17 +89,17 @@ export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
   const navigate = useLocaleNavigate();
   const { t } = useTranslation();
 
-  const { checklistResource, decodedUrl } = loaderData;
+  const { checklistResource, decodedUrl, user } = loaderData;
   const { title, items } = checklistResource.properties;
 
-  const createInstanceLink = checklistResource.getFirstLinkMatching(
+  const createInstanceLink = checklistResource.getNamedLink(
     "create-from",
-    (link) => link.name === "instance",
+    "instance",
   );
 
-  const sharesLink = checklistResource.getFirstLinkMatching(
+  const sharesLink = checklistResource.getNamedLink(
     "related",
-    (link) => link.name === "shares",
+    "shares",
   );
 
   return (
@@ -111,7 +111,7 @@ export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
               type="primary"
               size="large"
               action={async () => {
-                const location = await createInstanceLink.actions().post({
+                const location = await apiResourceActions(createInstanceLink.href, user).post({
                   title,
                 });
                 if (!location) {

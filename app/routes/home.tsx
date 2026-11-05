@@ -4,8 +4,7 @@ import type { Route } from "./+types/home";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { Logo } from "~/components/Logo";
-import { apiResourceActions } from "~/lib/api";
-import { apiBaseUrl } from "~/lib/config";
+import { getApiRoot } from "~/lib/api";
 import { getUser } from "../lib/auth";
 import { encodeApiUrl } from "~/lib/encoding";
 import i18n from "~/lib/i18n";
@@ -34,8 +33,8 @@ export function ErrorBoundary({}: Route.ErrorBoundaryProps) {
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const user = await getUser();
-  const rootResource = await apiResourceActions(apiBaseUrl, user).get();
-  const instancesLink = rootResource.getFirstLinkMatching("related", (link) => link.name === "checklist-instances");
+  const rootResource = await getApiRoot(user);
+  const instancesLink = rootResource.getNamedLink("related", "checklist-instances");
   if (instancesLink) {
     return redirect(`/${params.locale}/runs/list/${encodeApiUrl(instancesLink.href)}`);
   }

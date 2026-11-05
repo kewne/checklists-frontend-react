@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  ApiResource,
-  type ApiLink,
-  type Checklist,
-  type ChecklistRun,
-} from "~/lib/api";
+import type { Link as ApiLink } from "@kewne/restspec";
+import { apiResourceActions, getApiResource } from "~/lib/api";
+import { getUser } from "~/lib/auth";
+import type { Checklist, ChecklistInstance } from "~/lib/restspec-api";
 import { useLocaleNavigate } from "~/lib/locale";
 import { useModal } from "~/lib/useModal";
 import { encodeApiUrl } from "../lib/encoding";
-import { showSuccessToast } from "../lib/toastHelpers";
+import { showErrorToast, showSuccessToast } from "../lib/toastHelpers";
 import { Button } from "./Button";
 import { Heading } from "./Heading";
 import { Link } from "./Link";
@@ -18,20 +16,22 @@ import { RunItem } from "./RunItem";
 import { Panel } from "./Panel";
 
 interface ChecklistRunDetailProps {
-  resource: ApiResource<ChecklistRun>;
+  resource: ChecklistInstance;
   onItemUpdated: () => Promise<void>;
   onDelete?: () => Promise<void>;
 }
 
 function CreatedFromChecklist({ checklistLink }: { checklistLink: ApiLink }) {
   const { t } = useTranslation();
-  const [checklist, setChecklist] = useState<Checklist>();
+  const [checklist, setChecklist] = useState<Checklist["properties"]>();
   useEffect(() => {
-    checklistLink
-      .actions<Checklist>()
-      .get()
-      .then((checklist) => setChecklist(checklist.properties));
-  }, [checklistLink]);
+    getUser()
+      .then((user) => getApiResource<Checklist>(checklistLink.href, user))
+      .then((checklist) => setChecklist(checklist.properties))
+      .catch((error: unknown) => {
+        showErrorToast(error instanceof Error ? error.message : t("error.loadChecklistsFailed"));
+      });
+  }, [checklistLink, t]);
 
   if (!checklist) {
     return;
@@ -56,17 +56,17 @@ export function ChecklistRunDetail({
   const completedItems = items.filter((item) => item.completed != null);
   const todoItems = items.filter((item) => item.completed == null);
   const allItemsCompleted = items.length > 0 && todoItems.length === 0;
-  const checklistLink = resource.getFirstLinkMatching(
+  const checklistLink = resource.getNamedLink(
     "related",
-    (link) => link.name === "checklist",
+    "checklist",
   );
-  const addItemLink = resource.getFirstLinkMatching(
+  const addItemLink = resource.getNamedLink(
     "update",
-    (link) => link.name === "add-item",
+    "add-item",
   );
-  const clearCompletedLink = resource.getFirstLinkMatching(
+  const clearCompletedLink = resource.getNamedLink(
     "update",
-    (link) => link.name === "clear-completed-items",
+    "clear-completed-items",
   );
 
   const navigate = useLocaleNavigate();
@@ -90,14 +90,14 @@ export function ChecklistRunDetail({
 
   const additionalActions: MenuItem[] = [];
 
-  const createChecklistFrom = resource.getFirstLinkMatching(
+  const createChecklistFrom = resource.getNamedLink(
     "create-from",
-    (link) => link.name === "checklist",
+    "checklist",
   );
 
-  const updateChecklistFrom = resource.getFirstLinkMatching(
+  const updateChecklistFrom = resource.getNamedLink(
     "update-from",
-    (link) => link.name === "checklist",
+    "checklist",
   );
 
   return (
@@ -107,7 +107,7 @@ export function ChecklistRunDetail({
           <div className="flex items-center gap-3 mb-2">
             <Link
               variant="inline-block"
-              to={`/runs/edit/${encodeApiUrl(resource.getFirstLinkMatching("self")!.href)}`}
+              to={`/runs/edit/${encodeApiUrl(resource.getRel("self")[0]!.href)}`}
             >
               {t("common.editEllipsis")}
             </Link>
@@ -126,7 +126,7 @@ export function ChecklistRunDetail({
               {createChecklistFrom && (
                 <Button
                   action={async () => {
-                    const location = await createChecklistFrom.actions().post({
+                    const location = await apiResourceActions(createChecklistFrom.href, await getUser()).post({
                       title: t("run.copyTitle", { title: resource.properties.title }),
                     });
                     if (location) {
@@ -143,7 +143,7 @@ export function ChecklistRunDetail({
               {updateChecklistFrom && (
                 <Button
                   action={async () => {
-                    const location = await updateChecklistFrom.actions().post();
+                    const location = await apiResourceActions(updateChecklistFrom.href, await getUser()).post();
                     if (location) {
                       return navigate(
                         `/checklists/show/${encodeApiUrl(location)}`,
@@ -158,7 +158,7 @@ export function ChecklistRunDetail({
               {clearCompletedLink && (
                 <Button
                   action={async () => {
-                    await clearCompletedLink.actions().post();
+                    await apiResourceActions(clearCompletedLink.href, await getUser()).post();
                     await onItemUpdated();
                     showSuccessToast(t("toast.completedItemsCleared"));
                   }}
@@ -193,10 +193,10 @@ export function ChecklistRunDetail({
         <ul className="space-y-3">
           {completedItems.map((item) => {
             const completeLink = resource
-              .getLinkArray("complete-item")
+              .getRel("complete-item")
               .find((l) => l.name === item.name);
             const markIncompleteLink = resource
-              .getLinkArray("mark-incomplete-item")
+              .getRel("mark-incomplete-item")
               .find((l) => l.name === item.name);
             return (
               <li key={item.name}>
@@ -233,10 +233,10 @@ export function ChecklistRunDetail({
         >
           {todoItems.map((item) => {
             const completeLink = resource
-              .getLinkArray("complete-item")
+              .getRel("complete-item")
               .find((l) => l.name === item.name);
             const markIncompleteLink = resource
-              .getLinkArray("mark-incomplete-item")
+              .getRel("mark-incomplete-item")
               .find((l) => l.name === item.name);
             return (
               <li key={item.name}>

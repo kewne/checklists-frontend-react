@@ -19,7 +19,7 @@
     "@firebase-oss/ui-react": "7.0.2-beta",
     "@firebase-oss/ui-styles": "7.0.2-beta",
     "@firebase-oss/ui-translations": "7.0.2-beta",
-    "@kewne/restspec": "0.3.0-beta.2",
+    "@kewne/restspec": "0.3.0-beta.7",
     "@react-router/node": "7.12.0",
     "@react-router/serve": "7.12.0",
     "firebase": "^12.10.0",
