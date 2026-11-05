@@ -1,15 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useFetcher } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { TextArea } from "~/components/TextArea";
 import { TextInput } from "~/components/TextInput";
-import { apiResourceActions } from "~/lib/api";
+import { createApiClient, linkFromHref } from "~/lib/api";
+import { getUser } from "~/lib/auth";
 import i18n from "~/lib/i18n";
 import { useLocaleNavigate } from "~/lib/locale";
-import { showSuccessToast } from "~/lib/toastHelpers";
+import type {
+  AddChecklistInstanceItemRequest,
+  ChecklistInstance,
+} from "~/lib/restspec-api";
+import { showErrorToast, showSuccessToast } from "~/lib/toastHelpers";
 import { Button } from "../../components/Button";
-import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
 import { type RouteHandle } from "../../lib/routeHandle";
 import type { Route } from "./+types/add-item";
@@ -46,33 +51,53 @@ export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
   );
 }
 
-export default function AddItem({ params }: Route.ComponentProps) {
-  const { user } = useAuth();
-  const navigate = useLocaleNavigate();
-  const { t } = useTranslation();
+export async function clientAction({ params, request }: Route.ClientActionArgs) {
+  const user = await getUser();
+  const data = (await request.json()) as AddChecklistInstanceItemRequest;
+  const link = linkFromHref<{
+    post: [AddChecklistInstanceItemRequest, ChecklistInstance];
+  }>(decodeApiUrl(params.apiUrlEncoded));
+  try {
+    const client = await createApiClient(user);
+    await client.post(link, data);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : i18n.t("toast.updateRunFailed");
+    showErrorToast(message);
+    return { added: false };
+  }
+  return { added: true };
+}
 
-  const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
-  const { post } = apiResourceActions<{ title: string; description?: string }>(
-    decodedUrl,
-    user!,
-  );
+export default function AddItem({}: Route.ComponentProps) {
+  const navigate = useLocaleNavigate();
+  const fetcher = useFetcher<typeof clientAction>();
+  const { t } = useTranslation();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [addMore, setAddMore] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await post({ title, description: description || undefined });
-
+  useEffect(() => {
+    if (!fetcher.data?.added) {
+      return;
+    }
     if (addMore) {
       showSuccessToast(t("toast.itemAdded"));
       setTitle("");
       setDescription("");
       return;
     }
-
     navigate(-1);
+    // Only react to a new action result, not to later edits of addMore.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetcher.data]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await fetcher.submit(
+      description ? { title, description } : { title },
+      { method: "post", encType: "application/json" },
+    );
   };
 
   const handleCancel = async () => {

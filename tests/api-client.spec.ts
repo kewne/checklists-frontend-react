@@ -412,6 +412,31 @@ test.describe("generated-read routes with mocked authentication", () => {
     expect(posts[0]).toMatch(/^Bearer /);
   });
 
+  test("adds a run item with a bearer-authenticated POST", async ({ page }) => {
+    const href = new URL("test-runs/sixth", root.env.staging).href;
+    const addHref = new URL("test-runs/sixth/items", root.env.staging).href;
+    const posts: { authorization?: string; body: { title: string; description?: string } }[] = [];
+    await page.route(addHref, (route) => {
+      const request = route.request();
+      posts.push({
+        authorization: request.headers()["authorization"],
+        body: request.postDataJSON(),
+      });
+      return route.fulfill({
+        json: { id: "sixth", title: "Run", items: [], _links: { self: { href } } },
+      });
+    });
+    await page.goto(`/en/runs/add-item/${encodeApiUrl(addHref)}`);
+    await page.getByLabel("Title", { exact: true }).fill("New item");
+    await page.getByLabel("Add more").check();
+    await page.getByRole("button", { name: "Add Item", exact: true }).click();
+    await expect(page.getByText("Item added successfully")).toBeVisible();
+    await expect(page.getByLabel("Title", { exact: true })).toHaveValue("");
+    expect(posts).toHaveLength(1);
+    expect(posts[0].authorization).toMatch(/^Bearer /);
+    expect(posts[0].body).toEqual({ title: "New item" });
+  });
+
   test("renders and edits nullable generated run fields and reads its source checklist", async ({ page }) => {
     const href = new URL("test-runs/first", root.env.staging).href;
     const sourceHref = new URL("test-checklists/source", root.env.staging).href;
