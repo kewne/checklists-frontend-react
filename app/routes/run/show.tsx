@@ -1,16 +1,21 @@
-import { useRevalidator } from "react-router";
+import { redirect, useRevalidator } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
 import { ChecklistRunDetail } from "../../components/ChecklistRunDetail";
-import { apiResourceActions, getApiResource } from "../../lib/api";
+import { apiResourceActions, createApiClient, getApiResource, linkFromHref } from "../../lib/api";
 import { getUser } from "../../lib/auth";
-import { decodeApiUrl } from "../../lib/encoding";
+import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import i18n from "~/lib/i18n";
 import { useLocaleNavigate } from "~/lib/locale";
+import { showErrorToast } from "~/lib/toastHelpers";
 import { resourceHeading, type RouteHandle } from "../../lib/routeHandle";
 import type { Route } from "./+types/show";
-import type { ChecklistInstance } from "~/lib/restspec-api";
+import type { LocationResponse, Response as RestspecResponse } from "@kewne/restspec";
+import type {
+  ChecklistInstance,
+  CreateChecklistFromInstanceRequest,
+} from "~/lib/restspec-api";
 
 export const handle: RouteHandle<{
   runResource: ChecklistInstance;
@@ -52,6 +57,40 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
   const runResource = await getApiResource<ChecklistInstance>(decodedUrl, user);
   return { runResource, user, decodedUrl };
+}
+
+export async function clientAction({ params, request }: Route.ClientActionArgs) {
+  const user = await getUser();
+  const formData = await request.formData();
+  if (formData.get("intent") !== "create-checklist") {
+    throw new Response("Unknown intent", { status: 400 });
+  }
+  const href = formData.get("href");
+  const title = formData.get("title");
+  if (typeof href !== "string" || typeof title !== "string") {
+    throw new Response("Invalid request", { status: 400 });
+  }
+  const link = linkFromHref<{
+    post: [
+      CreateChecklistFromInstanceRequest,
+      LocationResponse<RestspecResponse, {}>,
+    ];
+  }>(href);
+  let location: string | undefined;
+  try {
+    const client = await createApiClient(user);
+    const created = await client.post(link, { title });
+    location = created.location?.href;
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : i18n.t("toast.createChecklistFailed");
+    showErrorToast(message);
+    return;
+  }
+  if (!location) {
+    return redirect(`/${params.locale}/checklists`);
+  }
+  return redirect(`/${params.locale}/checklists/show/${encodeApiUrl(location)}`);
 }
 
 export default function ChecklistRun({ loaderData, params }: Route.ComponentProps) {

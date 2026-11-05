@@ -2,8 +2,12 @@ import { NavLink, redirect, useSubmit } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
-import { createApiClient, getApiResource } from "~/lib/api";
-import type { Checklist } from "~/lib/restspec-api";
+import { createApiClient, getApiResource, linkFromHref } from "~/lib/api";
+import type { LocationResponse, Response as RestspecResponse } from "@kewne/restspec";
+import type {
+  Checklist,
+  CreateChecklistInstanceFromChecklistRequest,
+} from "~/lib/restspec-api";
 import { getUser } from "~/lib/auth";
 import i18n from "~/lib/i18n";
 import { localePath, useLocale } from "~/lib/locale";
@@ -70,23 +74,24 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   return { checklistResource, decodedUrl };
 }
 
-export async function clientAction({ params }: Route.ClientActionArgs) {
+export async function clientAction({ params, request }: Route.ClientActionArgs) {
   const user = await getUser();
-  const checklistResource = await getApiResource<Checklist>(
-    decodeApiUrl(params.apiUrlEncoded),
-    user,
-  );
-  const link = checklistResource.getNamedLink("create-from", "instance");
-  if (!link) {
-    showErrorToast(i18n.t("toast.createRunFailed"));
-    return;
+  const formData = await request.formData();
+  const href = formData.get("href");
+  const title = formData.get("title");
+  if (typeof href !== "string" || typeof title !== "string") {
+    throw new Response("Invalid request", { status: 400 });
   }
+  const link = linkFromHref<{
+    post: [
+      CreateChecklistInstanceFromChecklistRequest,
+      LocationResponse<RestspecResponse, {}>,
+    ];
+  }>(href);
   let location: string | undefined;
   try {
     const client = await createApiClient(user);
-    const created = await client.post(link, {
-      title: checklistResource.properties.title,
-    });
+    const created = await client.post(link, { title });
     location = created.location?.href;
   } catch (error) {
     const message =
@@ -142,7 +147,10 @@ export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
               type="primary"
               size="large"
               action={async () => {
-                await submit(null, { method: "post" });
+                await submit(
+                  { href: createInstanceLink.href, title: checklistResource.properties.title },
+                  { method: "post" },
+                );
               }}
             >
               {t("checklist.run")}

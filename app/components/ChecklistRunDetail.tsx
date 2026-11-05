@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSubmit } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { Link as ApiLink } from "@kewne/restspec";
 import { apiResourceActions, getApiResource } from "~/lib/api";
@@ -70,6 +71,7 @@ export function ChecklistRunDetail({
   );
 
   const navigate = useLocaleNavigate();
+  const submit = useSubmit();
   const { t } = useTranslation();
 
   const deleteModal = useModal();
@@ -126,15 +128,14 @@ export function ChecklistRunDetail({
               {createChecklistFrom && (
                 <Button
                   action={async () => {
-                    const location = await apiResourceActions(createChecklistFrom.href, await getUser()).post({
-                      title: t("run.copyTitle", { title: resource.properties.title }),
-                    });
-                    if (location) {
-                      return navigate(
-                        `/checklists/show/${encodeApiUrl(location)}`,
-                      );
-                    }
-                    navigate("/checklists/list");
+                    await submit(
+                      {
+                        intent: "create-checklist",
+                        href: createChecklistFrom.href,
+                        title: t("run.copyTitle", { title: resource.properties.title }),
+                      },
+                      { method: "post" },
+                    );
                   }}
                 >
                   {t("run.createChecklist")}
