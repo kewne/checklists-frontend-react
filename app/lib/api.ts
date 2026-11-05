@@ -9,12 +9,7 @@ import {
 } from "@kewne/restspec";
 import { apiBaseUrl, apiEnvironment } from "./config";
 import { root } from "./restspec-api";
-import {
-  Resource,
-  type HalDocument,
-  type HalLink,
-  type JsonProperties,
-} from "./hal";
+import { Resource, type JsonProperties } from "./hal";
 
 type TokenProvider = Pick<User, "getIdToken">;
 
@@ -60,56 +55,6 @@ export async function getApiResource<RESOURCE>(href: string, user: TokenProvider
   return resource;
 }
 
-export interface ApiLink extends HalLink {
-  actions<T extends JsonProperties>(): ReturnType<typeof apiResourceActions<T>>;
-}
-
-export class ApiResource<T extends JsonProperties = {}> extends Resource<T> {
-  constructor(
-    document: HalDocument,
-    private readonly href: string,
-    private readonly user: User,
-  ) {
-    super(document);
-  }
-
-  get actions() {
-    return apiResourceActions(this.href, this.user)
-  }
-
-  getLinked<GET extends JsonProperties, POST extends JsonProperties>(
-    rel: string,
-    filter?: Parameters<Resource["getFirstLinkMatching"]>[1],
-  ) {
-    const link = this.getFirstLinkMatching(rel, filter);
-    if (!link) {
-      return undefined;
-    }
-    return apiResourceActions<GET, POST>(link.href, this.user).get();
-  }
-
-  getFirstLinkMatching(
-    rel: string,
-    filter?: (link: HalLink) => boolean,
-  ): ApiLink | undefined {
-    const link = super.getFirstLinkMatching(rel, filter);
-    if (!link) {
-      return undefined;
-    }
-    return {
-      ...link,
-      actions: () => apiResourceActions(link.href, this.user),
-    };
-  }
-
-  getLinkArray(rel: string): ApiLink[] {
-    return super.getLinkArray(rel).map((link) => ({
-      ...link,
-      actions: () => apiResourceActions(link.href, this.user),
-    }));
-  }
-}
-
 export function apiResourceActions<
   GET extends JsonProperties = {},
   POST extends JsonProperties = {},
@@ -117,7 +62,7 @@ export function apiResourceActions<
   const hrefUrl = validateHref(href);
 
   return {
-    get: async (): Promise<ApiResource<GET>> => {
+    get: async (): Promise<Resource<GET>> => {
       const idToken = await user.getIdToken();
       const response = await fetch(hrefUrl, {
         method: "GET",
@@ -130,7 +75,7 @@ export function apiResourceActions<
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       const json = await response.json();
-      return new ApiResource(json, href, user);
+      return new Resource<GET>(json);
     },
     post: async (data?: POST): Promise<string | null> => {
       const idToken = await user.getIdToken();

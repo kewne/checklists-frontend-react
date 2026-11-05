@@ -7,7 +7,8 @@ import { Link } from "~/components/Link";
 import { List } from "~/components/List";
 import { Loading } from "~/components/Loading";
 import { Panel } from "~/components/Panel";
-import { ApiResource, apiResourceActions, createApiClient, getApiResource, linkFromHref } from "~/lib/api";
+import { apiResourceActions, createApiClient, getApiResource, linkFromHref } from "~/lib/api";
+import type { Resource } from "~/lib/hal";
 import type { List as ChecklistCollection } from "~/lib/restspec-api";
 import { getUser } from "~/lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "~/lib/encoding";
@@ -87,7 +88,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   };
 }
 
-function SharedChecklistsList({ resource }: { resource: ApiResource }) {
+function SharedChecklistsList({ resource }: { resource: Resource }) {
   const { t } = useTranslation();
   const items = resource.getLinkArray("items");
   return (
