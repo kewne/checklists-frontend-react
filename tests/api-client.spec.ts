@@ -373,6 +373,45 @@ test.describe("generated-read routes with mocked authentication", () => {
     expect(posts[0].body.title).toBe("Copy of Source run");
   });
 
+  test("clears completed run items with a bearer-authenticated POST and reloads the run", async ({ page }) => {
+    const href = new URL("test-runs/fifth", root.env.staging).href;
+    const clearHref = new URL("test-runs/fifth/clear", root.env.staging).href;
+    const posts: (string | undefined)[] = [];
+    let cleared = false;
+    await page.route(href, (route) => route.fulfill({
+      json: {
+        id: "fifth",
+        title: "Clearable run",
+        checklistId: null,
+        createdBy: "test-user",
+        createdAt: "2026-01-01T00:00:00Z",
+        items: cleared ? [] : [
+          {
+            name: "done",
+            title: "Finished step",
+            completed: { completed_at: "2026-01-01T00:00:00Z", note: null },
+          },
+        ],
+        _links: {
+          self: { href },
+          update: { name: "clear-completed-items", href: clearHref },
+        },
+      },
+    }));
+    await page.route(clearHref, (route) => {
+      posts.push(route.request().headers()["authorization"]);
+      cleared = true;
+      return route.fulfill({ status: 204 });
+    });
+    await page.goto(`/en/runs/show/${encodeApiUrl(href)}`);
+    await expect(page.getByText("Finished step", { exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "More actions", exact: true }).click();
+    await page.getByRole("button", { name: "Clear completed items", exact: true }).click();
+    await expect(page.getByText("Finished step", { exact: true })).toBeHidden();
+    expect(posts).toHaveLength(1);
+    expect(posts[0]).toMatch(/^Bearer /);
+  });
+
   test("renders and edits nullable generated run fields and reads its source checklist", async ({ page }) => {
     const href = new URL("test-runs/first", root.env.staging).href;
     const sourceHref = new URL("test-checklists/source", root.env.staging).href;

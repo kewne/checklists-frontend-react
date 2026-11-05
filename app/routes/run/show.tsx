@@ -8,7 +8,7 @@ import { getUser } from "../../lib/auth";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import i18n from "~/lib/i18n";
 import { useLocaleNavigate } from "~/lib/locale";
-import { showErrorToast } from "~/lib/toastHelpers";
+import { showErrorToast, showSuccessToast } from "~/lib/toastHelpers";
 import { resourceHeading, type RouteHandle } from "../../lib/routeHandle";
 import type { Route } from "./+types/show";
 import type { LocationResponse, Response as RestspecResponse } from "@kewne/restspec";
@@ -62,12 +62,29 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 export async function clientAction({ params, request }: Route.ClientActionArgs) {
   const user = await getUser();
   const formData = await request.formData();
-  if (formData.get("intent") !== "create-checklist") {
-    throw new Response("Unknown intent", { status: 400 });
-  }
+  const intent = formData.get("intent");
   const href = formData.get("href");
+  if (typeof href !== "string") {
+    throw new Response("Invalid request", { status: 400 });
+  }
+  const client = await createApiClient(user);
+
+  if (intent === "clear-completed") {
+    const link = linkFromHref<{ post: [void, unknown] }>(href);
+    try {
+      await client.post(link);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : i18n.t("toast.updateRunFailed");
+      showErrorToast(message);
+      return;
+    }
+    showSuccessToast(i18n.t("toast.completedItemsCleared"));
+    return;
+  }
+
   const title = formData.get("title");
-  if (typeof href !== "string" || typeof title !== "string") {
+  if (intent !== "create-checklist" || typeof title !== "string") {
     throw new Response("Invalid request", { status: 400 });
   }
   const link = linkFromHref<{
@@ -78,7 +95,6 @@ export async function clientAction({ params, request }: Route.ClientActionArgs) 
   }>(href);
   let location: string | undefined;
   try {
-    const client = await createApiClient(user);
     const created = await client.post(link, { title });
     location = created.location?.href;
   } catch (error) {

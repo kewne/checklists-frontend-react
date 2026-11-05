@@ -159,9 +159,10 @@ export function ChecklistRunDetail({
               {clearCompletedLink && (
                 <Button
                   action={async () => {
-                    await apiResourceActions(clearCompletedLink.href, await getUser()).post();
-                    await onItemUpdated();
-                    showSuccessToast(t("toast.completedItemsCleared"));
+                    await submit(
+                      { intent: "clear-completed", href: clearCompletedLink.href },
+                      { method: "post" },
+                    );
                   }}
                 >
                   {t("run.clearCompleted")}
