@@ -64,19 +64,15 @@ test("reads nullable generated run fields and obtains a token for each operation
   expect(tokens).toEqual(["Bearer test-token-1", "Bearer test-token-2"]);
 });
 
-test("rejects decoded and discovered untrusted links before requesting credentials or sending requests", async ({ page }) => {
-  const href = new URL("test-checklist", root.env.staging).href;
+test("rejects decoded untrusted links before requesting credentials or sending requests", async ({ page }) => {
   const untrustedHref = "https://untrusted.example/checklist";
   const requests: string[] = [];
   await page.route("https://untrusted.example/**", (route) => {
     requests.push(route.request().url());
     return route.abort();
   });
-  await page.route(href, (route) => route.fulfill({
-    json: { _links: { related: { name: "shares", href: untrustedHref } } },
-  }));
   await page.goto("/en/login");
-  const result = await page.evaluate(async ({ href, untrustedHref }) => {
+  const result = await page.evaluate(async (untrustedHref) => {
     const api: typeof import("../app/lib/api") =
       await import(new URL("/app/lib/api.ts", location.origin).href);
     const errors: string[] = [];
@@ -87,19 +83,11 @@ test("rejects decoded and discovered untrusted links before requesting credentia
     } catch (error) {
       errors.push(String(error));
     }
-    const resource = await api.getApiResource<import("../app/lib/restspec-api").Checklist>(href, user);
-    const shares = resource.getNamedLink("related", "shares");
-    if (!shares) throw new Error("Missing test shares link");
-    try {
-      api.validateApiLink(shares);
-    } catch (error) {
-      errors.push(String(error));
-    }
     return { errors, tokenCount };
-  }, { href, untrustedHref });
-  expect(result.errors).toHaveLength(2);
-  for (const error of result.errors) expect(error).toContain("Invalid origin");
-  expect(result.tokenCount).toBe(1);
+  }, untrustedHref);
+  expect(result.errors).toHaveLength(1);
+  expect(result.errors[0]).toContain("Invalid origin");
+  expect(result.tokenCount).toBe(0);
   expect(requests).toEqual([]);
 });
 
@@ -196,6 +184,37 @@ test.describe("generated-read routes with mocked authentication", () => {
     await expect(page.getByLabel("Title", { exact: true })).toHaveValue("Test checklist");
     await expect(page.getByLabel("Step Title", { exact: true })).toHaveValue("First step");
     await expect(page.getByRole("button", { name: "Save", exact: true })).toBeVisible();
+  });
+
+  test("saves a checklist edit with a bearer-authenticated PUT", async ({ page }) => {
+    const href = new URL("test-checklists/second", root.env.staging).href;
+    const puts: { authorization?: string; body: { title: string } }[] = [];
+    await page.route(href, (route) => {
+      const request = route.request();
+      if (request.method() === "PUT") {
+        puts.push({
+          authorization: request.headers()["authorization"],
+          body: request.postDataJSON(),
+        });
+      }
+      return route.fulfill({
+        json: {
+          id: "second",
+          title: "Test checklist",
+          createdBy: "test-user",
+          createdAt: "2026-01-01T00:00:00Z",
+          updatedAt: "2026-01-01T00:00:00Z",
+          items: [{ id: "step", title: "First step" }],
+          _links: { self: { href } },
+        },
+      });
+    });
+    await page.goto(`/en/checklists/edit/${encodeApiUrl(href)}`);
+    await page.getByLabel("Title", { exact: true }).fill("Renamed checklist");
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    await expect.poll(() => puts.length).toBe(1);
+    expect(puts[0].authorization).toMatch(/^Bearer /);
+    expect(puts[0].body.title).toBe("Renamed checklist");
   });
 
   test("renders and edits nullable generated run fields and reads its source checklist", async ({ page }) => {

@@ -1,14 +1,21 @@
-import { NavLink, useRevalidator } from "react-router";
+import { NavLink, useSubmit } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
-import { apiResourceActions, getApiResource, type Checklist } from "~/lib/api";
-import type { Checklist as ChecklistResource } from "~/lib/restspec-api";
+import {
+  getApiResource,
+  createApiClient,
+  type Checklist,
+} from "~/lib/api";
+import type { Link as RestspecLink } from "@kewne/restspec";
+import type {
+  Checklist as ChecklistResource,
+  ReplaceChecklistRequest,
+} from "~/lib/restspec-api";
 import { getUser } from "~/lib/auth";
 import i18n from "~/lib/i18n";
-import { localePath, useLocale, useLocaleNavigate } from "~/lib/locale";
+import { localePath, useLocale } from "~/lib/locale";
 import { showErrorToast, showSuccessToast } from "~/lib/toastHelpers";
-import { Button } from "../../components/Button";
 import { ChecklistForm } from "../../components/ChecklistForm";
 import { decodeApiUrl, encodeApiUrl } from "../../lib/encoding";
 import { type RouteHandle } from "../../lib/routeHandle";
@@ -53,7 +60,25 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     decodedUrl,
     user,
   );
-  return { checklistResource, user, decodedUrl };
+  return { checklistResource, decodedUrl };
+}
+
+export async function clientAction({ params, request }: Route.ClientActionArgs) {
+  const user = await getUser();
+  const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
+  const data = (await request.json()) as Checklist;
+  try {
+    const link: RestspecLink<{
+      put: [ReplaceChecklistRequest, ChecklistResource];
+    }> = { href: decodedUrl };
+    const client = await createApiClient(user);
+    await client.put(link, data);
+    showSuccessToast(i18n.t("toast.checklistSaved"));
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : i18n.t("toast.updateChecklistFailed");
+    showErrorToast(message);
+  }
 }
 
 export const handle: RouteHandle<{ decodedUrl: string }> = {
@@ -64,16 +89,10 @@ export const handle: RouteHandle<{ decodedUrl: string }> = {
 };
 
 export default function ChecklistEdit({ loaderData }: Route.ComponentProps) {
-  const navigate = useLocaleNavigate();
-  const { revalidate } = useRevalidator();
+  const submit = useSubmit();
   const { t } = useTranslation();
 
-  const { checklistResource, user, decodedUrl } = loaderData;
-
-  const createInstanceLink = checklistResource.getNamedLink(
-    "create-from",
-    "instance",
-  );
+  const { checklistResource } = loaderData;
 
   const sharesLink = checklistResource.getNamedLink(
     "related",
@@ -81,39 +100,12 @@ export default function ChecklistEdit({ loaderData }: Route.ComponentProps) {
   );
 
   const handleSubmit = async (data: Checklist) => {
-    try {
-      await apiResourceActions<{ title: string }>(decodedUrl, user).put(data);
-      showSuccessToast(t("toast.checklistSaved"));
-      revalidate();
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : t("toast.updateChecklistFailed");
-      showErrorToast(message);
-    }
+    await submit(data, { method: "post", encType: "application/json" });
   };
 
   return (
     <div>
-      <div className="flex items-start justify-between gap-x-2 mb-4">
-        <div>
-          {createInstanceLink ? (
-            <Button
-              type="primary"
-              size="large"
-              action={async () => {
-                const location = await apiResourceActions(createInstanceLink.href, user).post({
-                  title: checklistResource.properties.title,
-                });
-                if (!location) {
-                  return navigate("/runs");
-                }
-                navigate(`/runs/show/${encodeApiUrl(location)}`);
-              }}
-            >
-              {t("checklist.run")}
-            </Button>
-          ) : null}
-        </div>
+      <div className="flex items-start justify-end gap-x-2 mb-4">
         <div className="space-x-2">
           {sharesLink && (
             <Link

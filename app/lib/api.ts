@@ -1,5 +1,5 @@
 import type { User } from "firebase/auth";
-import { createHttpClient, createLink, fromRoot, type Link } from "@kewne/restspec";
+import { createHttpClient, createLink, fromRoot } from "@kewne/restspec";
 import { apiBaseUrl, apiEnvironment } from "./config";
 import { root } from "./restspec-api";
 import {
@@ -38,13 +38,8 @@ export async function getApiRoot(user: TokenProvider) {
   return client.get(fromRoot(root, apiEnvironment));
 }
 
-export function validateApiLink<L extends Link<any>>(link: L): L {
-  validateHref(link.href);
-  return link;
-}
-
 export async function getApiResource<RESOURCE>(href: string, user: TokenProvider) {
-  const link = validateApiLink(createLink<RESOURCE>(validateHref(href).href));
+  const link = createLink<RESOURCE>(validateHref(href).href);
   const client = await createApiClient(user);
   const resource = await client.get(link);
   if (resource === undefined) {
