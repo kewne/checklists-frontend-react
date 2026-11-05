@@ -1,12 +1,13 @@
-import { NavLink } from "react-router";
+import { NavLink, redirect, useSubmit } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
-import { apiResourceActions, getApiResource } from "~/lib/api";
+import { createApiClient, getApiResource } from "~/lib/api";
 import type { Checklist } from "~/lib/restspec-api";
 import { getUser } from "~/lib/auth";
 import i18n from "~/lib/i18n";
-import { localePath, useLocale, useLocaleNavigate } from "~/lib/locale";
+import { localePath, useLocale } from "~/lib/locale";
+import { showErrorToast } from "~/lib/toastHelpers";
 import { Button } from "../../components/Button";
 import { HexCheckbox } from "../../components/HexCheckbox";
 import { List } from "../../components/List";
@@ -66,7 +67,37 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     decodedUrl,
     user,
   );
-  return { checklistResource, decodedUrl, user };
+  return { checklistResource, decodedUrl };
+}
+
+export async function clientAction({ params }: Route.ClientActionArgs) {
+  const user = await getUser();
+  const checklistResource = await getApiResource<Checklist>(
+    decodeApiUrl(params.apiUrlEncoded),
+    user,
+  );
+  const link = checklistResource.getNamedLink("create-from", "instance");
+  if (!link) {
+    showErrorToast(i18n.t("toast.createRunFailed"));
+    return;
+  }
+  let location: string | undefined;
+  try {
+    const client = await createApiClient(user);
+    const created = await client.post(link, {
+      title: checklistResource.properties.title,
+    });
+    location = created.location?.href;
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : i18n.t("toast.createRunFailed");
+    showErrorToast(message);
+    return;
+  }
+  if (!location) {
+    return redirect(`/${params.locale}/runs`);
+  }
+  return redirect(`/${params.locale}/runs/show/${encodeApiUrl(location)}`);
 }
 
 function findItemUrls(description: string | undefined): string[] {
@@ -86,11 +117,11 @@ function urlLabel(token: string): string {
 }
 
 export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
-  const navigate = useLocaleNavigate();
+  const submit = useSubmit();
   const { t } = useTranslation();
 
-  const { checklistResource, decodedUrl, user } = loaderData;
-  const { title, items } = checklistResource.properties;
+  const { checklistResource, decodedUrl } = loaderData;
+  const { items } = checklistResource.properties;
 
   const createInstanceLink = checklistResource.getNamedLink(
     "create-from",
@@ -111,13 +142,7 @@ export default function ChecklistShow({ loaderData }: Route.ComponentProps) {
               type="primary"
               size="large"
               action={async () => {
-                const location = await apiResourceActions(createInstanceLink.href, user).post({
-                  title,
-                });
-                if (!location) {
-                  return navigate("/runs");
-                }
-                navigate(`/runs/show/${encodeApiUrl(location)}`);
+                await submit(null, { method: "post" });
               }}
             >
               {t("checklist.run")}
