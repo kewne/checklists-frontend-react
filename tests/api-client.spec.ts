@@ -217,6 +217,29 @@ test.describe("generated-read routes with mocked authentication", () => {
     expect(puts[0].body.title).toBe("Renamed checklist");
   });
 
+  test("creates a checklist with a bearer-authenticated POST", async ({ page }) => {
+    const href = new URL("test-checklists", root.env.staging).href;
+    const posts: { authorization?: string; body: { title: string } }[] = [];
+    await page.route(href, (route) => {
+      const request = route.request();
+      if (request.method() === "POST") {
+        posts.push({
+          authorization: request.headers()["authorization"],
+          body: request.postDataJSON(),
+        });
+        return route.fulfill({ status: 201, headers: { Location: `${href}/new` } });
+      }
+      return route.fulfill({ json: { _links: {} } });
+    });
+    await page.goto(`/en/checklists/create/${encodeApiUrl(href)}`);
+    await page.getByLabel("Title", { exact: true }).fill("New checklist");
+    await page.getByRole("button", { name: "Create", exact: true }).click();
+    await expect(page).toHaveURL(`/en/checklists/list/${encodeApiUrl(href)}`);
+    expect(posts).toHaveLength(1);
+    expect(posts[0].authorization).toMatch(/^Bearer /);
+    expect(posts[0].body.title).toBe("New checklist");
+  });
+
   test("renders and edits nullable generated run fields and reads its source checklist", async ({ page }) => {
     const href = new URL("test-runs/first", root.env.staging).href;
     const sourceHref = new URL("test-checklists/source", root.env.staging).href;

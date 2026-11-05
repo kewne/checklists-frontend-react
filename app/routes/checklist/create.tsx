@@ -1,12 +1,15 @@
+import { redirect, useSubmit } from "react-router";
 import { useTranslation } from "react-i18next";
+import type { Link as RestspecLink } from "@kewne/restspec";
 import { Link } from "~/components/Link";
 import { Panel } from "~/components/Panel";
-import { apiResourceActions } from "~/lib/api";
+import { createApiClient, type Checklist } from "~/lib/api";
+import { getUser } from "~/lib/auth";
 import i18n from "~/lib/i18n";
 import { useLocaleNavigate } from "~/lib/locale";
+import type { CreateChecklistRequest } from "~/lib/restspec-api";
 import { showErrorToast, showSuccessToast } from "~/lib/toastHelpers";
 import { ChecklistForm } from "../../components/ChecklistForm";
-import { useAuth } from "../../lib/auth";
 import { decodeApiUrl } from "../../lib/encoding";
 import { type RouteHandle } from "../../lib/routeHandle";
 import type { Route } from "./+types/create";
@@ -43,27 +46,32 @@ export function ErrorBoundary({ }: Route.ErrorBoundaryProps) {
   );
 }
 
+export async function clientAction({ params, request }: Route.ClientActionArgs) {
+  const user = await getUser();
+  const link: RestspecLink<{ post: [CreateChecklistRequest, unknown] }> = {
+    href: decodeApiUrl(params.apiUrlEncoded),
+  };
+  const data = (await request.json()) as CreateChecklistRequest;
+  try {
+    const client = await createApiClient(user);
+    await client.post(link, data);
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : i18n.t("toast.createChecklistFailed");
+    showErrorToast(message);
+    return;
+  }
+  showSuccessToast(i18n.t("toast.checklistCreated"));
+  return redirect(`/${params.locale}/checklists/list/${params.apiUrlEncoded}`);
+}
+
 export default function CreateChecklist({ params }: Route.ComponentProps) {
-  const { user } = useAuth();
   const navigate = useLocaleNavigate();
+  const submit = useSubmit();
   const { t } = useTranslation();
 
-  const decodedUrl = decodeApiUrl(params.apiUrlEncoded);
-
-  const { post } = apiResourceActions(decodedUrl, user!);
-
-  const handleSubmit = async (data: {
-    title: string;
-    items: Array<{ title: string; description: string }>;
-  }) => {
-    try {
-      await post(data);
-      showSuccessToast(t("toast.checklistCreated"));
-      navigate(`/checklists/list/${params.apiUrlEncoded}`);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : t("toast.createChecklistFailed");
-      showErrorToast(message);
-    }
+  const handleSubmit = async (data: Checklist) => {
+    await submit(data, { method: "post", encType: "application/json" });
   };
 
   return (
