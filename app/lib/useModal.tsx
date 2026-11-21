@@ -25,8 +25,11 @@ export function useModal(initialOpen: boolean = false): UseModalReturn {
     setIsOpen((prev) => !prev);
   }, []);
 
-  const ModalWrapper = (props: Omit<ModalProps, "isOpen" | "onClose">) => (
-    <Modal isOpen={isOpen} onClose={close} {...props} />
+  const ModalWrapper = useCallback(
+    (props: Omit<ModalProps, "isOpen" | "onClose">) => (
+      <Modal isOpen={isOpen} onClose={close} {...props} />
+    ),
+    [isOpen, close],
   );
 
   return {

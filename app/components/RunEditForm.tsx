@@ -190,7 +190,7 @@ export function RunEditForm({
   const { t } = useTranslation();
   const [title, setTitle] = useState(initialValues.title);
   const [items, setItems] = useState<WriteableChecklistRun["items"]>(
-    initialValues.items.map(({ completed: _completed, ...item }) => item),
+    initialValues.items.map(({ completed: _completed, note: _note, ...item }) => item),
   );
   const addedItemRef = useRef<HTMLInputElement>(null);
   const lastAddedId = useRef<string | null>(null);

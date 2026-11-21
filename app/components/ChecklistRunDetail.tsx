@@ -5,17 +5,18 @@ import {
   type ApiLink,
   type Checklist,
   type ChecklistRun,
+  type ChecklistRunItem,
 } from "~/lib/api";
 import { useLocaleNavigate } from "~/lib/locale";
 import { useModal } from "~/lib/useModal";
 import { encodeApiUrl } from "../lib/encoding";
-import { showSuccessToast } from "../lib/toastHelpers";
+import { showErrorToast, showSuccessToast } from "../lib/toastHelpers";
 import { Button } from "./Button";
 import { Heading } from "./Heading";
 import { Link } from "./Link";
-import { MenuButton, type MenuItem } from "./MenuButton";
+import { MenuButton } from "./MenuButton";
 import { RunItem } from "./RunItem";
-import { Panel } from "./Panel";
+import { TextArea } from "./TextArea";
 
 interface ChecklistRunDetailProps {
   resource: ApiResource<ChecklistRun>;
@@ -52,9 +53,9 @@ export function ChecklistRunDetail({
   onItemUpdated,
   onDelete,
 }: ChecklistRunDetailProps) {
-  const items = resource.properties.items;
-  const completedItems = items.filter((item) => item.completed != null);
-  const todoItems = items.filter((item) => item.completed == null);
+  const items = resource.getNested<ChecklistRunItem>("items");
+  const completedItems = items.filter((item) => item.properties.completed != null);
+  const todoItems = items.filter((item) => item.properties.completed == null);
   const allItemsCompleted = items.length > 0 && todoItems.length === 0;
   const checklistLink = resource.getFirstLinkMatching(
     "related",
@@ -73,6 +74,51 @@ export function ChecklistRunDetail({
   const { t } = useTranslation();
 
   const deleteModal = useModal();
+  const noteModal = useModal();
+  const [editingNote, setEditingNote] = useState<{
+    noteHref: ApiLink;
+    initialNote?: string;
+  } | null>(null);
+  const [noteValue, setNoteValue] = useState("");
+
+  const handleOpenNoteModal = (noteHref: ApiLink, currentNote?: string) => {
+    setEditingNote({ noteHref, initialNote: currentNote });
+    setNoteValue(currentNote ?? "");
+    noteModal.open();
+  };
+
+  const handleCloseNoteModal = () => {
+    noteModal.close();
+    setEditingNote(null);
+  };
+
+  const handleSaveNote = async () => {
+    if (!editingNote) return;
+    const trimmed = noteValue.trim();
+    if (!trimmed) return;
+    try {
+      await editingNote.noteHref.actions().put({ note: trimmed });
+      await onItemUpdated();
+      handleCloseNoteModal();
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : t("toast.updateRunFailed");
+      showErrorToast(message);
+    }
+  };
+
+  const handleRemoveNote = async () => {
+    if (!editingNote) return;
+    try {
+      await editingNote.noteHref.actions().delete();
+      await onItemUpdated();
+      handleCloseNoteModal();
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : t("toast.updateRunFailed");
+      showErrorToast(message);
+    }
+  };
 
   const handleDeleteClick = async () => {
     if (!allItemsCompleted) {
@@ -88,7 +134,6 @@ export function ChecklistRunDetail({
     deleteModal.close();
   };
 
-  const additionalActions: MenuItem[] = [];
 
   const createChecklistFrom = resource.getFirstLinkMatching(
     "create-from",
@@ -191,21 +236,28 @@ export function ChecklistRunDetail({
       )}
       {completedItems.length > 0 && (
         <ul className="space-y-3">
-          {completedItems.map((item) => {
-            const completeLink = resource
-              .getLinkArray("complete-item")
-              .find((l) => l.name === item.name);
-            const markIncompleteLink = resource
-              .getLinkArray("mark-incomplete-item")
-              .find((l) => l.name === item.name);
+          {completedItems.map((itemResource) => {
+            const item = itemResource.properties;
+            const completeLink = itemResource.getFirstLinkMatching("complete-item");
+            const markIncompleteLink = itemResource.getFirstLinkMatching("mark-incomplete-item");
+            const noteLink = itemResource.getFirstLinkMatching(
+              "update",
+              (l) => l.name === "note",
+            );
             return (
-              <li key={item.name}>
+              <li key={item.id}>
                 <RunItem
-                  title={item.title ?? item.name}
+                  title={item.title ?? item.id}
                   description={item.description}
-                  completed={item.completed}
+                  note={item.note}
+                  completed={item.completed ?? undefined}
                   completeHref={completeLink}
                   markIncompleteHref={markIncompleteLink}
+                  onEditNote={
+                    noteLink
+                      ? () => handleOpenNoteModal(noteLink, item.note)
+                      : undefined
+                  }
                   onItemUpdated={onItemUpdated}
                 />
               </li>
@@ -231,21 +283,28 @@ export function ChecklistRunDetail({
         <ul
           className="space-y-3 overflow-y-auto overscroll-y-contain max-h-100 snap-y snap-mandatory"
         >
-          {todoItems.map((item) => {
-            const completeLink = resource
-              .getLinkArray("complete-item")
-              .find((l) => l.name === item.name);
-            const markIncompleteLink = resource
-              .getLinkArray("mark-incomplete-item")
-              .find((l) => l.name === item.name);
+          {todoItems.map((itemResource) => {
+            const item = itemResource.properties;
+            const completeLink = itemResource.getFirstLinkMatching("complete-item");
+            const markIncompleteLink = itemResource.getFirstLinkMatching("mark-incomplete-item");
+            const noteLink = itemResource.getFirstLinkMatching(
+              "update",
+              (l) => l.name === "note",
+            );
             return (
-              <li key={item.name}>
+              <li key={item.id}>
                 <RunItem
-                  title={item.title ?? item.name}
+                  title={item.title ?? item.id}
                   description={item.description}
-                  completed={item.completed}
+                  note={item.note}
+                  completed={item.completed ?? undefined}
                   completeHref={completeLink}
                   markIncompleteHref={markIncompleteLink}
+                  onEditNote={
+                    noteLink
+                      ? () => handleOpenNoteModal(noteLink, item.note)
+                      : undefined
+                  }
                   onItemUpdated={onItemUpdated}
                 />
               </li>
@@ -253,6 +312,39 @@ export function ChecklistRunDetail({
           })}
         </ul>
       )}
+      <noteModal.Modal>
+        <Heading level="2">{t("run.noteTitle")}</Heading>
+        <div className="mb-4">
+          <TextArea
+            aria-label={t("run.noteTitle")}
+            value={noteValue}
+            onChange={(e) => setNoteValue(e.target.value)}
+            placeholder={t("run.notePlaceholder")}
+            maxLength={500}
+            rows={4}
+            autoFocus
+          />
+        </div>
+        <div className="flex justify-between gap-2">
+          <div>
+            {editingNote?.initialNote && (
+              <Button variant="danger" action={handleRemoveNote}>
+                {t("common.remove")}
+              </Button>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button action={handleCloseNoteModal}>{t("common.cancel")}</Button>
+            <Button
+              type="primary"
+              action={handleSaveNote}
+              disabled={!noteValue.trim()}
+            >
+              {t("common.save")}
+            </Button>
+          </div>
+        </div>
+      </noteModal.Modal>
       <deleteModal.Modal>
         <Heading level="2">{t("run.deleteTitle")}</Heading>
         <p className="text-gray-600 text-sm mb-6">

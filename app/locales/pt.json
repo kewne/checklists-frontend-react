@@ -124,7 +124,11 @@
     "clearCompleted": "Limpar itens concluídos",
     "bookmark": "Marcar \"{{title}}\"",
     "removeBookmark": "Remover \"{{title}}\" dos marcados",
-    "addMore": "Adicionar mais"
+    "addMore": "Adicionar mais",
+    "addNote": "Adicionar nota",
+    "editNote": "Editar nota",
+    "noteTitle": "Nota",
+    "notePlaceholder": "Adicionar uma nota..."
   },
   "share": {
     "title": "Partilhas",

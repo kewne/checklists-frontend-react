@@ -64,6 +64,12 @@ export class ApiResource<T extends JsonProperties = {}> extends Resource<T> {
     };
   }
 
+  override getNested<N extends JsonProperties = {}>(key: string): ApiResource<N>[] {
+    const nested = this.doc._nested?.[key];
+    if (!nested) return [];
+    return nested.map((doc) => new ApiResource<N>(doc, this.href, this.user));
+  }
+
   getLinkArray(rel: string): ApiLink[] {
     return super.getLinkArray(rel).map((link) => ({
       ...link,
@@ -129,7 +135,6 @@ export function apiResourceActions<
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${idToken}`,
-          "Content-Type": "application/json",
         },
       });
       if (!response.ok) {
@@ -159,15 +164,25 @@ export type WriteableChecklistRun = {
   }[];
 };
 
+export type ChecklistRunItem = {
+  id: string;
+  title: string;
+  description?: string;
+  note?: string;
+  completed?: {
+    completed_at: string;
+  } | null;
+};
+
 export type ChecklistRun = {
   title: string;
   items: {
     name: string;
     title: string;
     description: string;
-    completed: {
+    note?: string;
+    completed?: {
       completed_at: string;
-      note: string;
-    };
+    } | null;
   }[];
 };

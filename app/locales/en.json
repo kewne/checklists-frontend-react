@@ -124,7 +124,11 @@
     "clearCompleted": "Clear completed items",
     "bookmark": "Bookmark \"{{title}}\"",
     "removeBookmark": "Remove bookmark for \"{{title}}\"",
-    "addMore": "Add more"
+    "addMore": "Add more",
+    "addNote": "Add note",
+    "editNote": "Edit note",
+    "noteTitle": "Note",
+    "notePlaceholder": "Add a note..."
   },
   "share": {
     "title": "Shares",

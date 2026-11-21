@@ -8,13 +8,14 @@ export interface HalLink {
 
 export interface HalDocument {
   _links?: Record<string, HalLink | HalLink[]>;
+  _nested?: Record<string, HalDocument[]>;
   [key: string]: unknown;
 }
 
 export type JsonProperties = Record<string, unknown>
 
 export class Resource<T extends JsonProperties = {}> {
-  private readonly doc: HalDocument;
+  protected readonly doc: HalDocument;
 
   constructor(doc: HalDocument) {
     this.doc = doc;
@@ -38,8 +39,14 @@ export class Resource<T extends JsonProperties = {}> {
     return links.find(filter);
   }
 
+  getNested<N extends JsonProperties = {}>(key: string): Resource<N>[] {
+    const nested = this.doc._nested?.[key];
+    if (!nested) return [];
+    return nested.map((doc) => new Resource<N>(doc));
+  }
+
   get properties(): T {
-    const { _links, ...rest } = this.doc;
+    const { _links, _nested, ...rest } = this.doc;
     return rest as T;
   }
 }
