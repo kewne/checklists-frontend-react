@@ -17,3 +17,5 @@ firebase-debug.log
 /playwright/.auth/
 
 /app/lib/restspec-api.ts
+
+.worktrees/
